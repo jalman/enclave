@@ -13,8 +13,8 @@ public class SoldierBehavior {
 	}
 
 	public void run() {
-		try {
-			while(true) {
+		while(true) {
+			try {
 				beginTurn();
 				
 				if (rc.isActive()) {
@@ -29,10 +29,11 @@ public class SoldierBehavior {
 				}
 				
 				endTurn();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		
 	}
 	
 	public void beginTurn() {

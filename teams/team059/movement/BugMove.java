@@ -1,11 +1,9 @@
-package team007.movement;
+package team059.movement;
 
-import team007.Action;
-import team007.RobotPlayer;
+import team059.RobotPlayer;
 import battlecode.common.*;
-import team007.talking.Broadcast;
 //
-public class BugMove implements Action {
+public class BugMove {
 	
 	RobotController rc;
 	Broadcast broad;
@@ -45,18 +43,13 @@ public class BugMove implements Action {
     	if(dir == Direction.NONE || dir == Direction.OMNI)
     		return false;
     	
-    	if(rc.canMove(dir))
+    	if(rc.canMove(dir) && rc.senseMine(rc.getLocation().add(dir)))
     		return true;
-    	
-    	if(rc.getType() == RobotType.ARCHON)
-    	{
-    		return tryYelling(dir);
-    	}
     	
     	return false;
     }
     
-    public boolean tryYelling(Direction dir)
+/*	public boolean tryYelling(Direction dir)
     {
     	if(counter > 0)
     		return true;
@@ -78,6 +71,7 @@ public class BugMove implements Action {
 		}
 		return false;
     }
+    */
     
 	public void execute(){
 		

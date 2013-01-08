@@ -4,3 +4,5 @@ Macro:
 - Decide power management (when to build soldiers, when to build generators)
 - Decide when to build suppliers
 - Decide when to research upgrades
+
+Different strategies for different size maps??? (Maybe put in RobotPlayer)

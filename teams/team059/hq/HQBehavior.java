@@ -6,6 +6,8 @@ import battlecode.common.*;
 public class HQBehavior {
 	RobotController rc;
 	MapLocation myBase, enemyBase;
+	
+	
 	public HQBehavior(RobotController therc) {
 		rc = therc;
 		myBase = rc.getLocation();
@@ -13,23 +15,22 @@ public class HQBehavior {
 	}
 
 	public void run() {
-		try {
-			while(true) {
-			beginTurn();
-	
-			if (rc.isActive()) {
-				// Spawn a soldier
-				Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
-				if (rc.canMove(dir))
-					rc.spawn(dir);
-	
+
+		while(true) {		
+			try {
+				beginTurn();
+
+
+				rc.setIndicatorString(0, Double.toString(rc.getTeamPower()));
+		
+				rc.buildSoldier(rc.getLocation().directionTo(rc.senseEnemyHQLocation()));
+				
+				endTurn();		
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			
-			endTurn();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+
 	}
 	
 	public void beginTurn() {
@@ -41,7 +42,12 @@ public class HQBehavior {
 	}
 
 	public void buildSoldier(Direction dir) {
-		
+		if (rc.isActive()) {
+			// Spawn a soldier
+			if (rc.canMove(dir) && rc.senseMine(rc.getLocation().add(dir)))
+				rc.spawn(dir);
+
+		}
 	}
 	
 	public void researchUpgrade(Upgrade upg) {
