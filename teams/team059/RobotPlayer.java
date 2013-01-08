@@ -1,12 +1,8 @@
 package team059;
 
-import battlecode.common.Clock;
-import battlecode.common.Direction;
-import battlecode.common.GameConstants;
-import battlecode.common.RobotController;
-import battlecode.common.RobotType;
-import battlecode.common.Team;
-import battlecode.common.Upgrade;
+import team059.hq.*;
+import battlecode.common.*;
+import team059.soldiers.*;
 
 /** The example funcs player is a player meant to demonstrate basic usage of the most common commands.
  * Robots will move around randomly, occasionally mining and writing useless messages.
@@ -14,37 +10,16 @@ import battlecode.common.Upgrade;
  */
 public class RobotPlayer {
 	public static void run(RobotController rc) {
-		while (true) {
-			try {
-				if (rc.getType() == RobotType.HQ) {
-					if (rc.isActive()) {
-						// Spawn a soldier
-						Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
-						if (rc.canMove(dir))
-							rc.spawn(dir);
-
-					}
-				} else if (rc.getType() == RobotType.SOLDIER) {
-					if (rc.isActive()) {
-							Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
-							Team mine = rc.senseMine(rc.getLocation().add(dir));
-							if(mine != rc.getTeam()) {
-								rc.defuseMine(rc.getLocation().add(dir));
-							}
-							if(rc.canMove(dir)) {
-								rc.move(dir);
-							}
-						
-						
-						
-					}
-				}
-
-				// End turn
-				rc.yield();
-			} catch (Exception e) {
-				e.printStackTrace();
+		try {
+			if (rc.getType() == RobotType.HQ) {
+				HQBehavior hqbehave = new HQBehavior(rc);
+				hqbehave.run();
+			} else if (rc.getType() == RobotType.SOLDIER) {
+				SoldierBehavior soldierbehave = new SoldierBehavior(rc);
+				soldierbehave.run();
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
