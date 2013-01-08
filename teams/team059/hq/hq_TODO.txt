@@ -6,3 +6,5 @@ Macro:
 - Decide when to research upgrades
 
 Different strategies for different size maps??? (Maybe put in RobotPlayer)
+yeah, we need very different strategies for different maps
+for example, on the big map with the mines the nuke strategy is DOMINANT
