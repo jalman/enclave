@@ -26,9 +26,6 @@ public class RobotPlayer {
 					}
 				} else if (rc.getType() == RobotType.SOLDIER) {
 					if (rc.isActive()) {
-						if(rc.senseMine(rc.getLocation())==null) {
-							rc.layMine();
-						} else {
 							Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
 							Team mine = rc.senseMine(rc.getLocation().add(dir));
 							if(mine == Team.NEUTRAL) {
@@ -37,7 +34,7 @@ public class RobotPlayer {
 							if(rc.canMove(dir)) {
 								rc.move(dir);
 							}
-						}
+						
 						
 						
 					}
