@@ -2,3 +2,4 @@ bin
 /.installationinformation
 .project
 /.metadata
+.classpath

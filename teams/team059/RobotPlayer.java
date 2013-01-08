@@ -28,7 +28,7 @@ public class RobotPlayer {
 					if (rc.isActive()) {
 							Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
 							Team mine = rc.senseMine(rc.getLocation().add(dir));
-							if(mine == Team.NEUTRAL) {
+							if(mine != rc.getTeam()) {
 								rc.defuseMine(rc.getLocation().add(dir));
 							}
 							if(rc.canMove(dir)) {
