@@ -1,5 +1,6 @@
 package team059;
 
+import team059.encampment.ArtilleryBehavior;
 import team059.encampment.EncampmentBehavior;
 import team059.hq.HQBehavior;
 import team059.soldiers.SoldierBehavior;
@@ -17,7 +18,10 @@ public class RobotPlayer {
 			case SOLDIER:
 				robot = new SoldierBehavior(rc);
 				break;
-			case GENERATOR:
+			case ARTILLERY:
+				robot = new ArtilleryBehavior(rc);
+				break;
+			default:
 				robot = new EncampmentBehavior(rc);
 				break;
 			}

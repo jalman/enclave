@@ -13,6 +13,10 @@ public class Utils {
 		this.rc = rc;
 	}
 	
+	public Team enemy() {
+		return rc.getTeam() == Team.A ? Team.B : Team.A;
+	}
+	
 	public boolean isEnemyMine(Team team) {
 		return !(team == myTeam() || team == null);
 	}
