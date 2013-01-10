@@ -15,6 +15,11 @@ public class SoldierBehavior extends RobotBehavior {
 	@Override
 	public void run() {
 		try {
+			messagingSystem.readMessages();
+		} catch (GameActionException e1) {
+			e1.printStackTrace();
+		}
+		try {
 			if (rc.isActive()) {
 				
 				//see if there is an encampment nearby to take

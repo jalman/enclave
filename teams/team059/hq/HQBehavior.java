@@ -21,6 +21,12 @@ public class HQBehavior extends RobotBehavior {
 
 	@Override
 	public void run() {
+		try {
+			messagingSystem.initHeaderMessage();
+		} catch (GameActionException e1) {
+			e1.printStackTrace();
+		}
+		
 		if(rc.getTeamPower() - 40.0 > 15.0 || Clock.getRoundNum() < 40) {
 			try {
 				rc.setIndicatorString(0, Double.toString(rc.getTeamPower()));
