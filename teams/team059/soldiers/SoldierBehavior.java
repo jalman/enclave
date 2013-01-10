@@ -56,11 +56,22 @@ public class SoldierBehavior extends RobotBehavior {
 					}
 				} else {
 					
-					Direction dir = encampTarget == null ? rc.getLocation().directionTo(rc.senseEnemyHQLocation()) : rc.getLocation().directionTo(encampTarget);
-					
-					if(!moveMine(dir)) {
-						if(!moveMine(dir.rotateLeft()))
-							moveMine(dir.rotateRight());
+					double mineProb = rc.senseHQLocation().distanceSquaredTo(rc.getLocation()) + rc.senseEnemyHQLocation().distanceSquaredTo(rc.getLocation());
+					mineProb /= rc.senseHQLocation().distanceSquaredTo(rc.senseEnemyHQLocation());
+					mineProb *= mineProb;
+					mineProb /= 20;
+					if(rc.senseMine(rc.getLocation()) == utils.myTeam()) {
+						mineProb = 0.0;
+					}
+					if(Math.random() < mineProb) {
+						rc.layMine();
+					} else {
+						Direction dir = encampTarget == null ? rc.getLocation().directionTo(rc.senseEnemyHQLocation()) : rc.getLocation().directionTo(encampTarget);
+						
+						if(!moveMine(dir)) {
+							if(!moveMine(dir.rotateLeft()))
+								moveMine(dir.rotateRight());
+						}
 					}
 					
 				}
