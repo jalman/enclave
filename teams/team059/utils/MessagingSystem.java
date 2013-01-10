@@ -77,7 +77,14 @@ public class MessagingSystem {
 	 */
 	private boolean readMessage(int index, int[] block) throws GameActionException {
 		for(int i = 0; i < COPIES; i++) {
-			if(readBlock(channels[i]+index*BLOCK_SIZE, block)) {
+			int off = index * BLOCK_SIZE;
+			if(readBlock(channels[i]+off, block)) {
+				//fix messages
+				for(int j = 0; j < COPIES; j++) {
+					if(j == i) continue;
+					writeBlock(channels[j]+off, block);
+				}
+				
 				return true;
 			}
 		}
@@ -106,22 +113,22 @@ public class MessagingSystem {
 		}
 	}
 	
-	public void writeBlock(int index, int[] block) throws GameActionException {
+	public void writeBlock(int channel, int[] block) throws GameActionException {
 		int checksum = 0;
 		
 		int i = 0;
 		while(i < block.length) {
-			rc.broadcast(index+i, block[i]);
+			rc.broadcast(channel+i, block[i]);
 			checksum ^= block[i];
 			i++;
 		}
 		
 		while(i < MESSAGE_SIZE) {
-			checksum ^= rc.readBroadcast(index+i);
+			checksum ^= rc.readBroadcast(channel+i);
 			i++;
 		}
 		
-		rc.broadcast(index + MESSAGE_SIZE, checksum);
+		rc.broadcast(channel + MESSAGE_SIZE, checksum);
 	}
 	
 	public void writeMessage(int... message) throws GameActionException {		
@@ -133,14 +140,21 @@ public class MessagingSystem {
 		total_messages++;
 	}
 	
+	private int prev_messages = 0;
+	
 	/**
 	 * Should be called by HQ at the start of each round.
 	 * @throws GameActionException 
 	 */
 	public void initHeaderMessage() throws GameActionException {
+		//do something with messages from last round?
+		if(Clock.getRoundNum() > 0) {
+			readMessages();
+			prev_messages = valid_messages;
+		}		
+		
 		setChannels();
 		total_messages = 0;
-		valid_messages = 0;
 		writeMessage(0);
 	}
 	
