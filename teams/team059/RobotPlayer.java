@@ -1,5 +1,6 @@
 package team059;
 
+import team059.encampment.EncampmentBehavior;
 import team059.hq.HQBehavior;
 import team059.soldiers.SoldierBehavior;
 import battlecode.common.RobotController;
@@ -15,6 +16,9 @@ public class RobotPlayer {
 				break;
 			case SOLDIER:
 				robot = new SoldierBehavior(rc);
+				break;
+			case GENERATOR:
+				robot = new EncampmentBehavior(rc);
 				break;
 			}
 			while(true) {
