@@ -9,7 +9,7 @@ public class Utils {
 	RobotController rc = null;
 	Team myTeam = null;
 	
-	public void initUtils(RobotController rc) {
+	public Utils(RobotController rc) {
 		this.rc = rc;
 	}
 	
