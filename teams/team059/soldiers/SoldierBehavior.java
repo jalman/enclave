@@ -18,7 +18,7 @@ public class SoldierBehavior extends RobotBehavior {
 			if (rc.isActive()) {
 				
 				//see if there is an encampment nearby to take
-				if(encampTarget == null) {
+				if(encampTarget == null && rc.getTeamPower() > (1 + rc.senseAlliedEncampmentSquares().length)* 20.0) {
 					MapLocation[] encampments = rc.senseEncampmentSquares(rc.getLocation(), 16, Team.NEUTRAL);
 					if(encampments.length > 0) {
 						int maxdist = 20;
@@ -30,10 +30,13 @@ public class SoldierBehavior extends RobotBehavior {
 							}
 						}
 					}
-				} else { //see if the encampment is taken
-					GameObject there = rc.senseObjectAtLocation(encampTarget);
-					if(there != null) {
-						encampTarget = null;
+				} else if (encampTarget != null) { //see if the encampment is taken
+					int dist = rc.getLocation().distanceSquaredTo(encampTarget);
+					if(dist > 0 && dist <= 14) {//change this to deal with upgrades!
+						GameObject there = rc.senseObjectAtLocation(encampTarget);
+						if(there != null) {
+							encampTarget = null;
+						}
 					}
 				}
 				
@@ -42,7 +45,7 @@ public class SoldierBehavior extends RobotBehavior {
 				
 				if(encampTarget != null && encampTarget.distanceSquaredTo(rc.getLocation()) == 0) {
 					try{
-						rc.captureEncampment(RobotType.GENERATOR);
+						rc.captureEncampment(RobotType.ARTILLERY);
 					} catch(Exception e) {
 						e.printStackTrace();
 					}
