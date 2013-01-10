@@ -6,16 +6,22 @@ import team059.utils.MessagingSystem;
 import team059.utils.Utils;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
+import battlecode.common.Team;
 
 public abstract class RobotBehavior {
 	protected RobotController rc;
-	protected MapLocation myBase, enemyBase;
+	public final Team myTeam;
+	public final Team enemyTeam;
+	public final MapLocation myBase, enemyBase;
+	
 	protected MessagingSystem messagingSystem;
 	protected MessageHandler[] messageHandlers;
 	protected Utils utils;
 	
 	public RobotBehavior(RobotController rc) {
 		this.rc = rc;
+		myTeam = rc.getTeam();
+		enemyTeam = (myTeam == Team.A) ? Team.B : Team.A;
 		myBase = rc.senseHQLocation();
 		enemyBase = rc.senseEnemyHQLocation();
 		
@@ -25,6 +31,16 @@ public abstract class RobotBehavior {
 		
 		utils = new Utils(rc);
 	}
+	
+	public boolean isEnemyMine(Team team) {
+		return !(team == myTeam || team == null);
+	}
+
+	public boolean isEnemyMine(MapLocation loc) {
+		return isEnemyMine(rc.senseMine(loc));
+	}
+	
+	protected int danger(MapLocation loc) {return 0;}
 	
 	/**
 	 * Called every round.

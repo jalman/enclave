@@ -3,6 +3,9 @@ Soldiers:
 Macro:
 Receive orders from HQ to build generators and suppliers
 
+Sensing:
+sense objects when computing pathing
+
 Micro:
 - Mines: Laying/Defusing
 - Encampments: Building/capturing
@@ -20,3 +23,7 @@ Mines.java
 Camp.java (building/capturing)
 BattleMicro.java
 ... etc
+
+Decision Making:
+different modes (attack, defend, scout)
+react differently based on modes

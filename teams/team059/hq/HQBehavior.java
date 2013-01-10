@@ -54,7 +54,7 @@ public class HQBehavior extends RobotBehavior {
 	public void buildSoldier(Direction dir) throws GameActionException {
 		if (rc.isActive()) {
 			// Spawn a soldier
-			if (rc.canMove(dir) && !utils.isEnemyMine(rc.getLocation().add(dir)))
+			if (rc.canMove(dir) && !isEnemyMine(rc.getLocation().add(dir)))
 				rc.spawn(dir);
 		}
 	}
