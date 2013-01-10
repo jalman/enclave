@@ -12,10 +12,8 @@ public abstract class RobotBehavior {
 		myBase = rc.senseHQLocation();
 		enemyBase = rc.senseEnemyHQLocation();
 	}
-	
 	/**
 	 * Called every round.
 	 */
-	public abstract void run();
-	
+	public abstract void run();	
 }
