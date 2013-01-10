@@ -21,14 +21,23 @@ public class HQBehavior extends RobotBehavior {
 
 	@Override
 	public void run() {
+		try {
+			messagingSystem.initHeaderMessage();
+		} catch (GameActionException e1) {
+			e1.printStackTrace();
+		}
+		
+		messagingSystem.handleMessages(messageHandlers);
+		
 		if(rc.getTeamPower() - 40.0 > 15.0 || Clock.getRoundNum() < 40) {
 			try {
-				rc.setIndicatorString(0, Double.toString(rc.getTeamPower()));
+				rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  asdf");
 				buildSoldier(rc.getLocation().directionTo(rc.senseEnemyHQLocation()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}			
 		} else {
+			rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  fdsa");
 			if(!rc.hasUpgrade(upgradeList[currentUpgrade])) {
 				try{
 					rc.researchUpgrade(upgradeList[currentUpgrade]);
@@ -45,7 +54,7 @@ public class HQBehavior extends RobotBehavior {
 	public void buildSoldier(Direction dir) throws GameActionException {
 		if (rc.isActive()) {
 			// Spawn a soldier
-			if (rc.canMove(dir) && rc.senseMine(rc.getLocation().add(dir)) == null)
+			if (rc.canMove(dir) && !isEnemyMine(rc.getLocation().add(dir)))
 				rc.spawn(dir);
 		}
 	}

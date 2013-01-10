@@ -15,9 +15,8 @@ public class ArtilleryBehavior extends RobotBehavior {
 
 	@Override
 	public void run() {
-		Robot[] enemies = rc.senseNearbyGameObjects(Robot.class, rc.getType().attackRadiusMaxSquared, enemy());
-		if(!rc.isActive())
-			return;
+		if(!rc.isActive()) return;
+		Robot[] enemies = rc.senseNearbyGameObjects(Robot.class, rc.getType().attackRadiusMaxSquared, enemyTeam);
 		if(enemies.length > 0) {
 			try {
 				RobotInfo ri = rc.senseRobotInfo(enemies[0]);
@@ -27,10 +26,4 @@ public class ArtilleryBehavior extends RobotBehavior {
 			}
 		}
 	}
-	
-	
-	public Team enemy() {
-		return rc.getTeam() == Team.A ? Team.B : Team.A;
-	}
-
 }
