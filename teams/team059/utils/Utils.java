@@ -6,15 +6,37 @@ import battlecode.common.RobotController;
 import battlecode.common.Team;
 
 public class Utils {
-	RobotController rc = null;
-	Team myTeam = null;
+	private RobotController rc = null;
+	public Team myTeam;
+	public int width, height;
+	public Team enemyTeam;
+	
+	public int[][] adj_tile_offsets = {
+		{ -1, -1 },
+		{ -1,  0 },
+		{ -1,  1 }, 
+		{  0, -1 },
+		{  0,  1 },
+		{  1, -1 },
+		{  1,  0 },
+		{  1,  1 }
+	};
 	
 	public Utils(RobotController rc) {
 		this.rc = rc;
+		height = rc.getMapHeight();
+		width = rc.getMapWidth();
+		this.myTeam = rc.getTeam();
+		this.enemyTeam = ( myTeam == Team.A ? Team.B : Team.A );
 	}
 	
+	@Deprecated
 	public Team enemy() {
 		return rc.getTeam() == Team.A ? Team.B : Team.A;
+	}
+	
+	public int naiveDistance(MapLocation m1, MapLocation m2) {
+		return Math.max(Math.abs(m1.x-m2.x), Math.abs(m1.y-m2.y));
 	}
 	
 	public boolean isEnemyMine(Team team) {
@@ -26,11 +48,11 @@ public class Utils {
 	}
 	
 	public int locToInt(MapLocation loc) { 
-		return rc.getMapHeight()*loc.y + loc.x;
+		return height*loc.y + loc.x;
 	}
 	
-	public int intToLoc(int encoded_loc) {
-		return new MapLocation(encoded_loc % rc.getMapHeight(), encoded_loc / rc.getMapHeight());
+	public MapLocation intToLoc(int encoded_loc) {
+		return new MapLocation(encoded_loc % height, encoded_loc / height);
 	}
 	
 	public Team myTeam() {
