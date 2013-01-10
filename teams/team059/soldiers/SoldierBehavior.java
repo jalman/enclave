@@ -11,9 +11,13 @@ public class SoldierBehavior extends RobotBehavior {
 	private SoldierMode mode = IDLE;
 	private MapLocation target = null;
 	private int priority;
+	private MapLocation gather;
+	private boolean charging = false;
 
 	public SoldierBehavior(RobotController therc) {
 		super(therc);
+		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5);
+		
 	}
 
 	@Override
@@ -125,7 +129,7 @@ public class SoldierBehavior extends RobotBehavior {
 	private static final synchronized strictfp void important() throws Exception {};
 	
 	private void idleBehavior() throws GameActionException {
-		
+		charging = false;
 		
 		//see if there is an encampment nearby to take
 		if(target == null && rc.getTeamPower() > (1 + rc.senseAlliedEncampmentSquares().length)* 20.0) {
@@ -162,11 +166,31 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void attackBehavior() {
-
+		if (!charging) {
+			if(rc.senseNearbyGameObjects(Robot.class, gather, 20, myTeam).length > 8) {
+				charging = true;
+			}
+		}
+		
+		if (!charging) {
+			target = gather;
+		} else {
+			target = enemyBase;
+		}
+		
+		aboutMoveMine(rc.getLocation().directionTo(target));
 	}
 
 	private void microBehavior() {
 
+	}
+	
+	public void aboutMoveMine(Direction dir) {
+		if (!moveMine(dir)) {
+			if(!moveMine(dir.rotateLeft())) {
+				moveMine(dir.rotateRight());
+			}
+		}
 	}
 
 	public boolean moveMine(Direction dir) {
