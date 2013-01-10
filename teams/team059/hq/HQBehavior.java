@@ -27,6 +27,8 @@ public class HQBehavior extends RobotBehavior {
 			e1.printStackTrace();
 		}
 		
+		messagingSystem.handleMessages(messageHandlers);
+		
 		if(rc.getTeamPower() - 40.0 > 15.0 || Clock.getRoundNum() < 40) {
 			try {
 				rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  asdf");

@@ -113,6 +113,13 @@ public class MessagingSystem {
 		}
 	}
 	
+	public void handleMessages(MessageHandler[] handlers) {
+		for(int i = 0; i < valid_messages; i++) {
+			int[] message = buffer[i];
+			handlers[message[0]].handleMessage(message);
+		}
+	}
+	
 	public void writeBlock(int channel, int[] block) throws GameActionException {
 		int checksum = 0;
 		
@@ -143,6 +150,7 @@ public class MessagingSystem {
 	private int prev_messages = 0;
 	
 	/**
+	 * Reads messages from last round, and initializes the new header message.
 	 * Should be called by HQ at the start of each round.
 	 * @throws GameActionException 
 	 */

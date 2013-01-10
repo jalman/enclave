@@ -19,6 +19,9 @@ public class SoldierBehavior extends RobotBehavior {
 		} catch (GameActionException e1) {
 			e1.printStackTrace();
 		}
+		
+		messagingSystem.handleMessages(messageHandlers);
+		
 		try {
 			if (rc.isActive()) {
 				
