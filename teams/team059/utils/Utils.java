@@ -25,6 +25,14 @@ public class Utils {
 		return isEnemyMine(rc.senseMine(loc));
 	}
 	
+	public int locToInt(MapLocation loc) { 
+		return rc.getMapHeight()*loc.y + loc.x;
+	}
+	
+	public int intToLoc(int encoded_loc) {
+		return new MapLocation(encoded_loc % rc.getMapHeight(), encoded_loc / rc.getMapHeight());
+	}
+	
 	public Team myTeam() {
 		if(myTeam != null) {
 			return myTeam;
