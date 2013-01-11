@@ -102,13 +102,13 @@ public class AStar1 {
 					System.out.println("Bytecodes used by fib heap insert [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 					pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
 					unchecked.add(neighbor);
-				} else if(tentative_pre_score <= pre_score[neighbor.x][neighbor.y]) {
+				} /* else if(tentative_pre_score <= pre_score[neighbor.x][neighbor.y]) {
 					previous[neighbor.x][neighbor.y] = current;
 					bc = Clock.getBytecodesLeft();
 					score.decreaseKey(nodesInHeap[neighbor.x][neighbor.y], tentative_pre_score + heuristic_cost(neighbor, finish));
 					System.out.println("Bytecodes used by fib heap decreaseKey [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 					pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
-				}
+				} */ 
 			}
 			int c = (loop_bc - Clock.getBytecodesLeft());
 			total_bc += ( (c > 0) ? c : 10000+c ) ; 

@@ -49,46 +49,47 @@ public class AStar2 {
 			total_bc = 0;
 			if(finish == null) return false;
 			
-			FastIterableLocSet checked = new FastIterableLocSet(); // nodes already checked
-			FastIterableLocSet unchecked = new FastIterableLocSet(); // nodes not yet checked
-			unchecked.add(start);
+			boolean[][] checked = new boolean[width][height];
+			checked[start.x][start.y] = true;
 			
 			MapLocation[][] previous = new MapLocation[width][height];
 			previous[start.x][start.y] = null;
 	
 			int tentative_pre_score;
 			int[][] pre_score = new int[width][height];
-			BucketPriorityQueue.BucketNode<MapLocation>[][] nodesInHeap = new BucketPriorityQueue.BucketNode[width][height];
-			BucketPriorityQueue<MapLocation> score = new BucketPriorityQueue<MapLocation>(1000);
+			OnePassQueue<MapLocation> score = new OnePassQueue<MapLocation>(1000, 200);
 			
 			MapLocation current, neighbor;
 			
 			pre_score[start.x][start.y] = 0;// Cost from start along best known path.
 			// Estimated total cost from start to goal through y.
-			nodesInHeap[start.x][start.y] = score.insert(heuristic_cost(start, finish), start); 
+			score.insert(heuristic_cost(start, finish), start);
+			//nodesInHeap[start.x][start.y] = score.insert(heuristic_cost(start, finish), start); 
 				// key is really 0 + heuristic_cost(start,goal)
 	
-			while(!unchecked.isEmpty()) {
+			while(true) {
 				loop_bc = bc = Clock.getBytecodesLeft();
-				if(score.size() == 0) {
+				if(score.size == 0) {
+					path = null;
 					System.out.println("BLAHBLAHBLAH 0");
+					return false;
 				}
-				score.debug();
-				current = (MapLocation) score.deleteMin();
-//				System.out.println(current.toString());
+				//score.debug();
+				current = score.deleteMin();
+				System.out.println(score.toString());
 				if(current.equals(finish)) {
 					System.out.println("Bytecodes used by A* pre-reconstruction = " + Integer.toString(total_bc));
 					reconstruct_path(previous, finish); 
 					return true;
 				}
-				unchecked.remove(current);
-				checked.add(current);
+				
+				checked[current.x][current.y] = true;
 				//System.out.println("Bytecodes used by unchecked/checked node manip = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 				
 				for(int idx = 0; idx < 8; ++idx) {
 					//bc = Clock.getBytecodesLeft();
 					neighbor = new MapLocation(current.x+rb.adj_tile_offsets[idx][0], current.y+rb.adj_tile_offsets[idx][1]);
-					if(checked.contains(neighbor) || 
+					if(checked[neighbor.x][neighbor.y] || 
 							(rc.canSenseSquare(neighbor) && rc.senseObjectAtLocation(neighbor) != null) || 
 							neighbor.x >= rb.width || neighbor.x < 0 || 
 							neighbor.y >= rb.height || neighbor.y < 0) {
@@ -96,23 +97,12 @@ public class AStar2 {
 					}
 					tentative_pre_score = pre_score[current.x][current.y] + neighbor_move_cost(neighbor);
 					//System.out.println("Bytecodes used by initial neighbor stuff = " + Integer.toString(bc-Clock.getBytecodesLeft()));
+				
+					previous[neighbor.x][neighbor.y] = current;
+					bc = Clock.getBytecodesLeft();
+					score.insert(tentative_pre_score + heuristic_cost(neighbor, finish), neighbor);
+					pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
 					
-					
-					if(!unchecked.contains(neighbor)) {
-						previous[neighbor.x][neighbor.y] = current;
-						bc = Clock.getBytecodesLeft();
-						nodesInHeap[neighbor.x][neighbor.y] = 
-							score.insert(tentative_pre_score + heuristic_cost(neighbor, finish), neighbor);
-//						System.out.println("Bytecodes used by bucketpriorityqueue insert [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
-						pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
-						unchecked.add(neighbor);
-					} else if(tentative_pre_score <= pre_score[neighbor.x][neighbor.y]) {
-						previous[neighbor.x][neighbor.y] = current;
-						bc = Clock.getBytecodesLeft();
-						score.decreaseKey(nodesInHeap[neighbor.x][neighbor.y], tentative_pre_score + heuristic_cost(neighbor, finish));
-//						System.out.println("Bytecodes used by bucketpriorityqueue decreaseKey [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
-						pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
-					}
 				}
 				int c = (loop_bc - Clock.getBytecodesLeft());
 				total_bc += ( (c > 0) ? c : 10000+c );
