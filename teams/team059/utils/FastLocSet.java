@@ -8,8 +8,8 @@ public class FastLocSet {
     private boolean[][] has = new boolean[HASH][HASH];
 
     public void add(MapLocation loc) {
-        int x = loc.x % HASH;
-        int y = loc.y % HASH;
+        int x = loc.x;
+        int y = loc.y;
         if (!has[x][y]){
             size++;
             has[x][y] = true;
@@ -17,8 +17,8 @@ public class FastLocSet {
     }
 
     public void remove(MapLocation loc) {
-        int x = loc.x % HASH;
-        int y = loc.y % HASH;
+        int x = loc.x;
+        int y = loc.y;
         if (has[x][y]){
             size--;
             has[x][y] = false;
@@ -26,7 +26,7 @@ public class FastLocSet {
     }
 
     public boolean contains(MapLocation loc) {
-        return has[loc.x % HASH][loc.y % HASH];
+        return has[loc.x][loc.y];
     }
 
     public void clear() {

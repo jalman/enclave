@@ -1,4 +1,4 @@
-package team059.utils;
+package team059.messaging;
 
 public class Message {
 	public static final int MAX_SIZE = 10;

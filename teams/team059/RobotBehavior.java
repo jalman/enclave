@@ -1,8 +1,8 @@
 package team059;
 
-import team059.utils.MessageHandler;
-import team059.utils.MessageType;
-import team059.utils.MessagingSystem;
+import team059.messaging.MessageHandler;
+import team059.messaging.MessageType;
+import team059.messaging.MessagingSystem;
 import team059.utils.Utils;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
@@ -63,7 +63,7 @@ public abstract class RobotBehavior {
 	
 	private static class DefaultMessageHandler implements MessageHandler {
 		@Override
-		public void handleMessage(int[] message) {}		
+		public void handleMessage(int[] message) {}
 	}
 	
 	/**
