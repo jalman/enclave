@@ -71,7 +71,8 @@ public class AStar1 {
 
 		while(!unchecked.isEmpty()) {
 			loop_bc = bc = Clock.getBytecodesLeft();
-			current = (MapLocation) score.deleteMin();
+			current = score.deleteMin();
+			System.out.println(current);
 			if(current.equals(finish)) {
 				System.out.println("Bytecodes used by A* pre-reconstruction = " + Integer.toString(total_bc));
 				reconstruct_path(previous, finish); 

@@ -70,7 +70,12 @@ public class AStar2 {
 	
 			while(!unchecked.isEmpty()) {
 				loop_bc = bc = Clock.getBytecodesLeft();
+				if(score.size() == 0) {
+					System.out.println("BLAHBLAHBLAH 0");
+				}
+				score.debug();
 				current = (MapLocation) score.deleteMin();
+//				System.out.println(current.toString());
 				if(current.equals(finish)) {
 					System.out.println("Bytecodes used by A* pre-reconstruction = " + Integer.toString(total_bc));
 					reconstruct_path(previous, finish); 
@@ -98,14 +103,14 @@ public class AStar2 {
 						bc = Clock.getBytecodesLeft();
 						nodesInHeap[neighbor.x][neighbor.y] = 
 							score.insert(tentative_pre_score + heuristic_cost(neighbor, finish), neighbor);
-						System.out.println("Bytecodes used by bucketpriorityqueue insert [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
+//						System.out.println("Bytecodes used by bucketpriorityqueue insert [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 						pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
 						unchecked.add(neighbor);
 					} else if(tentative_pre_score <= pre_score[neighbor.x][neighbor.y]) {
 						previous[neighbor.x][neighbor.y] = current;
 						bc = Clock.getBytecodesLeft();
 						score.decreaseKey(nodesInHeap[neighbor.x][neighbor.y], tentative_pre_score + heuristic_cost(neighbor, finish));
-						System.out.println("Bytecodes used by bucketpriorityqueue decreaseKey [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
+//						System.out.println("Bytecodes used by bucketpriorityqueue decreaseKey [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 						pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
 					}
 				}

@@ -45,6 +45,10 @@ public class BucketPriorityQueue<V> implements PriorityQueue<V, BucketNode<V>> {
 		public BucketNode(int k, V v) {
 			super(k, v);
 		}
+		
+		public String toString() {
+			return "(" + key + ", " + value + ")";
+		}
 	}
 
 	@Override
@@ -69,6 +73,8 @@ public class BucketPriorityQueue<V> implements PriorityQueue<V, BucketNode<V>> {
 	
 	@Override
 	public V deleteMin() {
+		if(size == 0) return null;
+		
 		while(queue[min] == null) {
 			min++;
 		}
@@ -97,5 +103,22 @@ public class BucketPriorityQueue<V> implements PriorityQueue<V, BucketNode<V>> {
 		delete(node);
 		node.key = key;
 		insert(node);
+	}
+	
+	public void debug() {		
+		int num = 0;
+
+		for(int key = 0; num < size; key++) {
+			BucketNode<V> head = queue[key];
+			if(head != null) {
+				System.out.print(head + " ");
+				num++;
+				for(BucketNode<V> node = head.next; node != head; node = node.next) {
+					System.out.print(node  + " ");
+					num++;
+				}
+			}
+		}
+		System.out.println();
 	}
 }
