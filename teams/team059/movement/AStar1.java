@@ -1,7 +1,5 @@
 package team059.movement;
 
-import java.util.LinkedList;
-
 import battlecode.common.*;
 import team059.RobotBehavior;
 import team059.utils.*;
@@ -71,7 +69,8 @@ public class AStar1 {
 
 		while(!unchecked.isEmpty()) {
 			loop_bc = bc = Clock.getBytecodesLeft();
-			current = (MapLocation) score.deleteMin();
+			current = score.deleteMin();
+			System.out.println(current);
 			if(current.equals(finish)) {
 				System.out.println("Bytecodes used by A* pre-reconstruction = " + Integer.toString(total_bc));
 				reconstruct_path(previous, finish); 
@@ -83,7 +82,7 @@ public class AStar1 {
 			
 			for(int idx = 0; idx < 8; ++idx) {
 				//bc = Clock.getBytecodesLeft();
-				neighbor = new MapLocation(current.x+rb.adj_tile_offsets[idx][0], current.y+rb.adj_tile_offsets[idx][1]);
+				neighbor = new MapLocation(current.x+Utils.OFFSETS[idx][0], current.y+Utils.OFFSETS[idx][1]);
 				if(checked.contains(neighbor) || 
 						neighbor.x >= rb.width || neighbor.x < 0 || 
 						neighbor.y >= rb.height || neighbor.y < 0) {
@@ -101,13 +100,13 @@ public class AStar1 {
 					System.out.println("Bytecodes used by fib heap insert [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 					pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
 					unchecked.add(neighbor);
-				} else if(tentative_pre_score <= pre_score[neighbor.x][neighbor.y]) {
+				} /* else if(tentative_pre_score <= pre_score[neighbor.x][neighbor.y]) {
 					previous[neighbor.x][neighbor.y] = current;
 					bc = Clock.getBytecodesLeft();
 					score.decreaseKey(nodesInHeap[neighbor.x][neighbor.y], tentative_pre_score + heuristic_cost(neighbor, finish));
 					System.out.println("Bytecodes used by fib heap decreaseKey [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 					pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
-				}
+				} */ 
 			}
 			int c = (loop_bc - Clock.getBytecodesLeft());
 			total_bc += ( (c > 0) ? c : 10000+c ) ; 
@@ -159,7 +158,7 @@ public class AStar1 {
 	
 	private int neighbor_move_cost(MapLocation dest) { 
 		try{
-			if(rb.isEnemyMine(dest)) {
+			if(Utils.isEnemyMine(dest)) {
 				return MINE_MOVE_COST;
 			} else if (rc.canSenseSquare(dest) && rc.senseObjectAtLocation(dest) != null) {
 				int distance = ut.naiveDistance(rc.getLocation(), dest);

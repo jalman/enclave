@@ -1,8 +1,9 @@
 package team059.soldiers;
 
 import team059.RobotBehavior;
+import team059.movement.Mover;
 import team059.messaging.MessageHandler;
-import team059.soldiers.micro.Micros;
+import team059.soldiers.micro.Micro;
 import team059.utils.Utils;
 import battlecode.common.*;
 import static team059.soldiers.SoldierMode.*;
@@ -14,12 +15,16 @@ public class SoldierBehavior extends RobotBehavior {
 	private int priority;
 	private MapLocation gather;
 	private boolean charging = false;
-	private Micros microSystem;
+	private Micro microSystem;
 	
-	public SoldierBehavior(RobotController therc) {
+	public final Mover mover;
+
+	public SoldierBehavior(RobotController therc) throws GameActionException {
 		super(therc);
+		mover = new Mover((RobotBehavior) this);
 		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5);
-		microSystem = new Micros(this);
+		microSystem = new Micro(this);
+		mode = SoldierMode.EXPLORE; // for now
 	}
 
 	@Override
@@ -46,6 +51,14 @@ public class SoldierBehavior extends RobotBehavior {
 				break;
 			case MICRO:
 				microBehavior();
+				break;
+			case EXPLORE:
+				exploreBehavior();
+				break;
+			case TAKE_ENCAMPMENT:
+				takeEncampmentBehavior();
+				break;
+			default:
 				break;
 			}
 
@@ -127,8 +140,8 @@ public class SoldierBehavior extends RobotBehavior {
 		return best;
 	}
 	
-	protected static volatile transient int essential;
-	private static final synchronized strictfp void important() throws Exception {};
+//	protected static volatile transient int essential;
+//	private static final synchronized strictfp void important() throws Exception {};
 	
 	private void idleBehavior() throws GameActionException {
 		charging = false;
@@ -180,44 +193,25 @@ public class SoldierBehavior extends RobotBehavior {
 			target = enemyBase;
 		}
 		
-		aboutMoveMine(rc.getLocation().directionTo(target));
+		//mover.aboutMoveMine(rc.getLocation().directionTo(target));
+		mover.setTarget(target);
+		mover.execute();
 	}
 
 	private void microBehavior() {
 
 	}
 	
-	public void aboutMoveMine(Direction dir) {
-		if (!moveMine(dir)) {
-			if(!moveMine(dir.rotateLeft())) {
-				moveMine(dir.rotateRight());
-			}
-		}
+	private void exploreBehavior() {
+		// very dumb
+		mover.setTarget(enemyBase);
+		mover.execute();
 	}
-
-	public boolean moveMine(Direction dir) {
-		Team mine = rc.senseMine(rc.getLocation().add(dir));
-		if(mine != null && mine != rc.getTeam()) {
-			try {
-				rc.defuseMine(rc.getLocation().add(dir));
-				return true;
-			} catch (GameActionException e) {
-				e.printStackTrace();
-			}
-		}
-
-		if(rc.canMove(dir)) {
-			try {
-				rc.move(dir);
-			} catch (GameActionException e) {
-				e.printStackTrace();
-			}
-			return true;
-		} else {
-			return false;
-		}
+	
+	private void takeEncampmentBehavior() {
+		
 	}
-
+	
 	public void buildEncampment(Direction dir) {
 
 	}

@@ -4,7 +4,7 @@ import team059.RobotBehavior;
 import team059.utils.Utils;
 import battlecode.common.*;
 
-public class Micros {
+public class Micro {
 
 	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
 	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
@@ -17,7 +17,7 @@ public class Micros {
 	BackCode backcode;
 
 	
-	public Micros(RobotBehavior rb) throws GameActionException {
+	public Micro(RobotBehavior rb) throws GameActionException {
 		this.rb = rb;
 		rc = rb.rc;
 		c=rc.getLocation();

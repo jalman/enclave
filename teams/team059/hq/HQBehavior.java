@@ -1,6 +1,7 @@
 package team059.hq;
 
 import team059.RobotBehavior;
+import team059.utils.Utils;
 import battlecode.common.*;
 
 public class HQBehavior extends RobotBehavior {
@@ -22,12 +23,12 @@ public class HQBehavior extends RobotBehavior {
 	@Override
 	public void run() {
 		try {
-			messagingSystem.initHeaderMessage();
+			super.messagingSystem.initHeaderMessage();
 		} catch (GameActionException e1) {
 			e1.printStackTrace();
 		}
 		
-		messagingSystem.handleMessages(messageHandlers);
+		super.messagingSystem.handleMessages(messageHandlers);
 		
 		if(rc.getTeamPower() - 40.0 > 15.0 || Clock.getRoundNum() < 40) {
 			try {
@@ -54,7 +55,7 @@ public class HQBehavior extends RobotBehavior {
 	public void buildSoldier(Direction dir) throws GameActionException {
 		if (rc.isActive()) {
 			// Spawn a soldier
-			if (rc.canMove(dir) && !isEnemyMine(rc.getLocation().add(dir)))
+			if (rc.canMove(dir) && !Utils.isEnemyMine(rc.getLocation().add(dir)))
 				rc.spawn(dir);
 		}
 	}

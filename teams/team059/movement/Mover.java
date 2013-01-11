@@ -46,7 +46,7 @@ public class Mover {
 				return;
 			}
 			MapLocation nextSquare = rc.getLocation().add(dir);
-			if(rb.isEnemyMine(nextSquare)) {
+			if(Utils.isEnemyMine(nextSquare)) {
 					rc.defuseMine(rc.getLocation().add(dir));
 			} if(rc.canMove(dir) && rc.isActive()) {
 				rc.move(dir);
@@ -55,4 +55,13 @@ public class Mover {
 			e.printStackTrace();
 		}
 	}
+	
+	/*public void aboutMoveMine(Direction dir) {
+		if (!moveMine(dir)) {
+			if(!moveMine(dir.rotateLeft())) {
+				moveMine(dir.rotateRight());
+			}
+		}
+	}*/
+
 }

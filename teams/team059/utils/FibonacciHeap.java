@@ -43,6 +43,7 @@ import team059.utils.FibonacciHeap.FibonacciNode;
  *
  * @author  Nathan Fiedler
  */
+@SuppressWarnings("unchecked")
 public class FibonacciHeap<V> implements PriorityQueue<V, FibonacciNode<V>> {
     /** Points to the minimum node in the heap. */
     private FibonacciNode<V> min;

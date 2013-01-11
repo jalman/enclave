@@ -17,7 +17,6 @@ public abstract class RobotBehavior {
 	
 	protected MessagingSystem messagingSystem;
 	protected MessageHandler[] messageHandlers;
-	protected Utils utils;
 	
 	public RobotBehavior(RobotController rc) {
 		this.rc = rc;
@@ -31,28 +30,7 @@ public abstract class RobotBehavior {
 		messagingSystem = new MessagingSystem(rc);
 		messageHandlers = new MessageHandler[MessageType.values().length];
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();
-		
-		utils = new Utils(rc);
 	}
-	
-	public boolean isEnemyMine(Team team) {
-		return !(team == myTeam || team == null);
-	}
-
-	public boolean isEnemyMine(MapLocation loc) {
-		return isEnemyMine(rc.senseMine(loc));
-	}
-
-	public int[][] adj_tile_offsets = {
-		{ -1, -1 },
-		{ -1,  0 },
-		{ -1,  1 }, 
-		{  0, -1 },
-		{  0,  1 },
-		{  1, -1 },
-		{  1,  0 },
-		{  1,  1 }
-	};
 	
 	protected int danger(MapLocation loc) {return 0;}
 	
