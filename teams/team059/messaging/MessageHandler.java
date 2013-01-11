@@ -1,4 +1,4 @@
-package team059.utils;
+package team059.messaging;
 
 public interface MessageHandler {
 	public void handleMessage(int[] message);	

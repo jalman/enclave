@@ -1,4 +1,4 @@
-package team059.utils;
+package team059.messaging;
 
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;

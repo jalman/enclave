@@ -1,7 +1,7 @@
 package team059.soldiers;
 
 import team059.RobotBehavior;
-import team059.utils.MessageHandler;
+import team059.messaging.MessageHandler;
 import team059.utils.Utils;
 import battlecode.common.*;
 import static team059.soldiers.SoldierMode.*;
