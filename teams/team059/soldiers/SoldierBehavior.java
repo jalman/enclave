@@ -10,7 +10,7 @@ import static team059.soldiers.SoldierMode.*;
 
 public class SoldierBehavior extends RobotBehavior {
 
-	private SoldierMode mode = IDLE;
+	private SoldierMode mode;
 	private MapLocation target = null;
 	private int priority;
 	private MapLocation gather;
@@ -23,15 +23,12 @@ public class SoldierBehavior extends RobotBehavior {
 		super(therc);
 		mover = new Mover((RobotBehavior) this);
 		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5);
-		//microSystem = new Micro(this);
-		mode = SoldierMode.EXPLORE; // for now
+		mode = SoldierMode.IDLE; // for now
 	}
 
 	@Override
 	public void run() {
 		if(!rc.isActive()) return;
-		
-		rc.wearHat();
 
 		try {
 			messagingSystem.readMessages();
@@ -69,27 +66,7 @@ public class SoldierBehavior extends RobotBehavior {
 		}
 
 		/*
-		try {
-			double mineProb = rc.senseHQLocation().distanceSquaredTo(rc.getLocation()) + rc.senseEnemyHQLocation().distanceSquaredTo(rc.getLocation());
-			mineProb /= rc.senseHQLocation().distanceSquaredTo(rc.senseEnemyHQLocation());
-			mineProb *= mineProb;
-			mineProb /= 20;
-			if(rc.senseMine(rc.getLocation()) == utils.myTeam()) {
-				mineProb = 0.0;
-			}
-			if(Math.random() < mineProb) {
-				rc.layMine();
-			} else {
-				Direction dir = encampTarget == null ? rc.getLocation().directionTo(rc.senseEnemyHQLocation()) : rc.getLocation().directionTo(encampTarget);
 
-				if(!moveMine(dir)) {
-					if(!moveMine(dir.rotateLeft()))
-						moveMine(dir.rotateRight());
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		 */
 	}
 
@@ -173,12 +150,32 @@ public class SoldierBehavior extends RobotBehavior {
 
 		//rc.setIndicatorString(0, encampTarget.toString());
 
-		if(rc.senseEncampmentSquare(rc.getLocation())) {
+		if(rc.senseEncampmentSquare(rc.getLocation()) && rc.senseCaptureCost() < rc.getTeamPower()) {
 			try {
-				rc.captureEncampment(RobotType.ARTILLERY);
+				rc.captureEncampment(RobotType.SUPPLIER);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
+		}
+		
+		try {
+			if(rc.isActive()) {
+				double mineProb = rc.senseHQLocation().distanceSquaredTo(rc.getLocation()) + rc.senseEnemyHQLocation().distanceSquaredTo(rc.getLocation());
+				mineProb /= rc.senseHQLocation().distanceSquaredTo(rc.senseEnemyHQLocation());
+				mineProb *= mineProb;
+				mineProb /= 20;
+				if(rc.senseMine(rc.getLocation()) == Utils.ALLY_TEAM) {
+					mineProb = 0.0;
+				}
+				if(Math.random() < mineProb) {
+					rc.layMine();
+				} else {
+					mover.setTarget(target == null ? Utils.ENEMY_HQ : target);
+					mover.execute();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

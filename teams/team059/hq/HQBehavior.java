@@ -30,23 +30,25 @@ public class HQBehavior extends RobotBehavior {
 		
 		super.messagingSystem.handleMessages(messageHandlers);
 		
-		if(rc.getTeamPower() - 40.0 > 15.0 || Clock.getRoundNum() < 40) {
-			try {
-				rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  asdf");
-				buildSoldier(rc.getLocation().directionTo(rc.senseEnemyHQLocation()));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}			
-		} else {
-			rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  fdsa");
-			if(!rc.hasUpgrade(upgradeList[currentUpgrade])) {
-				try{
-					rc.researchUpgrade(upgradeList[currentUpgrade]);
+		if(rc.isActive()) {
+			if(rc.getTeamPower() - 40.0 > 15.0 || Clock.getRoundNum() < 40) {
+				try {
+					rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  asdf");
+					buildSoldier(rc.getLocation().directionTo(rc.senseEnemyHQLocation()));
 				} catch (Exception e) {
 					e.printStackTrace();
-				}
+				}			
 			} else {
-				currentUpgrade++;
+				rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  fdsa");
+				if(!rc.hasUpgrade(upgradeList[currentUpgrade])) {
+					try{
+						rc.researchUpgrade(upgradeList[currentUpgrade]);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else {
+					currentUpgrade++;
+				}
 			}
 		}
 
