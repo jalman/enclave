@@ -113,6 +113,10 @@ public class MessagingSystem {
 		}
 	}
 	
+	/**
+	 * Convenience method for handling messages.
+	 * @param handlers Specify how to handle each type of message.
+	 */
 	public void handleMessages(MessageHandler[] handlers) {
 		for(int i = 0; i < valid_messages; i++) {
 			int[] message = buffer[i];
@@ -138,6 +142,11 @@ public class MessagingSystem {
 		rc.broadcast(channel + MESSAGE_SIZE, checksum);
 	}
 	
+	/**
+	 * Writes a message to the global radio.
+	 * @param message The message data. The first parameter must be the MessageType.ordinal().
+	 * @throws GameActionException
+	 */
 	public void writeMessage(int... message) throws GameActionException {		
 		int off = total_messages * BLOCK_SIZE;
 		

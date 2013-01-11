@@ -11,6 +11,22 @@ import team059.utils.BucketPriorityQueue.BucketNode;
  */
 public class BucketPriorityQueue<V> implements PriorityQueue<V, BucketNode<V>> {
 
+	public static void main(String[] args) {
+		BucketPriorityQueue<Object> queue = new BucketPriorityQueue<Object>(500);
+		
+		BucketNode<Object>[] nodes = new BucketNode[50];
+		
+		for(int i = 0; i < nodes.length; i++) {
+			nodes[i] = queue.insert(10*i, new Integer(i));
+		}
+		
+		queue.decreaseKey(nodes[20], 105);
+		
+		while(queue.size() > 0) {
+			System.out.println(queue.deleteMin());
+		}		
+	}
+	
 	private final BucketNode<V>[] queue;
 	public int size;
 	private int min;
@@ -21,6 +37,8 @@ public class BucketPriorityQueue<V> implements PriorityQueue<V, BucketNode<V>> {
 		size = 0;
 		min = 0;
 	}
+	
+	public int size() {return size;}
 	
 	public static class BucketNode<V> extends Node<V> {
 		private BucketNode<V> prev, next;

@@ -87,7 +87,7 @@ public class SoldierBehavior extends RobotBehavior {
 					PrioritySystem.rate(priority, Utils.naiveDistance(rc.getLocation(), target))) {
 					target = new_target;
 					priority = new_priority;
-					mode = ATTACK;					
+					mode = ATTACK;
 				}
 			}
 		};
