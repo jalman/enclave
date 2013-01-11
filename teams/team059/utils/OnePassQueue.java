@@ -22,8 +22,8 @@ public class OnePassQueue<T> {
 		while(length[min] == 0) {
 			min++;
 		}
-		size--;		
-		return queue[min][length[min]--];
+		size--;
+		return queue[min][--length[min]];
 	}
 	
 	public String toString() {

@@ -1,7 +1,5 @@
 package team059.movement;
 
-import java.util.LinkedList;
-
 import battlecode.common.*;
 import team059.RobotBehavior;
 import team059.utils.*;
@@ -84,7 +82,7 @@ public class AStar1 {
 			
 			for(int idx = 0; idx < 8; ++idx) {
 				//bc = Clock.getBytecodesLeft();
-				neighbor = new MapLocation(current.x+rb.adj_tile_offsets[idx][0], current.y+rb.adj_tile_offsets[idx][1]);
+				neighbor = new MapLocation(current.x+Utils.OFFSETS[idx][0], current.y+Utils.OFFSETS[idx][1]);
 				if(checked.contains(neighbor) || 
 						neighbor.x >= rb.width || neighbor.x < 0 || 
 						neighbor.y >= rb.height || neighbor.y < 0) {
@@ -160,7 +158,7 @@ public class AStar1 {
 	
 	private int neighbor_move_cost(MapLocation dest) { 
 		try{
-			if(rb.isEnemyMine(dest)) {
+			if(Utils.isEnemyMine(dest)) {
 				return MINE_MOVE_COST;
 			} else if (rc.canSenseSquare(dest) && rc.senseObjectAtLocation(dest) != null) {
 				int distance = ut.naiveDistance(rc.getLocation(), dest);

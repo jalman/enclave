@@ -19,7 +19,7 @@ public class NavSystem {
 		this.navtype = NavType.ASTAR1;
 		this.myLoc = rc.getLocation();
 		this.astar1 = new AStar1(rb, null);
-		this.astar2 = new AStar2(rb, null);
+		this.astar2 = new AStar2(null);
 		this.currentDest = null;
 	}
 	
@@ -30,7 +30,7 @@ public class NavSystem {
 			return Direction.NONE;
 		}
 		Direction d = navTowardLongRange2(dest); // just for now
-		System.out.println("Direction: " + d.toString() + ". Bytecodes used by navToward = " + Integer.toString(bc-Clock.getBytecodesLeft()));
+		//System.out.println("Direction: " + d.toString() + ". Bytecodes used by navToward = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 		return d;
 	}
 	

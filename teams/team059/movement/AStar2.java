@@ -1,14 +1,10 @@
 package team059.movement;
 
 import battlecode.common.*;
-import team059.RobotBehavior;
 import team059.utils.*;
+import static team059.utils.Utils.*;
 
 public class AStar2 {
-	private RobotBehavior rb;
-	private RobotController rc;
-	private Utils ut;
-	private int width, height;
 	private MapLocation start, finish;
 	
 	private MapLocation[] path; // reversed path!!!
@@ -19,19 +15,15 @@ public class AStar2 {
 	
 	private int bc, total_bc, loop_bc;
 	
-	public AStar2(RobotBehavior rb, MapLocation finish) {
-		this.rb = rb;
-		this.rc = rb.rc;
-		this.start = rc.getLocation();
+	public AStar2(MapLocation finish) {
+		this.start = RC.getLocation();
 		this.finish = finish;
-		this.width = rb.width;
-		this.height = rb.height;
-		this.path = new MapLocation[70*70];
+		this.path = new MapLocation[MAP_WIDTH * MAP_HEIGHT];
 		this.pathlength = 0;
 	}
 	
 	public void recompute() {
-		this.start = rc.getLocation();
+		this.start = RC.getLocation();
 		this.pathlength = 0;
 		//this.pathpos = 0;
 		this.compute_shortest(start, finish);
@@ -41,22 +33,27 @@ public class AStar2 {
 		this.finish = finish;
 		this.recompute();
 	}
-	
 
-	@SuppressWarnings("unchecked")
 	private boolean compute_shortest(MapLocation start, MapLocation finish) {		
 		try {
 			total_bc = 0;
 			if(finish == null) return false;
 			
-			boolean[][] checked = new boolean[width][height];
+			boolean[][] checked = new boolean[MAP_WIDTH+1][MAP_HEIGHT+1];
+			for(int x = 0; x < MAP_WIDTH; x++) {
+				checked[x][MAP_HEIGHT] = true;
+			}
+			for(int y = 0; y < MAP_HEIGHT; y++) {
+				checked[MAP_WIDTH][y] = true;
+			}
+			checked[MAP_WIDTH][MAP_HEIGHT] = true;
 			checked[start.x][start.y] = true;
 			
-			MapLocation[][] previous = new MapLocation[width][height];
+			MapLocation[][] previous = new MapLocation[MAP_WIDTH][MAP_HEIGHT];
 			previous[start.x][start.y] = null;
 	
 			int tentative_pre_score;
-			int[][] pre_score = new int[width][height];
+			int[][] pre_score = new int[MAP_WIDTH][MAP_HEIGHT];
 			OnePassQueue<MapLocation> score = new OnePassQueue<MapLocation>(1000, 200);
 			
 			MapLocation current, neighbor;
@@ -74,9 +71,7 @@ public class AStar2 {
 					System.out.println("BLAHBLAHBLAH 0");
 					return false;
 				}
-				//score.debug();
 				current = score.deleteMin();
-				System.out.println(score.toString());
 				if(current.equals(finish)) {
 					System.out.println("Bytecodes used by A* pre-reconstruction = " + Integer.toString(total_bc));
 					reconstruct_path(previous, finish); 
@@ -88,11 +83,9 @@ public class AStar2 {
 				
 				for(int idx = 0; idx < 8; ++idx) {
 					//bc = Clock.getBytecodesLeft();
-					neighbor = new MapLocation(current.x+rb.adj_tile_offsets[idx][0], current.y+rb.adj_tile_offsets[idx][1]);
-					if(checked[neighbor.x][neighbor.y] || 
-							(rc.canSenseSquare(neighbor) && rc.senseObjectAtLocation(neighbor) != null) || 
-							neighbor.x >= rb.width || neighbor.x < 0 || 
-							neighbor.y >= rb.height || neighbor.y < 0) {
+					neighbor = new MapLocation(current.x+OFFSETS[idx][0], current.y+OFFSETS[idx][1]);
+					if(neighbor.x < 0 || neighbor.y < 0 || checked[neighbor.x][neighbor.y] || 
+							(RC.canSenseSquare(neighbor) && RC.senseObjectAtLocation(neighbor) != null)) {
 						continue;
 					}
 					tentative_pre_score = pre_score[current.x][current.y] + neighbor_move_cost(neighbor);
@@ -157,12 +150,12 @@ public class AStar2 {
 	
 	private int neighbor_move_cost(MapLocation dest) { 
 		try{
-			if(rb.isEnemyMine(dest)) {
+			if(RC.senseMine(dest) == ENEMY_TEAM) {
 				return MINE_MOVE_COST;
 			} /*else if (rc.canSenseSquare(dest)) { // || rc.senseObjectAtLocation(dest) != null) {
 				int distance = ut.naiveDistance(rc.getLocation(), dest);
 				if(distance == 1) return 100000;
-				return (width + height)/( 2 * (distance - 1) ) ;
+				return (MAP_WIDTH + MAP_HEIGHT)/( 2 * (distance - 1) ) ;
 			} */ else {
 				return NORMAL_MOVE_COST;
 			}
@@ -196,7 +189,7 @@ public class AStar2 {
 			pathlength = 0;
 			return Direction.NONE;
 		}
-		Direction d = rc.getLocation().directionTo(path[pathlength]);
+		Direction d = RC.getLocation().directionTo(path[pathlength]);
 		return d;
 	}
 

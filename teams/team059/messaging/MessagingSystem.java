@@ -166,9 +166,12 @@ public class MessagingSystem {
 	public void initHeaderMessage() throws GameActionException {
 		//do something with messages from last round?
 		if(Clock.getRoundNum() > 0) {
+			int old_messages = prev_messages;
 			readMessages();
 			prev_messages = valid_messages;
-		}		
+			
+			
+		}
 		
 		setChannels();
 		total_messages = 0;
