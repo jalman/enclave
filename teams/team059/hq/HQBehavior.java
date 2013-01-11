@@ -6,8 +6,8 @@ import battlecode.common.*;
 
 public class HQBehavior extends RobotBehavior {
 	
-	final Upgrade[] SPARSE_UPGRADES = {Upgrade.PICKAXE, Upgrade.DEFUSION, Upgrade.NUKE}; //upgrades in the order we should research them
-	final Upgrade[] DENSE_UPGRADES = {Upgrade.DEFUSION, Upgrade.PICKAXE, Upgrade.NUKE}; //upgrades in the order we should research them
+	final Upgrade[] SPARSE_UPGRADES = {Upgrade.VISION, Upgrade.DEFUSION, Upgrade.NUKE}; //upgrades in the order we should research them
+	final Upgrade[] DENSE_UPGRADES = {Upgrade.DEFUSION, Upgrade.VISION, Upgrade.NUKE}; //upgrades in the order we should research them
 	Upgrade[] upgradeList;
 	int currentUpgrade = 0;
 	
