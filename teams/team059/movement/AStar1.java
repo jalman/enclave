@@ -3,10 +3,11 @@ package team059.movement;
 import java.util.LinkedList;
 
 import battlecode.common.*;
-import team059_test_damien.utils.*;
+import team059.RobotBehavior;
+import team059.utils.*;
 
 public class AStar1 {
-	
+	private RobotBehavior rb;
 	private RobotController rc;
 	private Utils ut;
 	private int width, height;
@@ -20,16 +21,15 @@ public class AStar1 {
 	
 	private int bc, total_bc, loop_bc;
 	
-	public AStar1(RobotController rc, MapLocation finish) {
-		this.rc = rc;
-		this.ut = new Utils(rc);
+	public AStar1(RobotBehavior rb, MapLocation finish) {
+		this.rb = rb;
+		this.rc = rb.rc;
 		this.start = rc.getLocation();
 		this.finish = finish;
-		this.width = ut.width;
-		this.height = ut.height;
+		this.width = rb.width;
+		this.height = rb.height;
 		this.path = new MapLocation[70*70];
 		this.pathlength = 0;
-		//this.pathpos = 0;
 	}
 	
 	public void recompute() {
@@ -82,10 +82,10 @@ public class AStar1 {
 			
 			for(int idx = 0; idx < 8; ++idx) {
 				//bc = Clock.getBytecodesLeft();
-				neighbor = new MapLocation(current.x+ut.adj_tile_offsets[idx][0], current.y+ut.adj_tile_offsets[idx][1]);
+				neighbor = new MapLocation(current.x+rb.adj_tile_offsets[idx][0], current.y+rb.adj_tile_offsets[idx][1]);
 				if(checked.contains(neighbor) || 
-						neighbor.x >= ut.width || neighbor.x < 0 || 
-						neighbor.y >= ut.height || neighbor.y < 0) {
+						neighbor.x >= rb.width || neighbor.x < 0 || 
+						neighbor.y >= rb.height || neighbor.y < 0) {
 					continue;
 				}
 				tentative_pre_score = pre_score[current.x][current.y] + neighbor_move_cost(neighbor);
@@ -158,7 +158,7 @@ public class AStar1 {
 	
 	private int neighbor_move_cost(MapLocation dest) { 
 		try{
-			if(ut.isEnemyMine(dest)) {
+			if(rb.isEnemyMine(dest)) {
 				return MINE_MOVE_COST;
 			} else if (rc.canSenseSquare(dest) && rc.senseObjectAtLocation(dest) != null) {
 				int distance = ut.naiveDistance(rc.getLocation(), dest);

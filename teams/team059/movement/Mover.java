@@ -1,20 +1,21 @@
 package team059.movement;
 
 import battlecode.common.*;
-import team059_test_damien.utils.*;
-//import team059_test_damien
+import team059.RobotBehavior;
+import team059.utils.*;
 
 public class Mover {
+	private RobotBehavior rb;
 	private RobotController rc;
 	private Utils ut;
 	public MapLocation dest;
 	public final NavSystem navsys;
 	
-	public Mover(RobotController rc) { 
-		this.rc = rc;
-		this.ut = new Utils(rc);
+	public Mover(RobotBehavior rb) { 
+		this.rb = rb;
+		this.rc = rb.rc;
 		this.dest = null;
-		this.navsys = new NavSystem(rc);
+		this.navsys = new NavSystem(rb);
 	}
 	
 	public void setTarget(MapLocation dest) {
@@ -45,7 +46,7 @@ public class Mover {
 				return;
 			}
 			MapLocation nextSquare = rc.getLocation().add(dir);
-			if(ut.isEnemyMine(nextSquare)) {
+			if(rb.isEnemyMine(nextSquare)) {
 					rc.defuseMine(rc.getLocation().add(dir));
 			} if(rc.canMove(dir) && rc.isActive()) {
 				rc.move(dir);

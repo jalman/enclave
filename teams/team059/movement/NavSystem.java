@@ -1,20 +1,22 @@
 package team059.movement;
 
 import battlecode.common.*;
-//import team059_test_damien
+import team059.RobotBehavior;
 
 public class NavSystem {
 	private RobotController rc;
+	private RobotBehavior rb;
 	public NavType navtype;
 	public MapLocation myLoc;
 	public MapLocation currentDest;
 	public final AStar1 astar1;
 	
-	public NavSystem(RobotController rc) { 
-		this.rc = rc;
+	public NavSystem(RobotBehavior rb) { 
+		this.rb = rb;
+		this.rc = rb.rc;
 		this.navtype = NavType.ASTAR1;
 		this.myLoc = rc.getLocation();
-		this.astar1 = new AStar1(rc, null);
+		this.astar1 = new AStar1(rb, null);
 		this.currentDest = null;
 	}
 	
