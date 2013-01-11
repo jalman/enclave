@@ -2,6 +2,7 @@ package team059.soldiers;
 
 import team059.RobotBehavior;
 import team059.messaging.MessageHandler;
+import team059.soldiers.micro.Micro;
 import team059.utils.Utils;
 import battlecode.common.*;
 import static team059.soldiers.SoldierMode.*;
@@ -13,11 +14,12 @@ public class SoldierBehavior extends RobotBehavior {
 	private int priority;
 	private MapLocation gather;
 	private boolean charging = false;
-
+	private Micro microSystem;
+	
 	public SoldierBehavior(RobotController therc) {
 		super(therc);
 		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5);
-		
+		microSystem = new Micro(this);
 	}
 
 	@Override
