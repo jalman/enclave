@@ -23,13 +23,15 @@ public class SoldierBehavior extends RobotBehavior {
 		super(therc);
 		mover = new Mover((RobotBehavior) this);
 		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5);
-		microSystem = new Micro(this);
+		//microSystem = new Micro(this);
 		mode = SoldierMode.EXPLORE; // for now
 	}
 
 	@Override
 	public void run() {
 		if(!rc.isActive()) return;
+		
+		rc.wearHat();
 
 		try {
 			messagingSystem.readMessages();
