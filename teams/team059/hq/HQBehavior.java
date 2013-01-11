@@ -57,9 +57,20 @@ public class HQBehavior extends RobotBehavior {
 	public void buildSoldier(Direction dir) throws GameActionException {
 		if (rc.isActive()) {
 			// Spawn a soldier
-			if (rc.canMove(dir) && !Utils.isEnemyMine(rc.getLocation().add(dir)))
-				rc.spawn(dir);
+			for(int i = 0; i < 8; i++) {
+				if(goodPlaceToMakeSoldier(dir)) {
+					rc.spawn(dir);
+					return;
+				}
+				dir = dir.rotateRight();
+			}
+			
+			//message guys to get out of the way??
 		}
+	}
+	
+	private boolean goodPlaceToMakeSoldier(Direction dir) {
+		return rc.canMove(dir) && !Utils.isEnemyMine(rc.getLocation().add(dir));
 	}
 
 	public void researchUpgrade(Upgrade upg) {
