@@ -45,6 +45,7 @@ public class AStar1 {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	private boolean compute_shortest(MapLocation start, MapLocation finish) {		
 		total_bc = 0;
 		if(finish == null) return false;
@@ -58,19 +59,19 @@ public class AStar1 {
 
 		int tentative_pre_score;
 		int[][] pre_score = new int[width][height];
-		FibonacciHeap.Node[][] nodesInHeap = new FibonacciHeap.Node[width][height];
-		FibonacciHeap score = new FibonacciHeap();
+		FibonacciHeap.FibonacciNode<MapLocation>[][] nodesInHeap = new FibonacciHeap.FibonacciNode[width][height];
+		FibonacciHeap<MapLocation> score = new FibonacciHeap<MapLocation>();
 		
 		MapLocation current, neighbor;
 		
 		pre_score[start.x][start.y] = 0;// Cost from start along best known path.
 		// Estimated total cost from start to goal through y.
-		nodesInHeap[start.x][start.y] = score.insert(start, heuristic_cost(start, finish)); 
+		nodesInHeap[start.x][start.y] = score.insert(heuristic_cost(start, finish), start); 
 			// key is really 0 + heuristic_cost(start,goal)
 
 		while(!unchecked.isEmpty()) {
 			loop_bc = bc = Clock.getBytecodesLeft();
-			current = (MapLocation) score.removeMin();
+			current = (MapLocation) score.deleteMin();
 			if(current.equals(finish)) {
 				System.out.println("Bytecodes used by A* pre-reconstruction = " + Integer.toString(total_bc));
 				reconstruct_path(previous, finish); 
@@ -96,7 +97,7 @@ public class AStar1 {
 					previous[neighbor.x][neighbor.y] = current;
 					bc = Clock.getBytecodesLeft();
 					nodesInHeap[neighbor.x][neighbor.y] = 
-						score.insert(neighbor, tentative_pre_score + heuristic_cost(neighbor, finish));
+						score.insert(tentative_pre_score + heuristic_cost(neighbor, finish), neighbor);
 					System.out.println("Bytecodes used by fib heap insert [new-unchecked neighbor] = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 					pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
 					unchecked.add(neighbor);

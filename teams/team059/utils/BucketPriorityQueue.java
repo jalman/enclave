@@ -16,8 +16,8 @@ public class BucketPriorityQueue<V> implements PriorityQueue<V, BucketNode<V>> {
 	private int min;
 	
 	@SuppressWarnings("unchecked")
-	public BucketPriorityQueue(int max_weight) {
-		queue = new BucketNode[max_weight];
+	public BucketPriorityQueue(int max_key) {
+		queue = new BucketNode[max_key];
 		size = 0;
 		min = 0;
 	}
@@ -50,14 +50,14 @@ public class BucketPriorityQueue<V> implements PriorityQueue<V, BucketNode<V>> {
 	}
 	
 	@Override
-	public BucketNode<V> deleteMin() {
+	public V deleteMin() {
 		while(queue[min] == null) {
 			min++;
 		}
 		
 		BucketNode<V> node = queue[min];
 		delete(node);
-		return node;
+		return node.value;
 	}
 	
 	private void delete(BucketNode<V> node) {

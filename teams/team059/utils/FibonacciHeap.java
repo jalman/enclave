@@ -23,6 +23,9 @@
 //package com.bluemarsh.graphmaker.core.util;
 package team059.utils;
 
+import team059.utils.PriorityQueue.Node;
+import team059.utils.FibonacciHeap.FibonacciNode;
+
 /**
  * This class implements a Fibonacci heap data structure. Much of the
  * code in this class is based on the algorithms in Chapter 21 of the
@@ -40,9 +43,9 @@ package team059.utils;
  *
  * @author  Nathan Fiedler
  */
-public class FibonacciHeap {
+public class FibonacciHeap<V> implements PriorityQueue<V, FibonacciNode<V>> {
     /** Points to the minimum node in the heap. */
-    private Node min;
+    private FibonacciNode<V> min;
     /** Number of nodes in the heap. If the type is ever widened,
      * (e.g. changed to long) then recalcuate the maximum degree
      * value used in the consolidate() method. */
@@ -69,21 +72,22 @@ public class FibonacciHeap {
         // The magic 45 comes from log base phi of Integer.MAX_VALUE,
         // which is the most elements we will ever hold, and log base
         // phi represents the largest degree of any root list node.
-        Node[] A = new Node[45];
+        @SuppressWarnings("unchecked")
+		FibonacciNode<V>[] A = new FibonacciNode[45];
 
         // For each root list node look for others of the same degree.
-        Node start = min;
-        Node w = min;
+        FibonacciNode<V> start = min;
+        FibonacciNode<V> w = min;
         do {
-            Node x = w;
+            FibonacciNode<V> x = w;
             // Because x might be moved, save its sibling now.
-            Node nextW = w.right;
+            FibonacciNode<V> nextW = w.right;
             int d = x.degree;
             while (A[d] != null) {
                 // Make one of the nodes a child of the other.
-                Node y = A[d];
+                FibonacciNode<V> y = A[d];
                 if (x.key > y.key) {
-                    Node temp = y;
+                    FibonacciNode<V> temp = y;
                     y = x;
                     x = temp;
                 }
@@ -113,7 +117,7 @@ public class FibonacciHeap {
         // The node considered to be min may have been changed above.
         min = start;
         // Find the minimum key again.
-        for (Node a : A) {
+        for (FibonacciNode<V> a : A) {
             if (a != null && a.key < min.key) {
                 min = a;
             }
@@ -132,7 +136,8 @@ public class FibonacciHeap {
      * @exception  IllegalArgumentException
      *             if k is larger than x.key value.
      */
-    public void decreaseKey(Node x, int k) {
+    @Override
+    public void decreaseKey(FibonacciNode<V> x, int k) {
         decreaseKey(x, k, false);
     }
 
@@ -144,12 +149,12 @@ public class FibonacciHeap {
      * @param  k       new key value for node x.
      * @param  delete  true if deleting node (in which case, k is ignored).
      */
-    private void decreaseKey(Node x, int k, boolean delete) {
+    private void decreaseKey(FibonacciNode<V> x, int k, boolean delete) {
         if (!delete && k > x.key) {
             throw new IllegalArgumentException("cannot increase key value");
         }
         x.key = k;
-        Node y = x.parent;
+        FibonacciNode<V> y = x.parent;
         if (y != null && (delete || k < y.key)) {
             y.cut(x, min);
             y.cascadingCut(min);
@@ -167,11 +172,11 @@ public class FibonacciHeap {
      *
      * @param  x  node to remove from heap.
      */
-    public void delete(Node x) {
+    public void delete(FibonacciNode<V> x) {
         // make x as small as possible
         decreaseKey(x, 0, true);
         // remove the smallest, which decreases n also
-        removeMin();
+        deleteMin();
     }
 
     /**
@@ -197,8 +202,9 @@ public class FibonacciHeap {
      * @param  key  key value associated with data object.
      * @return newly created heap node.
      */
-    public Node insert(Object x, int key) {
-        Node node = new Node(x, key);
+    @Override
+    public FibonacciNode<V> insert(int key, V value) {
+        FibonacciNode<V> node = new FibonacciNode<V>(key, value);
         // concatenate node into min list
         if (min != null) {
             node.right = min;
@@ -223,7 +229,7 @@ public class FibonacciHeap {
      *
      * @return  heap node with the smallest key, or null if empty.
      */
-    public Node min() {
+    public FibonacciNode<V> min() {
         return min;
     }
 
@@ -235,21 +241,21 @@ public class FibonacciHeap {
      *
      * @return  data object with the smallest key.
      */
-    public Object removeMin() {
-        Node z = min;
+    public V deleteMin() {
+        FibonacciNode<V> z = min;
         if (z == null) {
             return null;
         }
         if (z.child != null) {
             z.child.parent = null;
             // for each child of z do...
-            for (Node x = z.child.right; x != z.child; x = x.right) {
+            for (FibonacciNode<V> x = z.child.right; x != z.child; x = x.right) {
                 // set parent[x] to null
                 x.parent = null;
             }
             // merge the children into root list
-            Node minleft = min.left;
-            Node zchildleft = z.child.left;
+            FibonacciNode<V> minleft = min.left;
+            FibonacciNode<V> zchildleft = z.child.left;
             min.left = zchildleft;
             zchildleft.right = min;
             z.child.left = minleft;
@@ -266,7 +272,7 @@ public class FibonacciHeap {
         }
         // decrement size of heap
         n--;
-        return z.data;
+        return z.value;
     }
 
     /**
@@ -321,19 +327,15 @@ public class FibonacciHeap {
      *
      * @author  Nathan Fiedler
      */
-    public static class Node {
-        /** Data object for this node, holds the key value. */
-        private Object data;
-        /** Key value for this node. */
-        private int key;
+    public static class FibonacciNode<V> extends Node<V> {
         /** Parent node. */
-        private Node parent;
+        private FibonacciNode<V> parent;
         /** First child node. */
-        private Node child;
+        private FibonacciNode<V> child;
         /** Right sibling node. */
-        private Node right;
+        private FibonacciNode<V> right;
         /** Left sibling node. */
-        private Node left;
+        private FibonacciNode<V> left;
         /** Number of children of this node. */
         private int degree;
         /** True if this node has had a child removed since this node was
@@ -348,9 +350,8 @@ public class FibonacciHeap {
          * @param  data  data object to associate with this node
          * @param  key   key value for this data object
          */
-        public Node(Object data, int key) {
-            this.data = data;
-            this.key = key;
+        public FibonacciNode(int key, V value) {
+        	super(key, value);
             right = this;
             left = this;
         }
@@ -363,8 +364,8 @@ public class FibonacciHeap {
          *
          * @param  min  the minimum heap node, to which nodes will be added.
          */
-        public void cascadingCut(Node min) {
-            Node z = parent;
+        public void cascadingCut(FibonacciNode<V> min) {
+            FibonacciNode<V> z = parent;
             // if there's a parent...
             if (z != null) {
                 if (mark) {
@@ -388,7 +389,7 @@ public class FibonacciHeap {
          * @param  x    child to be removed from this node's child list
          * @param  min  the minimum heap node, to which x is added.
          */
-        public void cut(Node x, Node min) {
+        public void cut(FibonacciNode<V> x, FibonacciNode<V> min) {
             // remove x from childlist and decrement degree
             x.left.right = x.right;
             x.right.left = x.left;
@@ -417,7 +418,7 @@ public class FibonacciHeap {
          *
          * @param  parent  the new parent node.
          */
-        public void link(Node parent) {
+        public void link(FibonacciNode<V> parent) {
             // Note: putting this code here in Node makes it 7x faster
             // because it doesn't have to use generated accessor methods,
             // which add a lot of time when called millions of times.
