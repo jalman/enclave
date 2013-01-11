@@ -181,4 +181,27 @@ public class MessagingSystem {
 	public void writeAttackMessage(MapLocation attack, int priority) throws GameActionException {
 		writeMessage(MessageType.ATTACK_LOCATION.ordinal(), attack.x, attack.y, priority);
 	}
+	
+	public void scramble(int start, int end) {
+		start = start < 0 ? 0 : start;
+		end = end > 9999 ? 9999 : end;
+		for(int i = start; i < end; i++) {
+			if(!isAChannel(i)) {
+				try {
+					rc.broadcast(i,0);
+				} catch (GameActionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public boolean isAChannel(int i) {
+		for(int j = 0; j < channels.length; j++) {
+			if(channels[i] == i) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
