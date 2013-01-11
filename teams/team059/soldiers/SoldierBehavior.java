@@ -22,7 +22,7 @@ public class SoldierBehavior extends RobotBehavior {
 	public SoldierBehavior(RobotController therc) throws GameActionException {
 		super(therc);
 		mover = new Mover((RobotBehavior) this);
-		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5);
+		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5); //remove when micro works
 		mode = SoldierMode.IDLE; // for now
 	}
 
@@ -37,7 +37,11 @@ public class SoldierBehavior extends RobotBehavior {
 		}
 
 		messagingSystem.handleMessages(messageHandlers);
+		
+		
+		considerSwitchingModes();
 
+		
 		try {
 			switch(mode) {
 			case IDLE:
@@ -60,14 +64,13 @@ public class SoldierBehavior extends RobotBehavior {
 			default:
 				break;
 			}
+			
+			if(rc.isActive())
+				mover.execute();
 
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
-
-		/*
-
-		 */
 	}
 
 	protected MessageHandler getAttackHandler() {
@@ -85,6 +88,15 @@ public class SoldierBehavior extends RobotBehavior {
 				}
 			}
 		};
+	}
+	
+	private void considerSwitchingModes() {
+		if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
+			mode = ATTACK;
+		} else {
+			mode = IDLE;
+		}
+		rc.setIndicatorString(0, mode.name());
 	}
 
 	/**
@@ -152,7 +164,7 @@ public class SoldierBehavior extends RobotBehavior {
 
 		if(rc.senseEncampmentSquare(rc.getLocation()) && rc.senseCaptureCost() < rc.getTeamPower()) {
 			try {
-				rc.captureEncampment(RobotType.SUPPLIER);
+				rc.captureEncampment(RobotType.ARTILLERY);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -180,10 +192,10 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void attackBehavior() {
-		if (!charging) {
-			if(rc.senseNearbyGameObjects(Robot.class, gather, 20, myTeam).length > 8) {
-				charging = true;
-			}
+		if(rc.senseNearbyGameObjects(Robot.class, gather, 20, myTeam).length > 14 || rc.senseNearbyGameObjects(Robot.class, rc.getLocation(), 30, myTeam).length > 8) {
+			charging = true;
+		} else {
+			charging = false;
 		}
 		
 		if (!charging) {
@@ -209,13 +221,5 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	private void takeEncampmentBehavior() {
 		
-	}
-	
-	public void buildEncampment(Direction dir) {
-
-	}
-
-	public void researchUpgrade(Upgrade upg) {
-
 	}
 }
