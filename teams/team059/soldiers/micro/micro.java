@@ -1,4 +1,4 @@
-package team059.soldiers;
+/*package team059.soldiers;
 
 import team059.RobotBehavior;
 import battlecode.common.*;
@@ -147,3 +147,4 @@ public class micro {
 		}
 	}
 }
+*/

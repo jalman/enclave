@@ -55,4 +55,13 @@ public class Mover {
 			e.printStackTrace();
 		}
 	}
+	
+	/*public void aboutMoveMine(Direction dir) {
+		if (!moveMine(dir)) {
+			if(!moveMine(dir.rotateLeft())) {
+				moveMine(dir.rotateRight());
+			}
+		}
+	}*/
+
 }
