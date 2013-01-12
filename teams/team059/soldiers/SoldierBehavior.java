@@ -17,6 +17,10 @@ public class SoldierBehavior extends RobotBehavior {
 	private boolean charging = false;
 	private Micro microSystem;
 	
+	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
+	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
+	
+	
 	public final Mover mover;
 
 	public SoldierBehavior(RobotController therc) throws GameActionException {
@@ -24,6 +28,7 @@ public class SoldierBehavior extends RobotBehavior {
 		mover = new Mover((RobotBehavior) this);
 		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5); //remove when micro works
 		mode = SoldierMode.IDLE; // for now
+		microSystem = new Micro(this);
 	}
 
 	@Override
@@ -37,11 +42,8 @@ public class SoldierBehavior extends RobotBehavior {
 		}
 
 		messagingSystem.handleMessages(messageHandlers);
-		
-		
 		considerSwitchingModes();
 
-		
 		try {
 			switch(mode) {
 			case IDLE:
@@ -93,7 +95,12 @@ public class SoldierBehavior extends RobotBehavior {
 	private void considerSwitchingModes() {
 		if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
 			mode = ATTACK;
-		} else {
+		} 
+		if(microSystem.enemyNearby())
+		{
+			mode = MICRO;
+		}
+		else {
 			mode = IDLE;
 		}
 		rc.setIndicatorString(0, mode.name());
@@ -209,8 +216,8 @@ public class SoldierBehavior extends RobotBehavior {
 		mover.execute();
 	}
 
-	private void microBehavior() {
-
+	private void microBehavior() throws GameActionException {
+		microSystem.run();
 	}
 	
 	private void exploreBehavior() {

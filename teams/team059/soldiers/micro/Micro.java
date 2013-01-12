@@ -1,6 +1,7 @@
 package team059.soldiers.micro;
 
-import team059.RobotBehavior;
+import team059.soldiers.SoldierBehavior;
+import team059.movement.Mover;
 import team059.utils.Utils;
 import battlecode.common.*;
 
@@ -8,49 +9,49 @@ public class Micro {
 
 	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
 	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
-	MapLocation encampTarget = null, retreatTarget = null;
+	MapLocation encampTarget = null;
 	MapLocation c = null;// , m = null;	
 	Direction d = null;
-
+	public final Mover mover;
 	RobotController rc;
-	RobotBehavior rb;
+	SoldierBehavior sb;
 	BackCode backcode;
+	
+	public static int r = 11;
 
 	
-	public Micro(RobotBehavior rb) throws GameActionException {
-		this.rb = rb;
-		rc = rb.rc;
-		c=rc.getLocation();
-//		d = c.directionTo(m);
-		enemies = rc.senseNearbyGameObjects(Robot.class, 14, rb.enemyTeam); 
-		allies = rc.senseNearbyGameObjects(Robot.class, 14, rb.myTeam);
-		
+	public Micro(SoldierBehavior sb) throws GameActionException {
+		mover = sb.mover;
+		this.sb = sb;
+		rc = sb.rc;	
 		
 		backcode = new BackCode(this);
 		
-		if (hasEnoughAllies())
-		{
-			backcode.run();
-		}
-		else
-		{
-			
-		}
 	}
 	
 	/*
 	 * Methods for detecting Allies and Enemies Nearby
 	 */
+	public void run() throws GameActionException
+	{	
+		c=rc.getLocation();
+		enemies = rc.senseNearbyGameObjects(Robot.class, r, sb.enemyTeam);
+		allies = rc.senseNearbyGameObjects(Robot.class, r+3, sb.myTeam);
+		findEnemySoldiers();
+		findAlliedSoldiers();
+		backcode.run();
+
+	}
 	
 	public boolean enemyNearby()
 	{
-		if (enemies.length == 0)
+		enemies = rc.senseNearbyGameObjects(Robot.class, r, sb.enemyTeam); 
+		if (enemies == null || enemies.length == 0)
 		{
 			return false;
 		}
 		return true;
-	}
-	
+	}	
 	public boolean allyNearby()
 	{
 		if (allies.length == 0) // condition
@@ -124,9 +125,18 @@ public class Micro {
 		return alliedSoldiers.length;
 	}
 	
-	public MapLocation closestTarget() throws GameActionException // find closest enemy target nearby; use in battle
+	public void hasNearbyEnemy() //broadcasts that there are enemies nearby; incomplete
 	{
-		MapLocation m = new MapLocation(1000,1000);
+		if (enemyNearby())
+		{
+			
+		}		
+	}
+	
+	public MapLocation closestTarget(GameObject[] enemies) throws GameActionException // find closest enemy target nearby; use in battle
+	{
+		c=rc.getLocation();
+		MapLocation m = new MapLocation(10000,10000);
 		int d = 10000;
 		MapLocation loc;
 		if (enemyNearby())
@@ -144,42 +154,25 @@ public class Micro {
 		}
 		else
 			return null;
-	}
+	}	
 	
-	public MapLocation setRetreatTarget()
-	{
-		return null;
-	}
 	//todo: Determine how to weight encampments of various types.
 	public boolean hasEnoughAllies()
 	{
-		if(enemySoldiers.length < alliedSoldiers.length + 1)
+		if(enemySoldiers.length < alliedSoldiers.length)
 		{
 			return true;
 		}
 		return false;
 	}
-
-	//Movement Code: 
-	public void moveToTarget(MapLocation m) throws GameActionException //retreats to m until it hits a mine and then engages.
-	{
-		if(rc.canMove(d))
-		{
-			rc.move(d);
-		}		
-	}
 	
-	public void retreatCode() // run retreatCode before attackCode in run
-	{
-		
-	}
-
-
+	//Movement Code: 
+	
 	public void attackTarget(MapLocation m) throws GameActionException
 	{
 		if (c.distanceSquaredTo(m) > 2)
 		{
-			moveToTarget(m);
+			mover.setTarget(m);
 		}
 	}
 }

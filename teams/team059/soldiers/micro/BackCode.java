@@ -1,6 +1,8 @@
 package team059.soldiers.micro;
 
-import team059.RobotBehavior;
+import team059.soldiers.SoldierBehavior;
+import team059.utils.Utils;
+import team059.movement.Mover;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.GameObject;
@@ -19,46 +21,60 @@ public class BackCode{
 	Direction d = null;
 
 	RobotController rc;
-	RobotBehavior rb;
+	SoldierBehavior sb;
 	BackCode backcode;
 	Micro micro;
 	
+	public static int r;
+	public final Mover mover;
+	
+	// to optimize: what calls to use each turn and which calls not to use each turn.
+	
 	public BackCode(Micro micro) {
 		this.micro = micro;
-		rb = micro.rb;
+		r = micro.r;
+		sb = micro.sb;
 		rc = micro.rc;
-		enemySoldiers = micro.enemySoldiers;
-		alliedSoldiers = micro.alliedSoldiers;
-		encampTarget = micro.encampTarget;
-		retreatTarget = micro.retreatTarget;
 		c = micro.c;
-		d = micro.d;
+		mover = micro.mover;
 	}
 	public void run() throws GameActionException{
 		
-		d = c.directionTo(retreatTarget);
-		if (micro.hasEnoughAllies())
+		setRetreatBack();
+		d = micro.c.directionTo(retreatTarget);
+		if (!micro.hasEnoughAllies())
 		{
 			if (rc.senseMine(c.add(d)) != null)
 			{
 				if (rc.senseMine(c.add(d)) != rc.getTeam()) // is enemy's mine. Never bug around for now (maybe bug to artillery)
 				{
-					//stand and fight.
+					mover.setTarget(c);
 				}
 				else
 				{
+					mover.setTarget(c); 
 					//bug around neutral mine (maybe)
 				}
 			}
 			else
 			{
-				micro.moveToTarget(retreatTarget);
+				mover.setTarget(retreatTarget);
 			}
 		}
 		else
 		{
-			micro.attackTarget(micro.closestTarget());
+			micro.attackTarget(micro.closestTarget(micro.enemies));
 		}
 	}
-
+	public void setRetreatEncampment() //makes the retreat target the nearest encampment
+	{
+		retreatTarget = Utils.closest(rc.senseAlliedEncampmentSquares(), c);
+	}
+	public void setRetreatBack() throws GameActionException
+	{
+		c = micro.c;
+	
+		
+		retreatTarget = c.add(rc.getLocation().directionTo(micro.closestTarget(micro.enemies)).opposite());
+	}
 }
