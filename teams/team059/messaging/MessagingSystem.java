@@ -30,7 +30,13 @@ public class MessagingSystem {
 	/**
 	 * Stores messages that are read each round.
 	 */
-	public final int[][] buffer = new int[100][MESSAGE_SIZE];
+	public final int[][] buffer = new int[500][MESSAGE_SIZE];
+	
+	/**
+	 * Stores the header message. This is not placed in the buffer.
+	 */
+	private final int[] header = new int[MESSAGE_SIZE];
+
 	/**
 	 * The total number of messages posted by our team. Includes the header message.
 	 */
@@ -74,7 +80,7 @@ public class MessagingSystem {
 		int checksum = 0;
 		for(int i = 0; i < MESSAGE_SIZE; i++) {
 			block[i] = RC.readBroadcast(channel+i);
-			checksum ^= block[i];
+			checksum += block[i];
 		}
 		
 		return checksum == RC.readBroadcast(channel + MESSAGE_SIZE);
@@ -83,7 +89,7 @@ public class MessagingSystem {
 	public boolean checkBlock(int channel) throws GameActionException {
 		int checksum = 0;
 		for(int i = 0; i < MESSAGE_SIZE; i++) {
-			checksum ^= RC.readBroadcast(channel+i); 
+			checksum += RC.readBroadcast(channel+i); 
 		}
 		
 		return checksum == RC.readBroadcast(channel + MESSAGE_SIZE);
@@ -98,8 +104,8 @@ public class MessagingSystem {
 	 * @throws GameActionException
 	 */
 	private boolean readMessage(int index, int[] block) throws GameActionException {
+		int off = index * BLOCK_SIZE;
 		for(int i = 0; i < COPIES; i++) {
-			int off = index * BLOCK_SIZE;
 			if(readBlock(channels[i]+off, block)) {
 				//fix messages
 				for(int j = 0; j < i; j++) {
@@ -128,8 +134,6 @@ public class MessagingSystem {
 		readMessagesNoChannels();
 	}
 	
-	private final int[] header = new int[MESSAGE_SIZE];
-	
 	//doesn't set the channels
 	private void readMessagesNoChannels() throws GameActionException {		
 		valid_messages = 0;
@@ -151,7 +155,11 @@ public class MessagingSystem {
 	public void handleMessages(MessageHandler[] handlers) {
 		for(int i = 0; i < valid_messages; i++) {
 			int[] message = buffer[i];
-			handlers[message[0]].handleMessage(message);
+			try {
+				handlers[message[0]].handleMessage(message);
+			} catch(ArrayIndexOutOfBoundsException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -160,17 +168,13 @@ public class MessagingSystem {
 		
 		int i = 0;
 		while(i < block.length) {
-			try {
-				RC.broadcast(channel+i, block[i]);
-			} catch(GameActionException e) {
-				System.out.println(channel);
-			}
-			checksum ^= block[i];
+			RC.broadcast(channel+i, block[i]);
+			checksum += block[i];
 			i++;
 		}
 		
 		while(i < MESSAGE_SIZE) {
-			checksum ^= RC.readBroadcast(channel+i);
+			checksum += RC.readBroadcast(channel+i);
 			i++;
 		}
 		
@@ -183,7 +187,7 @@ public class MessagingSystem {
 	 * @param message The message data.
 	 * @throws GameActionException
 	 */
-	public void writeMessage(int index, int... message) throws GameActionException {		
+	public void writeMessageAtIndex(int index, int... message) throws GameActionException {		
 		int off = index * BLOCK_SIZE;
 		
 		for(int i = 0; i < COPIES; i++) {
@@ -199,7 +203,7 @@ public class MessagingSystem {
 	 * @param message The message data.
 	 * @throws GameActionException
 	 */
-	public void writeMessage(MessageType type, int... message) throws GameActionException {		
+	public void writeMessage(int... message) throws GameActionException {		
 		int off = total_messages * BLOCK_SIZE;
 		
 		for(int i = 0; i < COPIES; i++) {
@@ -216,7 +220,7 @@ public class MessagingSystem {
 	 */
 	public void writeHeaderMessage() throws GameActionException {
 		if(message_written) {
-			writeMessage(0, total_messages);
+			writeMessageAtIndex(0, total_messages);
 		}
 		message_written = false;
 	}
@@ -241,6 +245,16 @@ public class MessagingSystem {
 	
 	public void writeAttackMessage(MapLocation loc, int priority) throws GameActionException {
 		writeMessage(MessageType.ATTACK_LOCATION.ordinal(), loc.x, loc.y, priority);
+	}
+	
+	public void debug() throws GameActionException {
+		for(int i = 0; i < total_messages; i++) {
+			int off = i * BLOCK_SIZE;
+			for(int j = 0; j < BLOCK_SIZE; j++) {
+				System.out.print(RC.readBroadcast(channels[0] + off + j) + " ");
+			}
+			System.out.println();
+		}
 	}
 	
 	public void scramble(int start, int end) {
