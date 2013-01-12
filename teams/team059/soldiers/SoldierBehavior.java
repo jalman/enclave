@@ -171,7 +171,7 @@ public class SoldierBehavior extends RobotBehavior {
 
 		if(rc.senseEncampmentSquare(rc.getLocation()) && rc.senseCaptureCost() < rc.getTeamPower()) {
 			try {
-				rc.captureEncampment(RobotType.ARTILLERY);
+				rc.captureEncampment(RobotType.SUPPLIER);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -182,7 +182,9 @@ public class SoldierBehavior extends RobotBehavior {
 				double mineProb = rc.senseHQLocation().distanceSquaredTo(rc.getLocation()) + rc.senseEnemyHQLocation().distanceSquaredTo(rc.getLocation());
 				mineProb /= rc.senseHQLocation().distanceSquaredTo(rc.senseEnemyHQLocation());
 				mineProb *= mineProb;
-				mineProb /= 20;
+				mineProb *= 40;
+				mineProb /= rc.getMapWidth();
+				mineProb /= rc.getMapHeight();
 				if(rc.senseMine(rc.getLocation()) == Utils.ALLY_TEAM) {
 					mineProb = 0.0;
 				}
