@@ -21,13 +21,16 @@ public class HQBehavior extends RobotBehavior {
 	}
 
 	@Override
-	public void run() {
+	public void beginRound() {
 		try {
-			super.messagingSystem.initHeaderMessage();
+			messagingSystem.initMessagingSystem();
 		} catch (GameActionException e1) {
 			e1.printStackTrace();
 		}
-		
+	}
+	
+	@Override
+	public void run() {		
 		super.messagingSystem.handleMessages(messageHandlers);
 		
 		if(rc.isActive()) {

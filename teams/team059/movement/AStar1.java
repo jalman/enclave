@@ -82,7 +82,7 @@ public class AStar1 {
 			
 			for(int idx = 0; idx < 8; ++idx) {
 				//bc = Clock.getBytecodesLeft();
-				neighbor = new MapLocation(current.x+Utils.OFFSETS[idx][0], current.y+Utils.OFFSETS[idx][1]);
+				neighbor = new MapLocation(current.x+Utils.DX[idx], current.y+Utils.DY[idx]);
 				if(checked.contains(neighbor) || 
 						neighbor.x >= rb.width || neighbor.x < 0 || 
 						neighbor.y >= rb.height || neighbor.y < 0) {

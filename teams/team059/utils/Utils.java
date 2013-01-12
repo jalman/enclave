@@ -10,18 +10,9 @@ public class Utils {
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
 	
-
-	public static int[][] OFFSETS = {
-		{ -1, -1 },
-		{ -1,  0 },
-		{ -1,  1 }, 
-		{  0, -1 },
-		{  0,  1 },
-		{  1, -1 },
-		{  1,  0 },
-		{  1,  1 }
-	};
-	
+	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
+	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
+		
 	public static void initUtils(RobotController rc) {
 		RC = rc;
 		

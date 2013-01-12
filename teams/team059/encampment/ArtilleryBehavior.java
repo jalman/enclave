@@ -4,8 +4,8 @@ import battlecode.common.GameActionException;
 import battlecode.common.Robot;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
-import battlecode.common.Team;
 import team059.RobotBehavior;
+import team059.utils.Utils;
 
 public class ArtilleryBehavior extends RobotBehavior {
 
@@ -15,7 +15,7 @@ public class ArtilleryBehavior extends RobotBehavior {
 
 	@Override
 	public void run() {
-		Robot[] enemies = rc.senseNearbyGameObjects(Robot.class, rc.getType().attackRadiusMaxSquared, enemy());
+		Robot[] enemies = rc.senseNearbyGameObjects(Robot.class, rc.getType().attackRadiusMaxSquared, Utils.ENEMY_TEAM);
 		if(!rc.isActive())
 			return;
 		if(enemies.length > 0) {
@@ -27,10 +27,4 @@ public class ArtilleryBehavior extends RobotBehavior {
 			}
 		}
 	}
-	
-	
-	public Team enemy() {
-		return rc.getTeam() == Team.A ? Team.B : Team.A;
-	}
-
 }

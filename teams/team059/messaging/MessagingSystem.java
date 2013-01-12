@@ -1,10 +1,13 @@
 package team059.messaging;
 
+import java.util.Random;
+
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.GameConstants;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
+import static team059.utils.Utils.*;
 
 /**
  * Securely send and receive messages.
@@ -15,39 +18,48 @@ public class MessagingSystem {
 	public static final int MESSAGE_SIZE = 5;
 	public static final int BLOCK_SIZE = MESSAGE_SIZE+1;
 	
+	private static final int MAX_CHANNEL = GameConstants.BROADCAST_MAX_CHANNELS - 1024;
 	private static final int COPIES = 2;
-	private static final int DISPLACEMENT = GameConstants.BROADCAST_MAX_CHANNELS / COPIES;
+	private static final int DISPLACEMENT = MAX_CHANNEL / COPIES;
 	
-	private final RobotController rc;
+	/**
+	 * The channels of communication. These are set each round.
+	 */
+	public final int[] channels = new int[COPIES];
 	
 	/**
 	 * Stores messages that are read each round.
 	 */
 	public final int[][] buffer = new int[100][MESSAGE_SIZE];
 	/**
-	 * The total number of messages posted by our team.
+	 * The total number of messages posted by our team. Includes the header message.
 	 */
 	public int total_messages;
 	/**
 	 * The number of valid messages read this round.
 	 */
 	public int valid_messages;
+	/**
+	 * Whether any messages were written this round.
+	 */
+	private boolean message_written;
 	
-	public final int[] channels = new int[COPIES];
-	
-	public MessagingSystem(RobotController rc) {
-		this.rc = rc;
+	public MessagingSystem(RobotController RC) {
 	}
 	
-	public int key(int index) {return 0;}
+	public int key(int seed) {
+		Random r = new Random(seed);
+		return r.nextInt();
+	}
 	
 	/**
 	 * Sets up the channels for communication. Should be called each round.
 	 */
-	public void setChannels() {
+	private void setChannels() {
 		int k = key(Clock.getRoundNum());
 		for(int i = 0; i < COPIES; i++) {
-			channels[i] = (k + i * DISPLACEMENT) % GameConstants.BROADCAST_MAX_CHANNELS;
+			channels[i] = (k + i * DISPLACEMENT) % MAX_CHANNEL;
+			if(channels[i] < 0) channels[i] += MAX_CHANNEL;
 		}
 	}
 	
@@ -61,15 +73,25 @@ public class MessagingSystem {
 	public boolean readBlock(int channel, int[] block) throws GameActionException {
 		int checksum = 0;
 		for(int i = 0; i < MESSAGE_SIZE; i++) {
-			block[i] = rc.readBroadcast(channel+i);
+			block[i] = RC.readBroadcast(channel+i);
 			checksum ^= block[i];
 		}
 		
-		return checksum == rc.readBroadcast(channel + MESSAGE_SIZE);
+		return checksum == RC.readBroadcast(channel + MESSAGE_SIZE);
+	}
+	
+	public boolean checkBlock(int channel) throws GameActionException {
+		int checksum = 0;
+		for(int i = 0; i < MESSAGE_SIZE; i++) {
+			checksum ^= RC.readBroadcast(channel+i); 
+		}
+		
+		return checksum == RC.readBroadcast(channel + MESSAGE_SIZE);
 	}
 	
 	/**
 	 * Tries to read a single message, using multiple channels of communication.
+	 * If an uncorrupted copy is found, the other copies are checked and fixed.
 	 * @param index Index of the message among the set of messages.
 	 * @param block Stores the message.
 	 * @return Whether the message was successfully read.
@@ -80,9 +102,13 @@ public class MessagingSystem {
 			int off = index * BLOCK_SIZE;
 			if(readBlock(channels[i]+off, block)) {
 				//fix messages
-				for(int j = 0; j < COPIES; j++) {
-					if(j == i) continue;
+				for(int j = 0; j < i; j++) {
 					writeBlock(channels[j]+off, block);
+				}
+				
+				for(int j = i+1; j < COPIES; j++) {
+					if(!checkBlock(channels[j]+off))
+						writeBlock(channels[j]+off, block);
 				}
 				
 				return true;
@@ -99,19 +125,24 @@ public class MessagingSystem {
 	 */
 	public void readMessages() throws GameActionException {
 		setChannels();
-		
+		readMessagesNoChannels();
+	}
+	
+	private final int[] header = new int[MESSAGE_SIZE];
+	
+	//doesn't set the channels
+	private void readMessagesNoChannels() throws GameActionException {		
 		valid_messages = 0;
 		
-		int[] header = new int[MESSAGE_SIZE];
 		if(!readMessage(0, header)) return;
 		
-		total_messages = header[0]+1;
+		total_messages = header[0];
 		
 		for(int i = 1; i < total_messages; i++) {
 			if(readMessage(i, buffer[valid_messages]))
 				valid_messages++;
 		}
-	}
+	}	
 	
 	/**
 	 * Convenience method for handling messages.
@@ -129,57 +160,87 @@ public class MessagingSystem {
 		
 		int i = 0;
 		while(i < block.length) {
-			rc.broadcast(channel+i, block[i]);
+			try {
+				RC.broadcast(channel+i, block[i]);
+			} catch(GameActionException e) {
+				System.out.println(channel);
+			}
 			checksum ^= block[i];
 			i++;
 		}
 		
 		while(i < MESSAGE_SIZE) {
-			checksum ^= rc.readBroadcast(channel+i);
+			checksum ^= RC.readBroadcast(channel+i);
 			i++;
 		}
 		
-		rc.broadcast(channel + MESSAGE_SIZE, checksum);
+		RC.broadcast(channel + MESSAGE_SIZE, checksum);
+	}
+		
+	/**
+	 * Writes a message to the global radio.
+	 * @param index The index at which to write the message.
+	 * @param message The message data.
+	 * @throws GameActionException
+	 */
+	public void writeMessage(int index, int... message) throws GameActionException {		
+		int off = index * BLOCK_SIZE;
+		
+		for(int i = 0; i < COPIES; i++) {
+			writeBlock(channels[i]+off, message);
+		}
+		total_messages++;
+		message_written = true;
 	}
 	
 	/**
 	 * Writes a message to the global radio.
-	 * @param message The message data. The first parameter must be the MessageType.ordinal().
+	 * @param type The type of message.
+	 * @param message The message data.
 	 * @throws GameActionException
 	 */
-	public void writeMessage(int... message) throws GameActionException {		
+	public void writeMessage(MessageType type, int... message) throws GameActionException {		
 		int off = total_messages * BLOCK_SIZE;
 		
 		for(int i = 0; i < COPIES; i++) {
 			writeBlock(channels[i]+off, message);
 		}
 		total_messages++;
+		message_written = true;
 	}
 	
-	private int prev_messages = 0;
+	
+	/**
+	 * Rewrites the header message. Should be called at the end of each round by any robot that uses messaging.
+	 * @throws GameActionException 
+	 */
+	public void writeHeaderMessage() throws GameActionException {
+		if(message_written) {
+			writeMessage(0, total_messages);
+		}
+		message_written = false;
+	}
 	
 	/**
 	 * Reads messages from last round, and initializes the new header message.
-	 * Should be called by HQ at the start of each round.
+	 * Should be called by HQ at the start of each round, instead of {@link #readMessages()}.
 	 * @throws GameActionException 
 	 */
-	public void initHeaderMessage() throws GameActionException {
+	public void initMessagingSystem() throws GameActionException {
+		valid_messages = 0;
+		
 		//do something with messages from last round?
 		if(Clock.getRoundNum() > 0) {
-			int old_messages = prev_messages;
-			readMessages();
-			prev_messages = valid_messages;
-			
-			
+			readMessagesNoChannels();
 		}
 		
 		setChannels();
-		total_messages = 0;
-		writeMessage(0);
+		total_messages = 1;
+		message_written = true;
 	}
 	
-	public void writeAttackMessage(MapLocation attack, int priority) throws GameActionException {
-		writeMessage(MessageType.ATTACK_LOCATION.ordinal(), attack.x, attack.y, priority);
+	public void writeAttackMessage(MapLocation loc, int priority) throws GameActionException {
+		writeMessage(MessageType.ATTACK_LOCATION.ordinal(), loc.x, loc.y, priority);
 	}
 	
 	public void scramble(int start, int end) {
@@ -188,7 +249,7 @@ public class MessagingSystem {
 		for(int i = start; i < end; i++) {
 			if(!isAChannel(i)) {
 				try {
-					rc.broadcast(i,0);
+					RC.broadcast(i,0);
 				} catch (GameActionException e) {
 					e.printStackTrace();
 				}

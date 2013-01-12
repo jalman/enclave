@@ -3,12 +3,13 @@ package team059;
 import team059.messaging.MessageHandler;
 import team059.messaging.MessageType;
 import team059.messaging.MessagingSystem;
-import team059.utils.Utils;
+import static team059.utils.Utils.*;
+import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
 
-public abstract class RobotBehavior {
+public class RobotBehavior {
 	public final RobotController rc;
 	public final Team myTeam;
 	public final Team enemyTeam;
@@ -35,9 +36,31 @@ public abstract class RobotBehavior {
 	protected int danger(MapLocation loc) {return 0;}
 	
 	/**
+	 * Called at the beginning of each round.
+	 */
+	public void beginRound() {
+		try {
+			messagingSystem.readMessages();
+		} catch (GameActionException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
 	 * Called every round.
 	 */
-	public abstract void run();
+	public void run() {}
+	
+	/**
+	 * Called at the end of each round.
+	 */
+	public void endRound() {
+		try {
+			messagingSystem.writeHeaderMessage();
+		} catch (GameActionException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private static class DefaultMessageHandler implements MessageHandler {
 		@Override

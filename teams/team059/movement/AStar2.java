@@ -52,50 +52,67 @@ public class AStar2 {
 			MapLocation[][] previous = new MapLocation[MAP_WIDTH][MAP_HEIGHT];
 			previous[start.x][start.y] = null;
 	
-			int tentative_pre_score;
-			int[][] pre_score = new int[MAP_WIDTH][MAP_HEIGHT];
-			OnePassQueue<MapLocation> score = new OnePassQueue<MapLocation>(1000, 200);
+			//the cost to get to a location
+			int[][] cost_to = new int[MAP_WIDTH][MAP_HEIGHT];
+			OnePassQueue<MapLocation> queue = new OnePassQueue<MapLocation>(1000, 400);
 			
 			MapLocation current, neighbor;
 			
-			pre_score[start.x][start.y] = 0;// Cost from start along best known path.
+			cost_to[start.x][start.y] = 0;// Cost from start along best known path.
 			// Estimated total cost from start to goal through y.
-			score.insert(heuristic_cost(start, finish), start);
+			queue.insert(estimated_distance(start, finish), start);
 			//nodesInHeap[start.x][start.y] = score.insert(heuristic_cost(start, finish), start); 
 				// key is really 0 + heuristic_cost(start,goal)
 	
 			while(true) {
 				loop_bc = bc = Clock.getBytecodesLeft();
-				if(score.size == 0) {
-					path = null;
-					System.out.println("BLAHBLAHBLAH 0");
-					return false;
+				
+				if(queue.size < 5)
+				System.out.println(queue);
+				
+				if(queue.size == 0) {
+					System.out.println(finish);
+					for(int y = 0; y < MAP_HEIGHT; y++) {
+						for(int x = 0; x < MAP_WIDTH; x++) {
+							System.out.print(checked[x][y] ? 'X' : ' ');
+						}
+						System.out.println();
+					}
+					
+					throw new Exception("A* queue empty! No path to target.");
 				}
-				current = score.deleteMin();
+				current = queue.deleteMin();
 				if(current.equals(finish)) {
-					System.out.println("Bytecodes used by A* pre-reconstruction = " + Integer.toString(total_bc));
-					reconstruct_path(previous, finish); 
+					System.out.println("Bytecodes used by A* pre-reconstruction = " + total_bc);
+					reconstruct_path(previous, finish);
 					return true;
 				}
 				
-				checked[current.x][current.y] = true;
-				//System.out.println("Bytecodes used by unchecked/checked node manip = " + Integer.toString(bc-Clock.getBytecodesLeft()));
+				//checked[current.x][current.y] = true;
+				//System.out.println("Bytecodes used by unchecked/checked node manip = " + (bc-Clock.getBytecodesLeft()));
 				
-				for(int idx = 0; idx < 8; ++idx) {
-					//bc = Clock.getBytecodesLeft();
-					neighbor = new MapLocation(current.x+OFFSETS[idx][0], current.y+OFFSETS[idx][1]);
+				for(int i = 0; i < 8; i++) {
+					bc = Clock.getBytecodesLeft();
+					neighbor = new MapLocation(current.x + DX[i], current.y + DY[i]);
+					try {
 					if(neighbor.x < 0 || neighbor.y < 0 || checked[neighbor.x][neighbor.y] || 
 							(RC.canSenseSquare(neighbor) && RC.senseObjectAtLocation(neighbor) != null)) {
 						continue;
 					}
-					tentative_pre_score = pre_score[current.x][current.y] + neighbor_move_cost(neighbor);
-					//System.out.println("Bytecodes used by initial neighbor stuff = " + Integer.toString(bc-Clock.getBytecodesLeft()));
-				
+					} catch(GameActionException e) {
+						System.out.println(RC.getLocation());
+						System.out.println(neighbor);
+						e.printStackTrace();
+					}
+					int cost_to_neighbor = cost_to[current.x][current.y] + neighbor_move_cost(neighbor);
+					//System.out.println("Bytecodes used by initial neighbor stuff = " + (bc-Clock.getBytecodesLeft()));
+					
+					queue.insert(cost_to_neighbor + estimated_distance(neighbor, finish), neighbor);
+					cost_to[neighbor.x][neighbor.y] = cost_to_neighbor;
+					checked[neighbor.x][neighbor.y] = true;
+					
 					previous[neighbor.x][neighbor.y] = current;
 					bc = Clock.getBytecodesLeft();
-					score.insert(tentative_pre_score + heuristic_cost(neighbor, finish), neighbor);
-					pre_score[neighbor.x][neighbor.y] = tentative_pre_score;
-					
 				}
 				int c = (loop_bc - Clock.getBytecodesLeft());
 				total_bc += ( (c > 0) ? c : 10000+c );
@@ -140,17 +157,19 @@ public class AStar2 {
 	 */
 		
 	
-	private int heuristic_cost(MapLocation loc, MapLocation finish) {
-		return naive_heuristic(loc, finish);
+	private int estimated_distance(MapLocation loc, MapLocation finish) {
+		return naiveDistance(loc, finish);
 	}
 	
-	private int naive_heuristic(MapLocation loc, MapLocation finish) {
-		return Math.max(Math.abs(loc.x-finish.x), Math.abs(loc.y-finish.y));
-	}
-	
-	private int neighbor_move_cost(MapLocation dest) { 
+	/**
+	 * The heuristic cost of going through a map location.
+	 * Currently only takes into account whether there is a mine.
+	 * @param loc The map location.
+	 * @return {@link #MINE_MOVE_COST} if there is a mine, and {@link #NORMAL_MOVE_COST} otherwise.
+	 */
+	private int neighbor_move_cost(MapLocation loc) { 
 		try{
-			if(RC.senseMine(dest) == ENEMY_TEAM) {
+			if(Utils.isEnemyMine(loc)) {
 				return MINE_MOVE_COST;
 			} /*else if (rc.canSenseSquare(dest)) { // || rc.senseObjectAtLocation(dest) != null) {
 				int distance = ut.naiveDistance(rc.getLocation(), dest);

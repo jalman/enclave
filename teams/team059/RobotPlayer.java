@@ -29,7 +29,9 @@ public class RobotPlayer {
 				break;
 			}
 			while(true) {
+				robot.beginRound();
 				robot.run();
+				robot.endRound();
 				rc.yield();
 			}
 		} catch (Exception e) {
