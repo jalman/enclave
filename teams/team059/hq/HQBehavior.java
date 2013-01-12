@@ -6,8 +6,8 @@ import battlecode.common.*;
 
 public class HQBehavior extends RobotBehavior {
 	
-	final Upgrade[] SPARSE_UPGRADES = {Upgrade.PICKAXE, Upgrade.DEFUSION, Upgrade.NUKE}; //upgrades in the order we should research them
-	final Upgrade[] DENSE_UPGRADES = {Upgrade.DEFUSION, Upgrade.PICKAXE, Upgrade.NUKE}; //upgrades in the order we should research them
+	final Upgrade[] SPARSE_UPGRADES = {Upgrade.VISION, Upgrade.DEFUSION, Upgrade.NUKE}; //upgrades in the order we should research them
+	final Upgrade[] DENSE_UPGRADES = {Upgrade.DEFUSION, Upgrade.VISION, Upgrade.NUKE}; //upgrades in the order we should research them
 	Upgrade[] upgradeList;
 	int currentUpgrade = 0;
 	
@@ -21,13 +21,16 @@ public class HQBehavior extends RobotBehavior {
 	}
 
 	@Override
-	public void run() {
+	public void beginRound() {
 		try {
-			super.messagingSystem.initHeaderMessage();
+			messagingSystem.initMessagingSystem();
 		} catch (GameActionException e1) {
 			e1.printStackTrace();
 		}
-		
+	}
+	
+	@Override
+	public void run() {		
 		super.messagingSystem.handleMessages(messageHandlers);
 		
 		if(rc.isActive()) {
@@ -57,9 +60,20 @@ public class HQBehavior extends RobotBehavior {
 	public void buildSoldier(Direction dir) throws GameActionException {
 		if (rc.isActive()) {
 			// Spawn a soldier
-			if (rc.canMove(dir) && !Utils.isEnemyMine(rc.getLocation().add(dir)))
-				rc.spawn(dir);
+			for(int i = 0; i < 8; i++) {
+				if(goodPlaceToMakeSoldier(dir)) {
+					rc.spawn(dir);
+					return;
+				}
+				dir = dir.rotateRight();
+			}
+			
+			//message guys to get out of the way??
 		}
+	}
+	
+	private boolean goodPlaceToMakeSoldier(Direction dir) {
+		return rc.canMove(dir) && !Utils.isEnemyMine(rc.getLocation().add(dir));
 	}
 
 	public void researchUpgrade(Upgrade upg) {
