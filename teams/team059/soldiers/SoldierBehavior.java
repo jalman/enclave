@@ -6,6 +6,7 @@ import team059.messaging.MessageHandler;
 import team059.soldiers.micro.Micro;
 import team059.utils.Utils;
 import battlecode.common.*;
+import team059.soldiers.mineLay.MineLayer;
 import static team059.soldiers.SoldierMode.*;
 
 public class SoldierBehavior extends RobotBehavior {
@@ -22,10 +23,12 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	
 	public final Mover mover;
-
+	public final MineLayer mineLayer;
+	
 	public SoldierBehavior(RobotController therc) throws GameActionException {
 		super(therc);
 		mover = new Mover((RobotBehavior) this);
+		mineLayer = new MineLayer(rc);
 		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5); //remove when micro works
 		mode = SoldierMode.IDLE; // for now
 		microSystem = new Micro(this);
@@ -66,10 +69,8 @@ public class SoldierBehavior extends RobotBehavior {
 			default:
 				break;
 			}
-			
 			if(rc.isActive())
 				mover.execute();
-
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
@@ -103,7 +104,10 @@ public class SoldierBehavior extends RobotBehavior {
 		else {
 			mode = IDLE;
 		}
-		rc.setIndicatorString(0, mode.name());
+		if (mode!=mode.IDLE)
+		{
+			rc.setIndicatorString(0, mode.name());
+		}
 	}
 
 	/**
@@ -145,6 +149,7 @@ public class SoldierBehavior extends RobotBehavior {
 		charging = false;
 		
 		//see if there is an encampment nearby to take
+		
 		if(target == null && rc.getTeamPower() > (1 + rc.senseAlliedEncampmentSquares().length)* 20.0) {
 			MapLocation[] encampments = rc.senseEncampmentSquares(rc.getLocation(), 16, Team.NEUTRAL);
 			if(encampments.length > 0) {
@@ -179,20 +184,20 @@ public class SoldierBehavior extends RobotBehavior {
 		
 		try {
 			if(rc.isActive()) {
-				double mineProb = rc.senseHQLocation().distanceSquaredTo(rc.getLocation()) + rc.senseEnemyHQLocation().distanceSquaredTo(rc.getLocation());
-				mineProb /= rc.senseHQLocation().distanceSquaredTo(rc.senseEnemyHQLocation());
-				mineProb *= mineProb;
-				mineProb *= 40;
-				mineProb /= rc.getMapWidth();
-				mineProb /= rc.getMapHeight();
-				if(rc.senseMine(rc.getLocation()) == Utils.ALLY_TEAM) {
-					mineProb = 0.0;
+				mineLayer.randomize();
+				if (mineLayer.adjacentToEncampment()&& Math.random() < mineLayer.mineProb*2.5)
+				{
+					mineLayer.mineAroundEncampment();
 				}
-				if(Math.random() < mineProb) {
-					rc.layMine();
-				} else {
-					mover.setTarget(target == null ? Utils.ENEMY_HQ : target);
-					mover.execute();
+				else{
+					if(Math.random() < mineLayer.mineProb*3/4) {
+						rc.setIndicatorString(0, "RANDOM MINE");
+						rc.layMine();
+					} else {
+						rc.setIndicatorString(0, mode.name());
+						mover.setTarget(target == null ? Utils.ENEMY_HQ : target);
+						mover.execute();
+					}
 				}
 			}
 		} catch (Exception e) {

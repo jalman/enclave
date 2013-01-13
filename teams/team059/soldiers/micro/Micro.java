@@ -13,11 +13,20 @@ public class Micro {
 	MapLocation c = null;// , m = null;	
 	Direction d = null;
 	public final Mover mover;
-	RobotController rc;
+	
+	/**
+	 * The SoldierBehavior and rc that calls micro
+	 */
 	SoldierBehavior sb;
+	RobotController rc;
+	
+	/**
+	 * backcode executes the micro strategy
+	 */
 	BackCode backcode;
 	
-	public static int r = 11;
+	// The radius the rc uses to detect enemies and allies. This distance should change.
+	public static int r = 9;
 
 	
 	public Micro(SoldierBehavior sb) throws GameActionException {
@@ -29,9 +38,6 @@ public class Micro {
 		
 	}
 	
-	/*
-	 * Methods for detecting Allies and Enemies Nearby
-	 */
 	public void run() throws GameActionException
 	{	
 		c=rc.getLocation();
@@ -40,8 +46,11 @@ public class Micro {
 		findEnemySoldiers();
 		findAlliedSoldiers();
 		backcode.run();
-
 	}
+
+	/**
+	 * Methods for detecting Allies and Enemies Nearby
+	 */
 	
 	public boolean enemyNearby()
 	{
@@ -60,6 +69,12 @@ public class Micro {
 		}
 		return true;
 	}
+	
+	/**
+	 * Detects enemy and allied soldiers nearby
+	 * sets the arrays enemySoldiers and alliedSoldiers respectively
+	 * @throws GameActionException
+	 */
 	
 	public void findEnemySoldiers() throws GameActionException
 	{
@@ -114,7 +129,7 @@ public class Micro {
 			}
 		}
 	}
-
+	
 	public int enemyNumber()
 	{
 		return enemySoldiers.length;
@@ -133,6 +148,11 @@ public class Micro {
 		}		
 	}
 	
+	/**
+	 * @param array of enemies
+	 * @return closest enemy target
+	 * @throws GameActionException
+	 */
 	public MapLocation closestTarget(GameObject[] enemies) throws GameActionException // find closest enemy target nearby; use in battle
 	{
 		c=rc.getLocation();
@@ -156,7 +176,10 @@ public class Micro {
 			return null;
 	}	
 	
-	//todo: Determine how to weight encampments of various types.
+	/**
+	 * Determines whether there are enough allies nearby to engage
+	 * @return
+	 */
 	public boolean hasEnoughAllies()
 	{
 		if(enemySoldiers.length < alliedSoldiers.length)
@@ -165,8 +188,6 @@ public class Micro {
 		}
 		return false;
 	}
-	
-	//Movement Code: 
 	
 	public void attackTarget(MapLocation m) throws GameActionException
 	{
