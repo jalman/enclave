@@ -57,7 +57,6 @@ public class MineLayer {
 		return false;
 	}
 	
-	
 	public void mineAroundEncampment() throws GameActionException
 	{
 		if (adjacentToEncampment())

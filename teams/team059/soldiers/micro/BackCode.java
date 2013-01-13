@@ -73,8 +73,6 @@ public class BackCode{
 	public void setRetreatBack() throws GameActionException
 	{
 		c = micro.c;
-	
-		
 		retreatTarget = c.add(rc.getLocation().directionTo(micro.closestTarget(micro.enemies)).opposite());
 	}
 }

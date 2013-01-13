@@ -6,6 +6,9 @@ Receive orders from HQ to build generators and suppliers
 Sensing:
 sense objects when computing pathing
 
+Messaging:
+Send message to HQ updating mine status
+
 Micro:
 - Mines: Laying/Defusing
 - Encampments: Building/capturing
@@ -27,3 +30,4 @@ BattleMicro.java
 Decision Making:
 different modes (attack, defend, scout)
 react differently based on modes
+

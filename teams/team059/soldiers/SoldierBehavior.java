@@ -17,6 +17,7 @@ public class SoldierBehavior extends RobotBehavior {
 	private MapLocation gather;
 	private boolean charging = false;
 	private Micro microSystem;
+	private MapLocation c = null, p = null; // c = current location, p = past location.
 	
 	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
 	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
@@ -27,6 +28,8 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	public SoldierBehavior(RobotController therc) throws GameActionException {
 		super(therc);
+		c = rc.getLocation();
+		p = rc.getLocation();
 		mover = new Mover((RobotBehavior) this);
 		mineLayer = new MineLayer(rc);
 		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5); //remove when micro works
@@ -69,11 +72,21 @@ public class SoldierBehavior extends RobotBehavior {
 			default:
 				break;
 			}
+			stepOffMine();
 			if(rc.isActive())
 				mover.execute();
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
+		if (target !=null)
+		{
+			rc.setIndicatorString(1, "Target is " + target.toString() + " " + Clock.getRoundNum());
+		}
+		else 
+		{
+			rc.setIndicatorString(1, "No Target " + Clock.getRoundNum());
+		}
+		p = c; //updates the past location.
 	}
 
 	protected MessageHandler getAttackHandler() {
@@ -104,10 +117,8 @@ public class SoldierBehavior extends RobotBehavior {
 		else {
 			mode = IDLE;
 		}
-		if (mode!=mode.IDLE)
-		{
-			rc.setIndicatorString(0, mode.name());
-		}
+		rc.setIndicatorString(0, mode.name() + " " + Clock.getRoundNum());
+		
 	}
 
 	/**
@@ -185,18 +196,17 @@ public class SoldierBehavior extends RobotBehavior {
 		try {
 			if(rc.isActive()) {
 				mineLayer.randomize();
-				if (mineLayer.adjacentToEncampment()&& Math.random() < mineLayer.mineProb*2.5)
+				if (mineLayer.adjacentToEncampment()&& Math.random() < mineLayer.mineProb*5)
 				{
 					mineLayer.mineAroundEncampment();
 				}
 				else{
-					if(Math.random() < mineLayer.mineProb*3/4) {
+					if(Math.random() < mineLayer.mineProb*3) {
 						rc.setIndicatorString(0, "RANDOM MINE");
 						rc.layMine();
 					} else {
 						rc.setIndicatorString(0, mode.name());
 						mover.setTarget(target == null ? Utils.ENEMY_HQ : target);
-						mover.execute();
 					}
 				}
 			}
@@ -236,4 +246,34 @@ public class SoldierBehavior extends RobotBehavior {
 	private void takeEncampmentBehavior() {
 		
 	}
+	
+	public boolean onMine()
+	{
+		c = rc.getLocation();
+		if (Utils.isEnemyMine(c)){
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Increments the number of stepped on mines.
+	 */
+	public void incrementEnemyMineCount(){
+		//read number. Add one. Write new number.
+	}
+	
+	/**
+	 * 
+	 */
+	
+	public void stepOffMine(){
+		if (onMine())
+		{
+			mover.setTarget(p);
+		}
+	}
+	/**
+	 * Mine defusing behavior
+	 */
 }
