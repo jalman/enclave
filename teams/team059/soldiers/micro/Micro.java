@@ -25,8 +25,8 @@ public class Micro {
 	 */
 	BackCode backcode;
 	
-	// The radius the rc uses to detect enemies and allies
-	public static int r = 11;
+	// The radius the rc uses to detect enemies and allies. This distance should change.
+	public static int r = 9;
 
 	
 	public Micro(SoldierBehavior sb) throws GameActionException {

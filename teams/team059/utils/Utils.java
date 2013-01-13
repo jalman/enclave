@@ -51,16 +51,20 @@ public class Utils {
 		{
 			for(int i =0; i < a.length; i++)
 			{
-					loc = a[i];
-					if (Utils.naiveDistance(loc, c) < d)
-					{
-						m = loc;
-						d = Utils.naiveDistance(loc, c);
-					}
+				loc = a[i];
+				if (Utils.naiveDistance(loc, c) < d)
+				{
+					m = loc;
+					d = Utils.naiveDistance(loc, c);
 				}
+			}
 			return m;
 		}
 		else
+		{
+			System.out.println("Returning null");
 			return null;
+		}
+			
 	}
 }
