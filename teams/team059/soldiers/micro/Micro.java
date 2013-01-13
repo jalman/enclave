@@ -29,9 +29,6 @@ public class Micro {
 		
 	}
 	
-	/*
-	 * Methods for detecting Allies and Enemies Nearby
-	 */
 	public void run() throws GameActionException
 	{	
 		c=rc.getLocation();
@@ -40,8 +37,11 @@ public class Micro {
 		findEnemySoldiers();
 		findAlliedSoldiers();
 		backcode.run();
-
 	}
+
+	/**
+	 * Methods for detecting Allies and Enemies Nearby
+	 */
 	
 	public boolean enemyNearby()
 	{

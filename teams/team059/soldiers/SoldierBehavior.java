@@ -93,13 +93,13 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 	
 	private void considerSwitchingModes() {
-		if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
-			mode = ATTACK;
-		} 
 		if(microSystem.enemyNearby())
 		{
 			mode = MICRO;
 		}
+		else if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
+			mode = ATTACK;
+		} 
 		else {
 			mode = IDLE;
 		}
