@@ -9,8 +9,7 @@ public class Micro {
 
 	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
 	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
-	MapLocation encampTarget = null;
-	MapLocation c = null;// , m = null;	
+	MapLocation encampTarget = null, c = null;
 	Direction d = null;
 	public final Mover mover;
 	
@@ -26,9 +25,7 @@ public class Micro {
 	BackCode backcode;
 	
 	// The radius the rc uses to detect enemies and allies. This distance should change.
-	public static int r = 10;
-
-	
+	public static int r = 14;
 	public Micro(SoldierBehavior sb) throws GameActionException {
 		mover = sb.mover;
 		this.sb = sb;
@@ -60,7 +57,17 @@ public class Micro {
 			return false;
 		}
 		return true;
-	}	
+	}
+	
+	//should only be used in run
+	public boolean enemySoldierNearby()
+	{
+		if (enemySoldiers == null || enemySoldiers.length == 0)
+		{
+			return false;
+		}
+		return true;
+	}
 	public boolean allyNearby()
 	{
 		if (allies.length == 0) // condition
@@ -149,21 +156,44 @@ public class Micro {
 	}
 	
 	/**
-	 * @param array of enemies
-	 * @return closest enemy target
+	 * This method should only be called in run.
+	 * @param array of enemy soldiers
+	 * @return closest enemy soldier target
 	 * @throws GameActionException
 	 */
-	public MapLocation closestTarget(GameObject[] enemies) throws GameActionException // find closest enemy target nearby; use in battle
+	public MapLocation closestTarget(GameObject[] enemies) throws GameActionException
 	{
 		c=rc.getLocation();
 		MapLocation m = new MapLocation(10000,10000);
 		int d = 10000;
 		MapLocation loc;
-		if (enemyNearby())
+		if (enemies != null && enemies.length!=0)
 		{
 			for(int i =0; i < enemies.length; i++)
 			{
 				loc = rc.senseRobotInfo((Robot)enemies[i]).location;
+				if (Utils.naiveDistance(loc, c) < d)
+				{
+					m = loc;
+					d = Utils.naiveDistance(loc, c);
+				}
+			}
+			return m;
+		}
+		else
+			return null;
+	}
+	public MapLocation closestSoldierTarget(RobotInfo[] enemySoldiers) throws GameActionException // find closest enemy target nearby; use in battle
+	{
+		c=rc.getLocation();
+		MapLocation m = new MapLocation(10000,10000);
+		int d = 10000;
+		MapLocation loc;
+		if (enemySoldiers != null && enemySoldiers.length!=0)
+		{
+			for(int i =0; i < enemySoldiers.length; i++)
+			{
+				loc = enemySoldiers[i].location;//rc.senseRobotInfo((Robot)enemies[i]).location;
 				if (Utils.naiveDistance(loc, c) < d)
 				{
 					m = loc;
@@ -182,7 +212,7 @@ public class Micro {
 	 */
 	public boolean hasEnoughAllies()
 	{
-		if(enemySoldiers.length < alliedSoldiers.length)
+		if(enemyNumber() < allyNumber())
 		{
 			return true;
 		}
@@ -191,6 +221,7 @@ public class Micro {
 	
 	public void attackTarget(MapLocation m) throws GameActionException
 	{
+		c = rc.getLocation();
 		if (c.distanceSquaredTo(m) > 2)
 		{
 			mover.setTarget(m);
