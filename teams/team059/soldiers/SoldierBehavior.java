@@ -63,9 +63,13 @@ public class SoldierBehavior extends RobotBehavior {
 	public void run() {
 		if(!rc.isActive()) return;
 
-		if(messaging) {
-			messagingSystem.handleMessages(messageHandlers);
+		try {
+			messagingSystem.readMessages();
+		} catch (GameActionException e1) {
+			e1.printStackTrace();
 		}
+
+		messagingSystem.handleMessages(messageHandlers);
 		considerSwitchingModes();
 
 		try {
@@ -128,7 +132,7 @@ public class SoldierBehavior extends RobotBehavior {
 		if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
 			mode = ATTACK;
 		} 
-		if(microSystem.enemyNearby())
+		if(microSystem.enemySoldierNearby())
 		{
 			mode = MICRO;
 		}
@@ -214,12 +218,12 @@ public class SoldierBehavior extends RobotBehavior {
 		try {
 			if(rc.isActive()) {
 				mineLayer.randomize();
-				if (mineLayer.adjacentToEncampment()&& Math.random() < mineLayer.mineProb*5)
+				if (mineLayer.adjacentToEncampment()&& Math.random() < mineLayer.mineProb*3)
 				{
 					mineLayer.mineAroundEncampment();
 				}
 				else{
-					if(Math.random() < mineLayer.mineProb*3) {
+					if(Math.random() < mineLayer.mineProb*3/4) {
 						rc.setIndicatorString(0, "RANDOM MINE");
 						rc.layMine();
 					} else {

@@ -10,8 +10,8 @@ import battlecode.common.RobotController;
 
 public class RobotPlayer {
 	public static void run(RobotController rc) {
-		Utils.initUtils(rc);
 		
+		Utils.initUtils(rc);
 		try {
 			RobotBehavior robot = null;
 			switch(rc.getType()) {
