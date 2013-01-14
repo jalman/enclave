@@ -22,6 +22,8 @@ public class MessagingSystem {
 	private static final int COPIES = 2;
 	private static final int DISPLACEMENT = MAX_CHANNEL / COPIES;
 	
+	public static final double MESSAGING_COST = 2;
+	
 	/**
 	 * The channels of communication. These are set each round.
 	 */

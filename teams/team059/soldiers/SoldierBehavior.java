@@ -41,13 +41,9 @@ public class SoldierBehavior extends RobotBehavior {
 	public void run() {
 		if(!rc.isActive()) return;
 
-		try {
-			messagingSystem.readMessages();
-		} catch (GameActionException e1) {
-			e1.printStackTrace();
+		if(messaging) {
+			messagingSystem.handleMessages(messageHandlers);
 		}
-
-		messagingSystem.handleMessages(messageHandlers);
 		considerSwitchingModes();
 
 		try {

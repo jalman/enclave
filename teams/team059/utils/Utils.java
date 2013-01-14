@@ -1,8 +1,6 @@
 package team059.utils;
 
-import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
-import battlecode.common.Robot;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
 
@@ -41,30 +39,25 @@ public class Utils {
 		int dy = Math.abs(loc0.y-loc1.y);
 		return Math.max(dx, dy);
 	}
-	public static MapLocation closest(MapLocation[] a, MapLocation c) //finds closest element in a to c.
-	{
-		MapLocation m = new MapLocation(1000,1000);
-		int d = 10000;
-		MapLocation loc;
+
+	/**
+	 * Finds the closest (by naive distance) map location to the target among a set of map locations.
+	 * @param locs The set of map locations.
+	 * @param target The target location.
+	 * @return The closest map location.
+	 */
+	public static MapLocation closest(MapLocation[] locs, MapLocation target) {
+		MapLocation close = null;
+		int distance = Integer.MAX_VALUE;
 		
-		if (a!=null && a.length !=0)
-		{
-			for(int i =0; i < a.length; i++)
-			{
-				loc = a[i];
-				if (Utils.naiveDistance(loc, c) < d)
-				{
-					m = loc;
-					d = Utils.naiveDistance(loc, c);
-				}
+		for(int i = 0; i < locs.length; i++) {
+			int d = naiveDistance(locs[i], target);
+			if(d < distance) {
+				close = locs[i];
+				distance = d;
 			}
-			return m;
 		}
-		else
-		{
-			System.out.println("Returning null");
-			return null;
-		}
-			
+		
+		return close;
 	}
 }
