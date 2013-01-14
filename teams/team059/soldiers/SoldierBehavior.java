@@ -1,5 +1,7 @@
 package team059.soldiers;
 
+import java.util.Random;
+
 import team059.RobotBehavior;
 import team059.movement.Mover;
 import team059.messaging.MessageHandler;
@@ -14,10 +16,13 @@ public class SoldierBehavior extends RobotBehavior {
 	private SoldierMode mode;
 	private MapLocation target = null;
 	private int priority;
-	private MapLocation gather;
+	private MapLocation[] gather;
+	private MapLocation myGather;
 	private boolean charging = false;
 	private Micro microSystem;
 	private MapLocation c = null, p = null; // c = current location, p = past location.
+
+	Random rand;
 	
 	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
 	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
@@ -32,9 +37,26 @@ public class SoldierBehavior extends RobotBehavior {
 		p = rc.getLocation();
 		mover = new Mover((RobotBehavior) this);
 		mineLayer = new MineLayer(rc);
-		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5); //remove when micro works
 		mode = SoldierMode.IDLE; // for now
 		microSystem = new Micro(this);
+		rand = new Random(Clock.getRoundNum() * rc.getRobot().getID() + Clock.getBytecodeNum());
+		gather = new MapLocation[3]; 
+		
+		gather[0] = new MapLocation((myBase.x * 2 + enemyBase.x ) / 3, (myBase.y * 2 + enemyBase.y ) / 3);
+		gather[1] = gather[0].add((myBase.y - enemyBase.y)/3, (- myBase.x + enemyBase.x)/3);
+		gather[2] = gather[0].add((- myBase.y + enemyBase.y)/3, (myBase.x - enemyBase.x)/3);
+		
+		double r = rand.nextDouble();
+		if (r > 0.5) {
+			myGather = gather[0];
+			rc.setIndicatorString(2, r + "");
+		} else if (r > 0.25) {
+			myGather = gather[1];
+			rc.setIndicatorString(2, r + "");
+		} else {
+			myGather = gather[2];
+			rc.setIndicatorString(2, r + "");
+		}
 	}
 
 	@Override
@@ -202,7 +224,7 @@ public class SoldierBehavior extends RobotBehavior {
 						rc.layMine();
 					} else {
 						rc.setIndicatorString(0, mode.name());
-						mover.setTarget(target == null ? gather : target);
+						mover.setTarget(target == null ? myGather : target);
 					}
 				}
 			}
@@ -212,14 +234,14 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void attackBehavior() {
-		if(rc.senseNearbyGameObjects(Robot.class, gather, 20, myTeam).length > 14 || rc.senseNearbyGameObjects(Robot.class, rc.getLocation(), 30, myTeam).length > 8) {
+		if(rc.senseNearbyGameObjects(Robot.class, gather[0], 20, myTeam).length > 10 || rc.senseNearbyGameObjects(Robot.class, rc.getLocation(), 30, myTeam).length > 8) {
 			charging = true;
 		} else {
 			charging = false;
 		}
 		
 		if (!charging) {
-			target = gather;
+			target = gather[0];
 		} else {
 			target = enemyBase;
 		}
