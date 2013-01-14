@@ -21,14 +21,12 @@ public class BackCode{
 	RobotController rc;
 	Micro micro;
 	
-	public static int r;
 	public final Mover mover;
 	
 	// to optimize: what calls to use each turn and which calls not to use each turn.
 	
 	public BackCode(Micro micro) {
 		this.micro = micro;
-		r = Micro.r;
 		rc = micro.rc;
 		c = micro.c;
 		mover = micro.mover;
