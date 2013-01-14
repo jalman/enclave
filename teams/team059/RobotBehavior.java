@@ -33,7 +33,7 @@ public class RobotBehavior {
 		width = rc.getMapWidth();
 		height = rc.getMapHeight();
 
-		messagingSystem = new MessagingSystem(rc);
+		messagingSystem = new MessagingSystem();
 		messageHandlers = new MessageHandler[MessageType.values().length];
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();
 	}
@@ -44,12 +44,13 @@ public class RobotBehavior {
 	 * Called at the beginning of each round.
 	 */
 	public void beginRound() {
-		//messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
-		messaging = false;
+		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
+		//messaging = false;
 		
 		if(messaging) {
 			try {
 				messagingSystem.readMessages();
+				//messagingSystem.writeAttackMessage(RC.getLocation(), 5);
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}

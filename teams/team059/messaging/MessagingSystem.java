@@ -52,8 +52,7 @@ public class MessagingSystem {
 	 */
 	private boolean message_written;
 	
-	public MessagingSystem(RobotController RC) {
-	}
+	public MessagingSystem() {}
 	
 	public int key(int seed) {
 		Random r = new Random(seed);
@@ -158,19 +157,7 @@ public class MessagingSystem {
 	public void handleMessages(MessageHandler[] handlers) {
 		for(int i = 0; i < valid_messages; i++) {
 			int[] message = buffer[i];
-			try {
-				handlers[message[0]].handleMessage(message);
-			} catch(ArrayIndexOutOfBoundsException e) {
-				e.printStackTrace();
-			} catch(NullPointerException e) {
-				try {
-					debug();
-				} catch (GameActionException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				throw e;
-			}
+			handlers[message[0]].handleMessage(message);
 		}
 	}
 	
