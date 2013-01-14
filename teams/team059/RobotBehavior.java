@@ -15,8 +15,7 @@ public class RobotBehavior {
 	public final Team enemyTeam;
 	public final MapLocation myBase, enemyBase;
 	public final int width, height;
-
-	
+	public Strategy strategy;
 	
 	/**
 	 * Whether we want to send messages this round.
@@ -45,8 +44,9 @@ public class RobotBehavior {
 	 * Called at the beginning of each round.
 	 */
 	public void beginRound() {
-		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
-
+		//messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
+		messaging = false;
+		
 		if(messaging) {
 			try {
 				messagingSystem.readMessages();

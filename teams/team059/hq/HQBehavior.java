@@ -1,18 +1,20 @@
 package team059.hq;
 
 import team059.RobotBehavior;
+import static team059.utils.Utils.*;
+import team059.messaging.MessagingSystem;
 import team059.utils.Utils;
 import battlecode.common.*;
 
 public class HQBehavior extends RobotBehavior {
-	
+
 	final Upgrade[] SPARSE_UPGRADES = {Upgrade.VISION, Upgrade.DEFUSION, Upgrade.NUKE}; //upgrades in the order we should research them
 	final Upgrade[] DENSE_UPGRADES = {Upgrade.DEFUSION, Upgrade.VISION, Upgrade.NUKE}; //upgrades in the order we should research them
 	Upgrade[] upgradeList;
 	int currentUpgrade = 0;
-	
+
 	double mineDensity;
-	
+
 	public HQBehavior(RobotController therc) {
 		super(therc);
 		MapLocation[] mines = therc.senseNonAlliedMineLocations(therc.getLocation(), 100000);
@@ -22,17 +24,21 @@ public class HQBehavior extends RobotBehavior {
 
 	@Override
 	public void beginRound() {
-		try {
-			messagingSystem.initMessagingSystem();
-		} catch (GameActionException e1) {
-			e1.printStackTrace();
+		//messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
+		messaging = false;
+		if(messaging) {
+			try {
+				messagingSystem.initMessagingSystem();
+			} catch (GameActionException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
-	
+
 	@Override
 	public void run() {		
 		super.messagingSystem.handleMessages(messageHandlers);
-		
+
 		if(rc.isActive()) {
 			if(rc.getTeamPower() - 40.0 > 15.0 || Clock.getRoundNum() < 40) {
 				try {
@@ -67,11 +73,11 @@ public class HQBehavior extends RobotBehavior {
 				}
 				dir = dir.rotateRight();
 			}
-			
+
 			//message guys to get out of the way??
 		}
 	}
-	
+
 	private boolean goodPlaceToMakeSoldier(Direction dir) {
 		return rc.canMove(dir) && !Utils.isEnemyMine(rc.getLocation().add(dir));
 	}
@@ -79,4 +85,5 @@ public class HQBehavior extends RobotBehavior {
 	public void researchUpgrade(Upgrade upg) {
 
 	}
+
 }

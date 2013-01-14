@@ -24,6 +24,6 @@ public class EncampmentBehavior extends RobotBehavior {
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}
-		}
+		}	
 	}
 }
