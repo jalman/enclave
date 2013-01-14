@@ -206,7 +206,7 @@ public class SoldierBehavior extends RobotBehavior {
 						rc.layMine();
 					} else {
 						rc.setIndicatorString(0, mode.name());
-						mover.setTarget(target == null ? Utils.ENEMY_HQ : target);
+						mover.setTarget(target == null ? gather : target);
 					}
 				}
 			}
