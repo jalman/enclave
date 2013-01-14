@@ -31,6 +31,7 @@ public class SoldierBehavior extends RobotBehavior {
 		c = rc.getLocation();
 		p = rc.getLocation();
 		mover = new Mover((RobotBehavior) this);
+		mover.toggleDefuseMoving(false);
 		mineLayer = new MineLayer(rc);
 		gather = new MapLocation((myBase.x * 3 + enemyBase.x * 2) / 5, (myBase.y * 3 + enemyBase.y * 2) / 5); //remove when micro works
 		mode = SoldierMode.IDLE; // for now
