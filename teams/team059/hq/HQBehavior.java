@@ -8,8 +8,8 @@ import battlecode.common.*;
 
 public class HQBehavior extends RobotBehavior {
 
-	final Upgrade[] SPARSE_UPGRADES = {Upgrade.VISION, Upgrade.DEFUSION, Upgrade.NUKE}; //upgrades in the order we should research them
-	final Upgrade[] DENSE_UPGRADES = {Upgrade.DEFUSION, Upgrade.VISION, Upgrade.NUKE}; //upgrades in the order we should research them
+	final Upgrade[] SPARSE_UPGRADES = {Upgrade.PICKAXE, Upgrade.VISION, Upgrade.NUKE}; //upgrades in the order we should research them
+	final Upgrade[] DENSE_UPGRADES = {Upgrade.PICKAXE, Upgrade.VISION, Upgrade.NUKE}; //upgrades in the order we should research them
 	Upgrade[] upgradeList;
 	int currentUpgrade = 0;
 
@@ -40,7 +40,7 @@ public class HQBehavior extends RobotBehavior {
 		super.messagingSystem.handleMessages(messageHandlers);
 
 		if(rc.isActive()) {
-			if(rc.getTeamPower() - 40.0 > 15.0 || Clock.getRoundNum() < 40) {
+			if(Clock.getRoundNum() < 100 || (rc.getTeamPower() - 40.0 > 15.0 && rc.hasUpgrade(upgradeList[upgradeList.length - 2]))) {
 				try {
 					rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  asdf");
 					buildSoldier(rc.getLocation().directionTo(rc.senseEnemyHQLocation()));
