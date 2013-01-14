@@ -10,12 +10,22 @@ public class Mover {
 	private Utils ut;
 	public MapLocation dest;
 	public final NavSystem navsys;
+	public boolean defuseMoving;
 	
 	public Mover(RobotBehavior rb) { 
 		this.rb = rb;
 		this.rc = rb.rc;
 		this.dest = null;
 		this.navsys = new NavSystem(rb);
+		this.defuseMoving = true;
+	}
+	
+	public void toggleDefuseMoving(boolean b) {
+		this.defuseMoving = b;
+	}
+	
+	public void toggleDefuseMoving() {
+		defuseMoving = !defuseMoving;
 	}
 	
 	public void setTarget(MapLocation dest) {
@@ -36,7 +46,11 @@ public class Mover {
 				//System.out.println("d = " + d.toString());
 
 			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
-				moveMine(d);
+				if(defuseMoving) {
+					moveMine(d);
+				} else {
+					aboutMoveMine(d);
+				}
 			}
 		}
 		//System.out.println("Bytecodes used by Mover.execute() = " + Integer.toString(bc-Clock.getBytecodesLeft()));
@@ -63,9 +77,9 @@ public class Mover {
 			if(empty(dir)) {
 				rc.move(dir);
 			} else if (empty(dir.rotateLeft())) {
-				rc.move(dir.rotateLeft())
+				rc.move(dir.rotateLeft());
 			} else if (empty(dir.rotateRight())) {
-				rc.move(dir.rotateRight())
+				rc.move(dir.rotateRight());
 			} else {
 				moveMine(dir);
 			}
