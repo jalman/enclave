@@ -55,12 +55,32 @@ public class Mover {
 		}
 	}
 	
-	/*public void aboutMoveMine(Direction dir) {
-		if (!moveMine(dir)) {
-			if(!moveMine(dir.rotateLeft())) {
-				moveMine(dir.rotateRight());
+	public void aboutMoveMine(Direction dir) {
+		try {
+			if(!rc.isActive() || dir == Direction.NONE || dir == Direction.OMNI) {
+				return;
 			}
+			if(empty(dir)) {
+				rc.move(dir);
+			} else if (empty(dir.rotateLeft())) {
+				rc.move(dir.rotateLeft())
+			} else if (empty(dir.rotateRight())) {
+				rc.move(dir.rotateRight())
+			} else {
+				moveMine(dir);
+			}
+
+		} catch (GameActionException e) {
+			e.printStackTrace();
 		}
-	}*/
+	}
+	
+	private boolean empty(Direction dir) {
+		MapLocation nextSquare = rc.getLocation().add(dir);
+		if(Utils.isEnemyMine(nextSquare) || !rc.canMove(dir)) {
+			return false;
+		}
+		return true;
+	}
 
 }
