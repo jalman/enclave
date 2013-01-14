@@ -40,16 +40,14 @@ public class Micro {
 		findEnemySoldiers(sensorRadius);
 		findAlliedSoldiers(sensorRadius);
 		
-		if(!enemySoldierNearby(sensorRadius))
-		{
-			attackcode.run();
-		}
-		else
+		if(enemySoldierNearby(sensorRadius))
 		{
 			backcode.run();
 		}
-		
-		backcode.run();
+		else
+		{
+			attackcode.run();
+		}
 	}
 
 	/**
@@ -68,7 +66,7 @@ public class Micro {
 	
 	public boolean enemySoldierNearby(int radius) throws GameActionException
 	{
-		if (findEnemySoldiers(radius).length == 0)
+		if (findEnemySoldiers(radius) == null || findEnemySoldiers(radius).length == 0)
 		{
 			return false;
 		}
@@ -94,7 +92,7 @@ public class Micro {
 	public RobotInfo[] findEnemySoldiers(int radius) throws GameActionException
 	{
 		GameObject[] enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam);
-		RobotInfo[] enemySoldiers;
+		RobotInfo[] enemySoldiers = new RobotInfo[0];
 		if (enemyNearby(radius))
 		{
 			int l = 0;
@@ -117,10 +115,7 @@ public class Micro {
 					l++;
 				}
 			}
-			return enemySoldiers;
 		}
-		enemySoldiers = new RobotInfo[0];
-		System.out.println("No enemy soldiers");
 		return enemySoldiers;
 	}
 	

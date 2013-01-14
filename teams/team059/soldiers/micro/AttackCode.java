@@ -11,18 +11,20 @@ public class AttackCode {
 	 * Nearby allies will flock to a battle.
 	 */
 	Micro micro;
-	
+	RobotController rc;
 	public final Mover mover;
 	MapLocation c; //current location
 	MapLocation target;
 	
 	public AttackCode(Micro micro){
+		this.micro = micro;
 		mover = micro.mover;
-		c = micro.c;
+		rc = micro.rc;
+		c = rc.getLocation();
 	}
 	
 	public void run(){
-		c = micro.c;
+		c = rc.getLocation();
 	}
 	
 	public void goToBattle() throws GameActionException

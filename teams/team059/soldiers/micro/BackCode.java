@@ -55,7 +55,7 @@ public class BackCode{
 			}
 		}
 		else
-		{			
+		{	
 			micro.attackTarget(micro.closestSoldierTarget(micro.findEnemySoldiers(Micro.sensorRadius)));
 		}
 		rc.setIndicatorString(2, "MICRO " + mover.getTarget());
