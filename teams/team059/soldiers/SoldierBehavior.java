@@ -110,7 +110,7 @@ public class SoldierBehavior extends RobotBehavior {
 		if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
 			mode = ATTACK;
 		} 
-		if(microSystem.enemyNearby())
+		if(microSystem.enemySoldierNearby())
 		{
 			mode = MICRO;
 		}
@@ -157,6 +157,7 @@ public class SoldierBehavior extends RobotBehavior {
 //	private static final synchronized strictfp void important() throws Exception {};
 	
 	private void idleBehavior() throws GameActionException {
+		mover.defuseMoving = true;
 		charging = false;
 		
 		//see if there is an encampment nearby to take
@@ -196,12 +197,12 @@ public class SoldierBehavior extends RobotBehavior {
 		try {
 			if(rc.isActive()) {
 				mineLayer.randomize();
-				if (mineLayer.adjacentToEncampment()&& Math.random() < mineLayer.mineProb*5)
+				if (mineLayer.adjacentToEncampment()&& Math.random() < mineLayer.mineProb*3)
 				{
 					mineLayer.mineAroundEncampment();
 				}
 				else{
-					if(Math.random() < mineLayer.mineProb*3) {
+					if(Math.random() < mineLayer.mineProb*3/4) {
 						rc.setIndicatorString(0, "RANDOM MINE");
 						rc.layMine();
 					} else {
@@ -247,6 +248,11 @@ public class SoldierBehavior extends RobotBehavior {
 		
 	}
 	
+	
+	/**
+	 * Mine defusing behavior
+	 */
+	
 	public boolean onMine()
 	{
 		c = rc.getLocation();
@@ -259,13 +265,10 @@ public class SoldierBehavior extends RobotBehavior {
 	/**
 	 * Increments the number of stepped on mines.
 	 */
+	
 	public void incrementEnemyMineCount(){
 		//read number. Add one. Write new number.
 	}
-	
-	/**
-	 * 
-	 */
 	
 	public void stepOffMine(){
 		if (onMine())
@@ -273,7 +276,10 @@ public class SoldierBehavior extends RobotBehavior {
 			mover.setTarget(p);
 		}
 	}
+	
+	
 	/**
-	 * Mine defusing behavior
+	 * Sets target for IdleBehavior
 	 */
+	
 }
