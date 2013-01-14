@@ -31,10 +31,11 @@ public class Mover {
 		//rc.setIndicatorString(1, "my x = " + Integer.toString(rc.getLocation().x) + ", my y = " + Integer.toString(rc.getLocation().y)
 		//		+ "x = " + Integer.toString(dest.x) + ", y = " + Integer.toString(dest.y)); 
 		rc.setIndicatorString(1, dest + "");
-		if(rc.isActive() && dest != null) {
+		if(rc.isActive()) {
 			Direction d = navsys.navToward(dest);
-			if(d != null) {
 				//System.out.println("d = " + d.toString());
+
+			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
 				moveMine(d);
 			}
 		}
@@ -43,9 +44,6 @@ public class Mover {
 
 	public void moveMine(Direction dir) {
 		try {
-			if(dir == Direction.NONE || dir == Direction.OMNI) {
-				return;
-			}
 			MapLocation nextSquare = rc.getLocation().add(dir);
 			if(Utils.isEnemyMine(nextSquare)) {
 					rc.defuseMine(rc.getLocation().add(dir));
