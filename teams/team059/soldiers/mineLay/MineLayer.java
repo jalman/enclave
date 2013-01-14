@@ -25,6 +25,7 @@ public class MineLayer {
 	/** 
 	 * Generates a probability for mines to be laid.
 	 */	
+	
 	public void randomize(){
 		mineProb = rc.senseHQLocation().distanceSquaredTo(rc.getLocation()) + rc.senseEnemyHQLocation().distanceSquaredTo(rc.getLocation());
 		mineProb /= rc.senseHQLocation().distanceSquaredTo(rc.senseEnemyHQLocation());

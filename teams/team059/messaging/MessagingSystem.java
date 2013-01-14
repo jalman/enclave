@@ -144,11 +144,12 @@ public class MessagingSystem {
 		
 		total_messages = header[0];
 		
+		
 		for(int i = 1; i < total_messages; i++) {
 			if(readMessage(i, buffer[valid_messages]))
 				valid_messages++;
 		}
-	}	
+	}
 	
 	/**
 	 * Convenience method for handling messages.
@@ -161,6 +162,14 @@ public class MessagingSystem {
 				handlers[message[0]].handleMessage(message);
 			} catch(ArrayIndexOutOfBoundsException e) {
 				e.printStackTrace();
+			} catch(NullPointerException e) {
+				try {
+					debug();
+				} catch (GameActionException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				throw e;
 			}
 		}
 	}
