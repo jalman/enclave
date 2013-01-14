@@ -236,15 +236,8 @@ public class SoldierBehavior extends RobotBehavior {
 	private void attackBehavior() {
 		if(rc.senseNearbyGameObjects(Robot.class, gather[0], 20, myTeam).length > 10 || rc.senseNearbyGameObjects(Robot.class, rc.getLocation(), 30, myTeam).length > 8) {
 			charging = true;
-		} else {
-			charging = false;
-		}
-		
-		if (!charging) {
-			target = gather[0];
-		} else {
-			target = enemyBase;
-		}
+		} 
+		target = enemyBase;
 		
 		//mover.aboutMoveMine(rc.getLocation().directionTo(target));
 		mover.setTarget(target);
