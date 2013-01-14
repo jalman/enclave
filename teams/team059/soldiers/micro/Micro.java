@@ -7,51 +7,56 @@ import battlecode.common.*;
 
 public class Micro {
 
-	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
-	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
+//	GameObject[] foe = new GameObject[0], friends = new GameObject[0];
+//	RobotInfo[] foeSoldiers = new RobotInfo[0], friendSoldiers = new RobotInfo[0];
+	
 	MapLocation encampTarget = null, c = null;
 	Direction d = null;
 	public final Mover mover;
 	
-	/**
-	 * The SoldierBehavior and rc that calls micro
-	 */
 	SoldierBehavior sb;
 	RobotController rc;
 	
-	/**
-	 * backcode executes the micro strategy
-	 */
 	BackCode backcode;
+	AttackCode attackcode;
 	
-	// The radius the rc uses to detect enemies and allies. This distance should change.
-	public static int r = 14;
+	public static int sensorRadius = 14; // The radius the rc uses to detect enemies and allies. This distance.
+	public static int battleRadius = 36;
+	
 	public Micro(SoldierBehavior sb) throws GameActionException {
 		mover = sb.mover;
 		this.sb = sb;
 		rc = sb.rc;	
 		
 		backcode = new BackCode(this);
-		
+		attackcode = new AttackCode(this);
 	}
 	
 	public void run() throws GameActionException
 	{	
 		c=rc.getLocation();
-		enemies = rc.senseNearbyGameObjects(Robot.class, r, sb.enemyTeam);
-		allies = rc.senseNearbyGameObjects(Robot.class, r+3, sb.myTeam);
-		findEnemySoldiers();
-		findAlliedSoldiers();
-		backcode.run();
+//		enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam);
+//		allies = rc.senseNearbyGameObjects(Robot.class, radius+3, sb.myTeam);
+		findEnemySoldiers(sensorRadius);
+		findAlliedSoldiers(sensorRadius);
+		
+		if(enemySoldierNearby(sensorRadius))
+		{
+			backcode.run();
+		}
+		else
+		{
+			attackcode.run();
+		}
 	}
 
 	/**
-	 * Methods for detecting Allies and Enemies Nearby
+	 * Methods for detecting Allies and Enemies within a certain radius
 	 */
 	
-	public boolean enemyNearby()
+	public boolean enemyNearby(int radius)
 	{
-		enemies = rc.senseNearbyGameObjects(Robot.class, r, sb.enemyTeam); 
+		GameObject[] enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam); 
 		if (enemies == null || enemies.length == 0)
 		{
 			return false;
@@ -59,17 +64,18 @@ public class Micro {
 		return true;
 	}
 	
-	//should only be used in run
-	public boolean enemySoldierNearby()
+	public boolean enemySoldierNearby(int radius) throws GameActionException
 	{
-		if (enemySoldiers == null || enemySoldiers.length == 0)
+		if (findEnemySoldiers(radius) == null || findEnemySoldiers(radius).length == 0)
 		{
 			return false;
 		}
 		return true;
 	}
-	public boolean allyNearby()
+	
+	public boolean allyNearby(int radius)
 	{
+		GameObject[] allies = rc.senseNearbyGameObjects(Robot.class, radius, sb.myTeam); 
 		if (allies.length == 0) // condition
 		{
 			return false;
@@ -83,9 +89,11 @@ public class Micro {
 	 * @throws GameActionException
 	 */
 	
-	public void findEnemySoldiers() throws GameActionException
+	public RobotInfo[] findEnemySoldiers(int radius) throws GameActionException
 	{
-		if (enemyNearby())
+		GameObject[] enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam);
+		RobotInfo[] enemySoldiers = new RobotInfo[0];
+		if (enemyNearby(radius))
 		{
 			int l = 0;
 			RobotInfo r = null;
@@ -108,11 +116,14 @@ public class Micro {
 				}
 			}
 		}
+		return enemySoldiers;
 	}
 	
-	public void findAlliedSoldiers() throws GameActionException // might be useless
+	public RobotInfo[] findAlliedSoldiers(int radius) throws GameActionException // might be useless
 	{
-		if (allyNearby())
+		GameObject[] allies = rc.senseNearbyGameObjects(Robot.class, radius, sb.myTeam); 
+		RobotInfo[] alliedSoldiers = new RobotInfo[0];
+		if (allies!=null && allies.length != 0)
 		{
 			int l = 0;
 			RobotInfo r = null;
@@ -135,24 +146,17 @@ public class Micro {
 				}
 			}
 		}
+		return alliedSoldiers;
 	}
 	
-	public int enemyNumber()
+	public int enemyNumber(int radius) throws GameActionException
 	{
-		return enemySoldiers.length;
+		return findEnemySoldiers(radius).length;
 	}
 	
-	public int allyNumber()
+	public int allyNumber(int radius) throws GameActionException
 	{
-		return alliedSoldiers.length;
-	}
-	
-	public void hasNearbyEnemy() //broadcasts that there are enemies nearby; incomplete
-	{
-		if (enemyNearby())
-		{
-			
-		}		
+		return findAlliedSoldiers(radius).length;
 	}
 	
 	/**
@@ -207,12 +211,13 @@ public class Micro {
 	}	
 	
 	/**
-	 * Determines whether there are enough allies nearby to engage
+	 * Determines whether there are enough allies in sensorRadius nearby to engage
 	 * @return
+	 * @throws GameActionException 
 	 */
-	public boolean hasEnoughAllies()
+	public boolean hasEnoughAllies() throws GameActionException
 	{
-		if(enemyNumber() < allyNumber())
+		if(enemyNumber(sensorRadius) < allyNumber(sensorRadius))
 		{
 			return true;
 		}

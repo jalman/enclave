@@ -13,28 +13,20 @@ import battlecode.common.RobotType;
 
 public class BackCode{
 	
-	
-	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
-	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
-	MapLocation encampTarget = null, retreatTarget = null;
 	MapLocation c = null;// , m = null;	
+	MapLocation retreatTarget = null;
 	
 	Direction d = null;
 
 	RobotController rc;
-	SoldierBehavior sb;
-	BackCode backcode;
 	Micro micro;
 	
-	public static int r;
 	public final Mover mover;
 	
 	// to optimize: what calls to use each turn and which calls not to use each turn.
 	
 	public BackCode(Micro micro) {
 		this.micro = micro;
-		r = Micro.r;
-		sb = micro.sb;
 		rc = micro.rc;
 		c = micro.c;
 		mover = micro.mover;
@@ -63,9 +55,8 @@ public class BackCode{
 			}
 		}
 		else
-		{
-			System.out.println(micro.closestSoldierTarget(micro.enemySoldiers));
-			micro.attackTarget(micro.closestSoldierTarget(micro.enemySoldiers));
+		{	
+			micro.attackTarget(micro.closestSoldierTarget(micro.findEnemySoldiers(Micro.sensorRadius)));
 		}
 		rc.setIndicatorString(2, "MICRO " + mover.getTarget());
 	}
@@ -73,9 +64,9 @@ public class BackCode{
 	public void setRetreatBack() throws GameActionException
 	{
 		c = micro.c;
-		if (micro.enemySoldierNearby())
+		if (micro.enemySoldierNearby(Micro.sensorRadius))
 		{
-			retreatTarget = c.add(rc.getLocation().directionTo(micro.closestSoldierTarget(micro.enemySoldiers)).opposite());
+			retreatTarget = c.add(rc.getLocation().directionTo(micro.closestSoldierTarget(micro.findEnemySoldiers(Micro.sensorRadius))).opposite());
 		}
 	}
 	

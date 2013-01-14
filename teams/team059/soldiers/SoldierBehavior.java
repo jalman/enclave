@@ -20,7 +20,7 @@ public class SoldierBehavior extends RobotBehavior {
 	private MapLocation myGather;
 	private boolean charging = false;
 	private Micro microSystem;
-	private MapLocation c = null, p = null; // c = current location, p = past location.
+	private MapLocation c = null, previousLocation = null; // c = current location, p = past location.
 
 	Random rand;
 	
@@ -34,7 +34,7 @@ public class SoldierBehavior extends RobotBehavior {
 	public SoldierBehavior(RobotController therc) throws GameActionException {
 		super(therc);
 		c = rc.getLocation();
-		p = rc.getLocation();
+		previousLocation = rc.getLocation();
 		mover = new Mover((RobotBehavior) this);
 		mover.toggleDefuseMoving(false);
 		mineLayer = new MineLayer(rc);
@@ -65,9 +65,10 @@ public class SoldierBehavior extends RobotBehavior {
 		if(!rc.isActive()) return;
 
 		messagingSystem.handleMessages(messageHandlers);
-		considerSwitchingModes();
-
+		
 		try {
+			considerSwitchingModes();
+
 			switch(mode) {
 			case IDLE:
 				idleBehavior();
@@ -103,7 +104,7 @@ public class SoldierBehavior extends RobotBehavior {
 		{
 			rc.setIndicatorString(1, "No Target " + Clock.getRoundNum());
 		}
-		p = c; //updates the past location.
+		previousLocation = c; //updates the past location.
 	}
 
 	protected MessageHandler getAttackHandler() {
@@ -123,14 +124,14 @@ public class SoldierBehavior extends RobotBehavior {
 		};
 	}
 	
-	private void considerSwitchingModes() {
-		if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
-			mode = ATTACK;
-		} 
-		if(microSystem.enemySoldierNearby())
+	private void considerSwitchingModes() throws GameActionException {
+		if(microSystem.enemySoldierNearby(Micro.battleRadius))
 		{
 			mode = MICRO;
 		}
+		else if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
+			mode = ATTACK;
+		} 
 		else {
 			mode = IDLE;
 		}
@@ -179,7 +180,7 @@ public class SoldierBehavior extends RobotBehavior {
 		//see if there is an encampment nearby to take
 		
 		if(target == null && rc.getTeamPower() > (1 + rc.senseAlliedEncampmentSquares().length)* 20.0) {
-			MapLocation[] encampments = rc.senseEncampmentSquares(rc.getLocation(), 16, Team.NEUTRAL);
+			MapLocation[] encampments = rc.senseEncampmentSquares(rc.getLocation(), 100, Team.NEUTRAL);
 			if(encampments.length > 0) {
 				int maxdist = 20;
 				for(MapLocation encampment : encampments) {
@@ -204,7 +205,7 @@ public class SoldierBehavior extends RobotBehavior {
 
 		if(rc.senseEncampmentSquare(rc.getLocation()) && rc.senseCaptureCost() < rc.getTeamPower()) {
 			try {
-				rc.captureEncampment(RobotType.SUPPLIER);
+				rc.captureEncampment(RobotType.ARTILLERY);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -287,7 +288,7 @@ public class SoldierBehavior extends RobotBehavior {
 	public void stepOffMine(){
 		if (onMine())
 		{
-			mover.setTarget(p);
+			mover.setTarget(previousLocation);
 		}
 	}
 	/**
