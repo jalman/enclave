@@ -24,8 +24,8 @@ public class HQBehavior extends RobotBehavior {
 
 	@Override
 	public void beginRound() {
-		//messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
-		messaging = false;
+		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
+		//messaging = false;
 		if(messaging) {
 			try {
 				messagingSystem.initMessagingSystem();
@@ -37,7 +37,7 @@ public class HQBehavior extends RobotBehavior {
 
 	@Override
 	public void run() {		
-		super.messagingSystem.handleMessages(messageHandlers);
+		messagingSystem.handleMessages(messageHandlers);
 
 		if(rc.isActive()) {
 			if(Clock.getRoundNum() < 100 || (rc.getTeamPower() - 40.0 > 15.0 && rc.hasUpgrade(upgradeList[upgradeList.length - 2]))) {
