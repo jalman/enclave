@@ -1,13 +1,7 @@
 package team059.soldiers.mineLay;
 
-import team059.RobotBehavior;
-import team059.soldiers.SoldierBehavior;
-import team059.movement.Mover;
 import team059.utils.Utils;
-import battlecode.common.*;
-import team059.messaging.MessagingSystem;
 import battlecode.common.GameActionException;
-import battlecode.common.GameConstants;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 
@@ -21,7 +15,7 @@ public class MineLayer {
 
 	public double mineProb;
 
-	public MineLayer(RobotController rc){
+	public MineLayer(RobotController rc) {
 		this.rc = rc;
 		c = rc.getLocation();
 		a = rc.senseAllEncampmentSquares();
@@ -70,6 +64,7 @@ public class MineLayer {
 		else
 			rc.setIndicatorString(0, "ERROR");
 	}
+	
 	/**
 	 * lays mines with some probability.
 	 * @throws GameActionException
@@ -77,5 +72,7 @@ public class MineLayer {
 	public void randomMine() throws GameActionException {
 		
 	}
+	
+	
 	
 }

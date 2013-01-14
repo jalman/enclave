@@ -18,7 +18,7 @@ public class EncampmentBehavior extends RobotBehavior {
 	@Override
 	public void run() {
 		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, SAFETY_DISTANCE, ENEMY_TEAM);
-		if(enemies.length > SAFETY_THRESHOLD) {
+		if(enemies.length > SAFETY_THRESHOLD && messaging) {
 			try {
 				messagingSystem.writeAttackMessage(RC.getLocation(), 5);
 			} catch (GameActionException e) {
@@ -26,5 +26,4 @@ public class EncampmentBehavior extends RobotBehavior {
 			}
 		}
 	}
-
 }
