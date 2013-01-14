@@ -55,9 +55,8 @@ public class BackCode{
 			}
 		}
 		else
-		{
-			System.out.println(micro.closestSoldierTarget(micro.enemySoldiers));
-			micro.attackTarget(micro.closestSoldierTarget(micro.enemySoldiers));
+		{			
+			micro.attackTarget(micro.closestSoldierTarget(micro.findEnemySoldiers(Micro.sensorRadius)));
 		}
 		rc.setIndicatorString(2, "MICRO " + mover.getTarget());
 	}
@@ -65,9 +64,9 @@ public class BackCode{
 	public void setRetreatBack() throws GameActionException
 	{
 		c = micro.c;
-		if (micro.enemySoldierNearby())
+		if (micro.enemySoldierNearby(Micro.sensorRadius))
 		{
-			retreatTarget = c.add(rc.getLocation().directionTo(micro.closestSoldierTarget(micro.enemySoldiers)).opposite());
+			retreatTarget = c.add(rc.getLocation().directionTo(micro.closestSoldierTarget(micro.findEnemySoldiers(Micro.sensorRadius))).opposite());
 		}
 	}
 	

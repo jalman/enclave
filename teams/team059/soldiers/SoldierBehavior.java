@@ -64,9 +64,10 @@ public class SoldierBehavior extends RobotBehavior {
 		if(!rc.isActive()) return;
 
 		messagingSystem.handleMessages(messageHandlers);
-		considerSwitchingModes();
-
+		
 		try {
+			considerSwitchingModes();
+
 			switch(mode) {
 			case IDLE:
 				idleBehavior();
@@ -122,14 +123,14 @@ public class SoldierBehavior extends RobotBehavior {
 		};
 	}
 	
-	private void considerSwitchingModes() {
-		if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
-			mode = ATTACK;
-		} 
-		if(microSystem.enemySoldierNearby())
+	private void considerSwitchingModes() throws GameActionException {
+		if(microSystem.enemySoldierNearby(Micro.battleRadius))
 		{
 			mode = MICRO;
 		}
+		else if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
+			mode = ATTACK;
+		} 
 		else {
 			mode = IDLE;
 		}

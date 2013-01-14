@@ -12,7 +12,6 @@ public class AttackCode {
 	 */
 	Micro micro;
 	
-	public static int r;
 	public final Mover mover;
 	MapLocation c; //current location
 	MapLocation target;
@@ -28,7 +27,7 @@ public class AttackCode {
 	
 	public void goToBattle() throws GameActionException
 	{
-		target = micro.closestSoldierTarget(micro.enemySoldiers); 
+		target = micro.closestSoldierTarget((micro.findEnemySoldiers(Micro.battleRadius))); 
 		mover.setTarget(target);
 	}
 }
