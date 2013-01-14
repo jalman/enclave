@@ -13,6 +13,7 @@ import battlecode.common.RobotType;
 
 public class BackCode{
 	
+	
 	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
 	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
 	MapLocation encampTarget = null, retreatTarget = null;
@@ -32,15 +33,15 @@ public class BackCode{
 	
 	public BackCode(Micro micro) {
 		this.micro = micro;
-		r = micro.r;
+		r = Micro.r;
 		sb = micro.sb;
 		rc = micro.rc;
 		c = micro.c;
 		mover = micro.mover;
 	}
 	public void run() throws GameActionException{
-		
-		setRetreatBack();
+		mover.defuseMoving = false;
+		setRetreatEncampment();
 		d = micro.c.directionTo(retreatTarget);
 		if (!micro.hasEnoughAllies())
 		{
@@ -63,16 +64,27 @@ public class BackCode{
 		}
 		else
 		{
-			micro.attackTarget(micro.closestTarget(micro.enemies));
+			System.out.println(micro.closestSoldierTarget(micro.enemySoldiers));
+			micro.attackTarget(micro.closestSoldierTarget(micro.enemySoldiers));
 		}
+		rc.setIndicatorString(2, "MICRO " + mover.getTarget());
 	}
-	public void setRetreatEncampment() //makes the retreat target the nearest encampment
-	{
-		retreatTarget = Utils.closest(rc.senseAlliedEncampmentSquares(), c);
-	}
+
 	public void setRetreatBack() throws GameActionException
 	{
 		c = micro.c;
-		retreatTarget = c.add(rc.getLocation().directionTo(micro.closestTarget(micro.enemies)).opposite());
+		if (micro.enemySoldierNearby())
+		{
+			retreatTarget = c.add(rc.getLocation().directionTo(micro.closestSoldierTarget(micro.enemySoldiers)).opposite());
+		}
+	}
+	
+	public void setRetreatEncampment() throws GameActionException //makes the retreat target the nearest encampment
+	{
+		c = micro.c;
+		if (rc.senseAlliedEncampmentSquares() != null)
+			retreatTarget = Utils.closest(rc.senseAlliedEncampmentSquares(), c);
+		else
+			setRetreatBack();
 	}
 }

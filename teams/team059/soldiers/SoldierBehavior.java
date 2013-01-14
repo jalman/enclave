@@ -11,13 +11,13 @@ import static team059.soldiers.SoldierMode.*;
 
 public class SoldierBehavior extends RobotBehavior {
 
-	private SoldierMode mode;
-	private MapLocation target = null;
-	private int priority;
-	private MapLocation gather;
-	private boolean charging = false;
-	private Micro microSystem;
-	private MapLocation c = null, p = null; // c = current location, p = past location.
+	public SoldierMode mode;
+	public MapLocation target = null;
+	public int priority;
+	public MapLocation gather;
+	public boolean charging = false;
+	public Micro microSystem;
+	public MapLocation c = null, p = null; // c = current location, p = past location.
 	
 	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
 	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
@@ -41,9 +41,13 @@ public class SoldierBehavior extends RobotBehavior {
 	public void run() {
 		if(!rc.isActive()) return;
 
-		if(messaging) {
-			messagingSystem.handleMessages(messageHandlers);
+		try {
+			messagingSystem.readMessages();
+		} catch (GameActionException e1) {
+			e1.printStackTrace();
 		}
+
+		messagingSystem.handleMessages(messageHandlers);
 		considerSwitchingModes();
 
 		try {
@@ -153,7 +157,6 @@ public class SoldierBehavior extends RobotBehavior {
 //	private static final synchronized strictfp void important() throws Exception {};
 	
 	private void idleBehavior() throws GameActionException {
-		mover.defuseMoving = true;
 		charging = false;
 		
 		//see if there is an encampment nearby to take
@@ -203,7 +206,7 @@ public class SoldierBehavior extends RobotBehavior {
 						rc.layMine();
 					} else {
 						rc.setIndicatorString(0, mode.name());
-						mover.setTarget(target == null ? gather : target);
+						mover.setTarget(target == null ? Utils.ENEMY_HQ : target);
 					}
 				}
 			}
@@ -244,11 +247,6 @@ public class SoldierBehavior extends RobotBehavior {
 		
 	}
 	
-	
-	/**
-	 * Mine defusing behavior
-	 */
-	
 	public boolean onMine()
 	{
 		c = rc.getLocation();
@@ -261,10 +259,13 @@ public class SoldierBehavior extends RobotBehavior {
 	/**
 	 * Increments the number of stepped on mines.
 	 */
-	
 	public void incrementEnemyMineCount(){
 		//read number. Add one. Write new number.
 	}
+	
+	/**
+	 * 
+	 */
 	
 	public void stepOffMine(){
 		if (onMine())
@@ -272,10 +273,7 @@ public class SoldierBehavior extends RobotBehavior {
 			mover.setTarget(p);
 		}
 	}
-	
-	
 	/**
-	 * Sets target for IdleBehavior
+	 * Mine defusing behavior
 	 */
-	
 }
