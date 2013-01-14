@@ -23,23 +23,24 @@ public class Micro {
 	 * backcode executes the micro strategy
 	 */
 	BackCode backcode;
+	AttackCode attackcode;
 	
 	// The radius the rc uses to detect enemies and allies. This distance should change.
-	public static int r = 14;
+	public static int radius = 10;
 	public Micro(SoldierBehavior sb) throws GameActionException {
 		mover = sb.mover;
 		this.sb = sb;
 		rc = sb.rc;	
 		
 		backcode = new BackCode(this);
-		
+		attackcode = new AttackCode(this);
 	}
 	
 	public void run() throws GameActionException
 	{	
 		c=rc.getLocation();
-		enemies = rc.senseNearbyGameObjects(Robot.class, r, sb.enemyTeam);
-		allies = rc.senseNearbyGameObjects(Robot.class, r+3, sb.myTeam);
+		enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam);
+		allies = rc.senseNearbyGameObjects(Robot.class, radius+3, sb.myTeam);
 		findEnemySoldiers();
 		findAlliedSoldiers();
 		backcode.run();
@@ -51,7 +52,7 @@ public class Micro {
 	
 	public boolean enemyNearby()
 	{
-		enemies = rc.senseNearbyGameObjects(Robot.class, r, sb.enemyTeam); 
+		enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam); 
 		if (enemies == null || enemies.length == 0)
 		{
 			return false;
@@ -68,6 +69,7 @@ public class Micro {
 		}
 		return true;
 	}
+	
 	public boolean allyNearby()
 	{
 		if (allies.length == 0) // condition

@@ -13,17 +13,12 @@ import battlecode.common.RobotType;
 
 public class BackCode{
 	
-	
-	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
-	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
-	MapLocation encampTarget = null, retreatTarget = null;
 	MapLocation c = null;// , m = null;	
+	MapLocation retreatTarget = null;
 	
 	Direction d = null;
 
 	RobotController rc;
-	SoldierBehavior sb;
-	BackCode backcode;
 	Micro micro;
 	
 	public static int r;
@@ -34,7 +29,6 @@ public class BackCode{
 	public BackCode(Micro micro) {
 		this.micro = micro;
 		r = Micro.r;
-		sb = micro.sb;
 		rc = micro.rc;
 		c = micro.c;
 		mover = micro.mover;

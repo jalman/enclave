@@ -20,7 +20,7 @@ public class SoldierBehavior extends RobotBehavior {
 	private MapLocation myGather;
 	private boolean charging = false;
 	private Micro microSystem;
-	private MapLocation c = null, p = null; // c = current location, p = past location.
+	private MapLocation c = null, previousLocation = null; // c = current location, p = past location.
 
 	Random rand;
 	
@@ -34,7 +34,7 @@ public class SoldierBehavior extends RobotBehavior {
 	public SoldierBehavior(RobotController therc) throws GameActionException {
 		super(therc);
 		c = rc.getLocation();
-		p = rc.getLocation();
+		previousLocation = rc.getLocation();
 		mover = new Mover((RobotBehavior) this);
 		mineLayer = new MineLayer(rc);
 		mode = SoldierMode.IDLE; // for now
@@ -108,7 +108,7 @@ public class SoldierBehavior extends RobotBehavior {
 		{
 			rc.setIndicatorString(1, "No Target " + Clock.getRoundNum());
 		}
-		p = c; //updates the past location.
+		previousLocation = c; //updates the past location.
 	}
 
 	protected MessageHandler getAttackHandler() {
@@ -292,7 +292,7 @@ public class SoldierBehavior extends RobotBehavior {
 	public void stepOffMine(){
 		if (onMine())
 		{
-			mover.setTarget(p);
+			mover.setTarget(previousLocation);
 		}
 	}
 	/**
