@@ -101,6 +101,7 @@ public class SoldierBehavior extends RobotBehavior {
 		curLoc = rc.getLocation();
 		try {
 			considerSwitchingModes();
+			rc.setIndicatorString(0, mode.name());
 			
 			switch(mode) {
 			case IDLE:
@@ -145,7 +146,12 @@ public class SoldierBehavior extends RobotBehavior {
 		}
 		else if (target !=null)
 		{
-			rc.setIndicatorString(1, "Target is " + mover.getTarget().toString() + " " + Clock.getRoundNum());
+			try {
+				rc.setIndicatorString(1, "Target is " + mover.getTarget().toString() + " " + Clock.getRoundNum());
+			} catch(NullPointerException e) {
+				System.out.println(mover.getTarget());
+				throw e;
+			}
 		}
 		else 
 		{
@@ -302,7 +308,9 @@ public class SoldierBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		}
-		
+
+		mover.setTarget(target == null ? myGather : target);
+
 		/*
 		try {
 			if(rc.isActive()) {
@@ -317,8 +325,6 @@ public class SoldierBehavior extends RobotBehavior {
 						rc.setIndicatorString(0, "RANDOM MINE");
 						rc.layMine();
 					} else {
-						rc.setIndicatorString(0, mode.name());
-						mover.setTarget(target == null ? myGather : target);
 					}
 				}
 			}
