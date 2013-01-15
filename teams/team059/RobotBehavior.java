@@ -36,6 +36,7 @@ public class RobotBehavior {
 
 		messagingSystem = new MessagingSystem();
 		messageHandlers = new MessageHandler[MessageType.values().length];
+		messageHandlers[MessageType.HQ_INFO.ordinal()] = getHQHandler();		
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();
 	}
 
@@ -85,4 +86,10 @@ public class RobotBehavior {
 	 * @return The default message handler (does nothing).
 	 */
 	protected MessageHandler getAttackHandler() {return new DefaultMessageHandler();}
+	
+	/**
+	 * Override in order to respond to this type of message.
+	 * @return The default message handler (does nothing).
+	 */
+	protected MessageHandler getHQHandler() {return new DefaultMessageHandler();}	
 }
