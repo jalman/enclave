@@ -161,13 +161,6 @@ public class SoldierBehavior extends RobotBehavior {
 			public void handleMessage(int[] message) {
 				messageTarget = new MapLocation(message[1], message[2]);
 				int new_priority = message[3];
-				
-				/*if(target == null || PrioritySystem.rate(new_priority, Utils.naiveDistance(rc.getLocation(), new_target)) >
-					PrioritySystem.rate(priority, Utils.naiveDistance(rc.getLocation(), target))) {
-					target = new_target;
-					priority = new_priority;
-					mode = ATTACK;
-				}*/
 			}
 		};
 	}
