@@ -8,10 +8,9 @@ public class BuggingDigMove extends NavAlg {
 	
 	//public Direction lastDir;
 	private Direction tryDir, refDir;
-	private boolean bugging, hugLeft, waiting;
+	private boolean bugging, hugLeft;
 	
-	public BuggingDigMove(RobotBehavior rb, MapLocation finish) {
-		super(rb, finish);
+	public BuggingDigMove() {
 		//lastDir = Direction.NONE;
 	}
 	

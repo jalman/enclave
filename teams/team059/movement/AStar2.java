@@ -1,11 +1,11 @@
 package team059.movement;
 
 import battlecode.common.*;
+import team059.RobotBehavior;
 import team059.utils.*;
 import static team059.utils.Utils.*;
 
-public class AStar2 {
-	private MapLocation start, finish;
+public class AStar2 extends NavAlg {
 	
 	private MapLocation[] path; // reversed path!!!
 	private int pathlength; //, pathpos;
@@ -15,9 +15,7 @@ public class AStar2 {
 	
 	private int bc, total_bc, loop_bc;
 	
-	public AStar2(MapLocation finish) {
-		this.start = RC.getLocation();
-		this.finish = finish;
+	public AStar2() {
 		this.path = new MapLocation[MAP_WIDTH * MAP_HEIGHT];
 		this.pathlength = 0;
 	}
@@ -209,6 +207,10 @@ public class AStar2 {
 			return Direction.NONE;
 		}
 		Direction d = RC.getLocation().directionTo(path[pathlength]);
+		if(!RC.canMove(d)) {
+			recompute();
+			return getNextDir();
+		}
 		return d;
 	}
 

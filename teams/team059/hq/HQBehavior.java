@@ -1,6 +1,7 @@
 package team059.hq;
 
 import team059.RobotBehavior;
+import team059.Strategy;
 import static team059.utils.Utils.*;
 import team059.messaging.MessagingSystem;
 import team059.utils.Utils;
@@ -37,7 +38,11 @@ public class HQBehavior extends RobotBehavior {
 	}
 
 	@Override
-	public void run() {		
+	public void run() {
+		if(Clock.getRoundNum() == 0) {
+			strategy = Strategy.decide();
+		}
+		
 		messagingSystem.handleMessages(messageHandlers);
 
 		if(rc.isActive()) {
@@ -70,7 +75,8 @@ public class HQBehavior extends RobotBehavior {
 			for(int i = 0; i < 8; i++) {
 				if(goodPlaceToMakeSoldier(dir)) {
 					rc.spawn(dir);
-					return;
+					messagingSystem.writeHQMessage(strategy);
+					break;
 				}
 				dir = dir.rotateRight();
 			}
