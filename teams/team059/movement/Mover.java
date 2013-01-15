@@ -3,24 +3,32 @@ package team059.movement;
 import battlecode.common.*;
 import team059.RobotBehavior;
 import team059.utils.*;
+import static team059.utils.Utils.*;
 
 public class Mover {
 	private RobotBehavior rb;
 	private RobotController rc;
-	private Utils ut;
-	public MapLocation dest;
-	public final NavSystem navsys;
+	private MapLocation dest, here;
 	private boolean defuseMoving;
+	private NavAlg navAlg;
 	
 	public Mover(RobotBehavior rb) { 
 		this.rb = rb;
 		this.rc = rb.rc;
 		this.dest = null;
-		this.navsys = new NavSystem(rb);
+		this.navAlg = NavType.BUG_STRAIGHT_DIG.navAlg;
+		this.defuseMoving = true;
+	}
+
+	public void changeNavType(NavType navtype) {
+		this.navAlg = navtype.navAlg;
 	}
 	
 	public void setTarget(MapLocation dest) {
-		this.dest = dest;
+		if(!dest.equals(this.dest)) {
+			this.dest = dest;
+			navAlg.recompute(dest);
+		}
 	}
 
 	public MapLocation getTarget() {
@@ -34,18 +42,18 @@ public class Mover {
 	public void toggleDefuseMoving(boolean b) { 
 		defuseMoving = b;
 		if(defuseMoving) {
-			navsys.changeNavType(NavType.BUG_STRAIGHT_DIG);
+			changeNavType(NavType.BUG_STRAIGHT_DIG);
 		} else {
-			navsys.changeNavType(NavType.BUG);
+			changeNavType(NavType.BUG);
 		}
 	}
 	
 	public void toggleDefuseMoving() {
 		defuseMoving = !defuseMoving;
 		if(defuseMoving) {
-			navsys.changeNavType(NavType.BUG_STRAIGHT_DIG);
+			changeNavType(NavType.BUG_STRAIGHT_DIG);
 		} else {
-			navsys.changeNavType(NavType.BUG);
+			changeNavType(NavType.BUG);
 		}
 	}
 	
@@ -55,8 +63,12 @@ public class Mover {
 		//		+ "x = " + Integer.toString(dest.x) + ", y = " + Integer.toString(dest.y)); 
 		rc.setIndicatorString(1, dest + "");
 		if(rc.isActive()) {
-			Direction d = navsys.navToward(dest);
-				//System.out.println("d = " + d.toString());
+			here = RC.getLocation();
+			if(dest == null || dest.equals(here)) {
+				return;
+			}
+			
+			Direction d = navAlg.getNextDir();
 
 			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
 				moveMine(d);
@@ -77,13 +89,5 @@ public class Mover {
 			e.printStackTrace();
 		}
 	}
-	
-	/*public void aboutMoveMine(Direction dir) {
-		if (!moveMine(dir)) {
-			if(!moveMine(dir.rotateLeft())) {
-				moveMine(dir.rotateRight());
-			}
-		}
-	}*/
 
 }

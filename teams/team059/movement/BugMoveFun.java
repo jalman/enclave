@@ -27,7 +27,7 @@ public class BugMoveFun extends NavAlg {
         /** the default direction to trace. Changes every time we trace too far. */
         int defaultTraceDirection = 0;
         /** trace threshold to reset to every time we get a new destination. */
-        static final int INITIAL_TRACE_THRESHOLD = 20;
+        static final int INITIAL_TRACE_THRESHOLD = 10;
         /** number of turns to trace before resetting. */
         int traceThreshold = -1;
         /** if we've hit the edge of the map by tracing in the other direction, 
@@ -45,8 +45,7 @@ public class BugMoveFun extends NavAlg {
         public int edgeXMin, edgeXMax, edgeYMin, edgeYMax;
         
         
-        public BugMoveFun(RobotBehavior rb, MapLocation finish) {
-        	super(rb, finish);
+        public BugMoveFun() {
             edgeXMin = 0;
             edgeXMax = MAP_HEIGHT;
             edgeYMin = 0;
@@ -58,8 +57,9 @@ public class BugMoveFun extends NavAlg {
         }
         
         public void recompute(MapLocation loc) {
-        	reset();
-        	setTarget(loc.x, loc.y);
+        	if(loc.x != tx || loc.y != ty) {
+        		setTarget(loc.x, loc.y);
+        	}
         }
         
         public void recompute() {
@@ -133,7 +133,8 @@ public class BugMoveFun extends NavAlg {
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(turnsTraced>=traceThreshold) {
                                 tracing = -1;
-                                traceThreshold *= 3;
+                                traceThreshold *= 2;
+                            	//System.out.println("turnsTraced >= traceThreshold! New threshold: " + traceThreshold);
                                 defaultTraceDirection = 1-defaultTraceDirection;
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(!(sx==expectedsx && sy==expectedsy)) {
