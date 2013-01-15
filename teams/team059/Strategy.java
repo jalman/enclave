@@ -1,13 +1,28 @@
 package team059;
 
+import static team059.hq.UpgradeAction.*;
 import static team059.utils.Utils.*;
+import team059.hq.BuildSoldier;
+import team059.hq.HQAction;
 import battlecode.common.MapLocation;
 import battlecode.common.Team;
 
 public enum Strategy {
-	NORMAL, NUKE, RUSH;
+	NORMAL(),
+	NUCLEAR(new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(4)),
+	RUSH(new BuildSoldier(2), UPGRADE_DEFUSION);
+	
+	
+	public final HQAction[] buildOrder;
+	
+	
+	private Strategy(HQAction... buildOrder) {
+		this.buildOrder = buildOrder;
+	}
 	
 	public static Strategy decide() {
+		return RUSH;
+		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
 		
@@ -19,11 +34,12 @@ public enum Strategy {
 		
 		
 		if (distance > 50 && mines > dx*dx + dy*dy) {
-			return NUKE;
+			return NUCLEAR;
 		} else if (distance < 20) {
 			return RUSH;
 		} else {
 			return NORMAL;
 		}
+		*/
 	}
 }
