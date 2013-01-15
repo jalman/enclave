@@ -128,7 +128,7 @@ public class SoldierBehavior extends RobotBehavior {
 				break;
 			}
 			
-			resetConstants(); // rests choice constants each turn.
+			resetEnemyInVicinityStatus(); // rests choice constants each turn.
 			
 			stepOffMine();
 			if(rc.isActive())
@@ -360,14 +360,14 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 	
 	/**
-	 * Increments the number of stepped on mines.
+	 * Increments the number of stepped on mines. Used to determine what to research
 	 */
 	public void incrementEnemyMineCount(){
 		//read number. Add one. Write new number.
 	}
 	
 	/**
-	 * 
+	 * Attack target (doesn't move if next to target)
 	 */
 	
 	public void attackTarget(MapLocation m) throws GameActionException
@@ -378,7 +378,10 @@ public class SoldierBehavior extends RobotBehavior {
 			mover.setTarget(target);
 		}
 	}
-	
+
+	/**
+	 * Tells soldier to step off of mine
+	 */
 	public void stepOffMine(){
 		if (onMine())
 		{
@@ -389,6 +392,9 @@ public class SoldierBehavior extends RobotBehavior {
 		}
 	}
 	
+	/**
+	 * Sets charge mode, and enforces it to expire after 10 turns.
+	 */
 	public void setChargeMode(){
 		if (mode != CHARGING_TO_BATTLE)
 		{
@@ -403,14 +409,12 @@ public class SoldierBehavior extends RobotBehavior {
 			goingToBattle = 0;
 		}
 	}
-	
-	public void resetConstants(){
+
+	//resets the enemyInVicinity constant to determine whether to enter charging mode
+	public void resetEnemyInVicinityStatus(){
 		if (mode != CHARGING_TO_BATTLE)
 		{
 			enemyInVicinity = false;
 		}
 	}
-	/**
-	 * Mine defusing behavior
-	 */
 }

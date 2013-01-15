@@ -106,6 +106,15 @@ public class Micro {
 	 * Methods for detecting Allies and Enemies within a certain radius
 	 */
 	
+	// Determines whether there are enough allies nearby to engage
+	public boolean hasEnoughAllies() throws GameActionException
+	{
+		if(goodSoldiers.length > badSoldiers.length)
+		{
+			return true;
+		}
+		return false;
+	}	
 	public boolean enemyNearby(int radius)
 	{
 		GameObject[] enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam); 
@@ -240,9 +249,8 @@ public class Micro {
 	}
 	
 	/**
-	 * This method should only be called in run.
-	 * @param array of enemy soldiers
-	 * @return closest enemy soldier target
+	 * @param array of enemies
+	 * @return closest enemy target
 	 * @throws GameActionException
 	 */
 	public MapLocation closestTarget(GameObject[] enemies) throws GameActionException
@@ -267,6 +275,7 @@ public class Micro {
 		else
 			return null;
 	}
+	
 	public MapLocation closestSoldierTarget(RobotInfo[] enemySoldiers) throws GameActionException // find closest enemy target nearby; use in battle
 	{
 		c=rc.getLocation();
@@ -290,17 +299,4 @@ public class Micro {
 			return null;
 	}	
 	
-	/**
-	 * Determines whether there are enough allies in sensorRadius nearby to engage
-	 * @return
-	 * @throws GameActionException 
-	 */
-	public boolean hasEnoughAllies() throws GameActionException
-	{
-		if(goodSoldiers.length > badSoldiers.length)
-		{
-			return true;
-		}
-		return false;
-	}
 }
