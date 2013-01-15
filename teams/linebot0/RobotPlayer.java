@@ -3,6 +3,7 @@ package linebot0;
 import battlecode.common.Clock;
 import battlecode.common.Direction;
 import battlecode.common.GameConstants;
+import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.RobotType;
 import battlecode.common.Team;
@@ -25,6 +26,7 @@ public class RobotPlayer {
 
 					}
 				} else if (rc.getType() == RobotType.SOLDIER) {
+					//System.out.println("(" + (Clock.getRoundNum() - 20) + ", " + (Clock.getRoundNum() - 20) + "): " + rc.senseTerrainTile(new MapLocation(Clock.getRoundNum() - 20, Clock.getRoundNum() - 20)));
 					if (rc.isActive()) {
 							Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
 							Team mine = rc.senseMine(rc.getLocation().add(dir));
