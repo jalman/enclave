@@ -194,7 +194,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	private void idleBehavior() throws GameActionException {
 		charging = false;
-		mover.defuseMoving = true;
+		mover.toggleDefuseMoving(true);
 		
 		//see if there is an encampment nearby to take
 		

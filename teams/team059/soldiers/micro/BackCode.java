@@ -32,7 +32,7 @@ public class BackCode{
 		mover = micro.mover;
 	}
 	public void run() throws GameActionException{
-		mover.defuseMoving = false;
+		mover.toggleDefuseMoving(false);
 		setRetreatEncampment();
 		d = micro.c.directionTo(retreatTarget);
 		if (!micro.hasEnoughAllies())

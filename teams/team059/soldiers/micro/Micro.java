@@ -36,7 +36,7 @@ public class Micro {
 	
 	public void run() throws GameActionException
 	{	
-		mover.defuseMoving = false;
+		mover.toggleDefuseMoving(false);
 		c=rc.getLocation();
 //		enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam);
 //		allies = rc.senseNearbyGameObjects(Robot.class, radius+3, sb.myTeam);

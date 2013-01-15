@@ -15,15 +15,17 @@ public class NavSystem {
 	public final DigMove digmove;
 	public final BuggingDigMove bugging_digmove;
 	public final BugMove bugmove;
+	public final BugMoveFun bugmovefun;
 	//public Direction lastDirectionMoved;
 	
 	public NavSystem(RobotBehavior rb) { 
 		this.rb = rb;
 		this.rc = rb.rc;
-		this.navtype = NavType.BUG_STRAIGHT_DIG; // NavType.BUG_STRAIGHT_DIG;
+		this.navtype = NavType.BUG; //NavType.BUG_STRAIGHT_DIG; // NavType.BUG_STRAIGHT_DIG;
 		this.myLoc = rc.getLocation();
 		this.digmove = new DigMove(rb, null);
 		this.bugmove = new BugMove(rb, null);
+		this.bugmovefun = new BugMoveFun(rb, null);
 		this.bugging_digmove = new BuggingDigMove(rb, null);
 		this.astar1 = new AStar1(rb, null);
 		this.astar2 = new AStar2(null);
@@ -76,8 +78,10 @@ public class NavSystem {
 	}
 
 	public Direction BugMove(MapLocation dest) {
-		bugmove.recompute(dest);
-		return bugmove.getNextDir();
+		bugmovefun.recompute(dest);
+		return bugmovefun.getNextDir();
+		//bugmove.recompute(dest);
+		//return bugmove.getNextDir();
 	}
 	
 	public Direction navTowardAStar1(MapLocation dest) {
