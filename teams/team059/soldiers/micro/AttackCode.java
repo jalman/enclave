@@ -12,31 +12,25 @@ public class AttackCode {
 	Micro micro;
 	RobotController rc;
 	public final Mover mover;
-	MapLocation c; //current location
 	MapLocation target;
+	SoldierBehavior sb;
 	
 	public AttackCode(Micro micro){
 		this.micro = micro;
 		mover = micro.mover;
 		rc = micro.rc;
-		c = rc.getLocation();
 	}
 	
 	public void run(){
-		c = rc.getLocation();
-		/*try {
+		try {
 			goToBattle();
 		} catch (GameActionException e) {
 			e.printStackTrace();
-		}*/
+		}
 	}
 	
 	public void goToBattle() throws GameActionException
-	{
-		if (micro.enemyNearby(Micro.battleDistance))
-		{
-			target = micro.closestSoldierTarget((micro.findEnemySoldiers(Micro.battleDistance))); 
-			micro.attackTarget(target);
-		}
+	{ 
+		micro.sb.attackTarget(mover.getTarget());
 	}
 }

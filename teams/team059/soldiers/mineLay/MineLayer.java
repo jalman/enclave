@@ -57,8 +57,7 @@ public class MineLayer {
 		if (adjacentToEncampment())
 		{	
 			if(rc.senseMine(rc.getLocation())==null)
-			{
-				rc.setIndicatorString(0, "ENCAMP MINE");	
+			{	
 				rc.layMine();
 			}
 		}

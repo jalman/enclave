@@ -83,7 +83,6 @@ public class MessagingSystem {
 			block[i] = RC.readBroadcast(channel+i);
 			checksum += block[i];
 		}
-
 		return checksum == RC.readBroadcast(channel + MESSAGE_SIZE);
 	}
 
@@ -270,8 +269,8 @@ public class MessagingSystem {
 	public void writeHQMessage(Strategy strategy) throws GameActionException {
 		writeMessage(MessageType.HQ_INFO.ordinal(), strategy.ordinal());
 	}
-	public void writeBattleMessage(MapLocation loc) throws GameActionException {
-		writeMessage(MessageType.BATTLE_INFO.ordinal(), loc.x, loc.y);
+	public void writeCheckpointMessage(int pointNumber) throws GameActionException {
+		writeMessage(MessageType.CHECKPOINT_NUMBER.ordinal(), pointNumber);
 	}
 
 	public void debug() throws GameActionException {

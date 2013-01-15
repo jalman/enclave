@@ -9,8 +9,9 @@ import team059.messaging.MessagingSystem;
 public class Micro {
 
 //	GameObject[] foe = new GameObject[0], friends = new GameObject[0];
-//	RobotInfo[] foeSoldiers = new RobotInfo[0], friendSoldiers = new RobotInfo[0];
+	RobotInfo[] badSoldiers = new RobotInfo[0], goodSoldiers = new RobotInfo[0];
 	
+	MapLocation retreatTarget = null;
 	MapLocation encampTarget = null, c = null;
 	Direction d = null;
 	public final Mover mover;
@@ -19,37 +20,61 @@ public class Micro {
 	RobotController rc;
 	MessagingSystem messageSystem;
 	
-	BackCode backcode;
-	AttackCode attackcode;
+	MapLocation enemySoldierTarget;
 	
-	public static int sensorRadius = 14; // The radius the rc uses to detect enemies and allies. This distance.
-	public static int battleDistance = 6;
+	public static int sensorRadius = 4; // The radius the rc uses to detect enemies and allies. This distance.
 	
+
 	public Micro(SoldierBehavior sb) throws GameActionException {
 		mover = sb.mover;
+		goodSoldiers = null; 
+		badSoldiers = null;
 		this.sb = sb;
 		rc = sb.rc;	
 		
-		backcode = new BackCode(this);
-		attackcode = new AttackCode(this);
+		enemySoldierTarget = null;
 	}
 	
-	public void run() throws GameActionException
-	{	
+	public void run() throws GameActionException{
+//		System.out.println("Checkpoint 0 " + Clock.getBytecodeNum());
 		mover.toggleDefuseMoving(false);
-		c=rc.getLocation();
-//		enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam);
-//		allies = rc.senseNearbyGameObjects(Robot.class, radius+3, sb.myTeam);
-
-
-		if(enemySoldierNearby(sensorRadius))
+		goodSoldiers = findAlliedSoldiers(sensorRadius); 
+		badSoldiers = findEnemySoldiers(sensorRadius);
+		enemySoldierTarget = closestSoldierTarget(badSoldiers);
+//		System.out.println("Checkpoint 1 " + Clock.getBytecodeNum());
+		
+		setRetreatEncampment();
+		if (!hasEnoughAllies())
 		{
-			backcode.run();
+//			System.out.println("Checkpoint 2 " + Clock.getBytecodeNum());
+			mover.setTarget(retreatTarget);
+//			System.out.println("Checkpoint 3 " + Clock.getBytecodeNum());
+
 		}
 		else
-		{
-			attackcode.run();
+		{	
+//			System.out.println("Checkpoint 4 " + Clock.getBytecodeNum());
+
+			this.sb.attackTarget(enemySoldierTarget);
+//			System.out.println("Checkpoint 5 " + Clock.getBytecodeNum());
 		}
+	}
+	
+	public void setRetreatBack() throws GameActionException
+	{
+		c = rc.getLocation();
+		if (enemySoldierNearby(Micro.sensorRadius))
+		{
+			retreatTarget = c.add(rc.getLocation().directionTo(enemySoldierTarget).opposite());
+		}
+	}
+	public void setRetreatEncampment() throws GameActionException //makes the retreat target the nearest encampment
+	{
+		c = rc.getLocation();
+		if (rc.senseAlliedEncampmentSquares() != null)
+			retreatTarget = Utils.closest(rc.senseAlliedEncampmentSquares(), c);
+		else
+			setRetreatBack();
 	}
 
 	/**
@@ -73,8 +98,7 @@ public class Micro {
 			return false;
 		}
 		return true;
-	}
-	
+	}	
 	public boolean allyNearby(int radius)
 	{
 		GameObject[] allies = rc.senseNearbyGameObjects(Robot.class, radius, sb.myTeam); 
@@ -90,7 +114,36 @@ public class Micro {
 	 * sets the arrays enemySoldiers and alliedSoldiers respectively
 	 * @throws GameActionException
 	 */
-	
+	public void findEnemyAndAlliedSoldiers(int radius) throws GameActionException
+	{
+		GameObject[] robots = rc.senseNearbyGameObjects(Robot.class, radius);
+		RobotInfo robotInfo; 
+		RobotInfo temp[] = new RobotInfo[50];
+		if (robots != null && robots.length != 0)
+		{
+			int aLength = 0;
+			int eLength = 0;
+			
+			for (int i = 0; i < robots.length; i++)
+			{				
+				robotInfo = rc.senseRobotInfo((Robot)robots[i]);
+				if (robotInfo.type == RobotType.SOLDIER) 
+				{
+					if (robotInfo.team == sb.myTeam)
+						aLength++;
+					else
+						eLength++;
+				}
+			}
+			
+			goodSoldiers = new RobotInfo[aLength];
+			badSoldiers = new RobotInfo[eLength];
+			for (int i = 0; i < eLength + aLength; i++)
+			{
+				robotInfo = rc.senseRobotInfo((Robot)robots[i]);
+			}
+		}
+	}
 	public RobotInfo[] findEnemySoldiers(int radius) throws GameActionException
 	{
 		GameObject[] enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam);
@@ -219,19 +272,10 @@ public class Micro {
 	 */
 	public boolean hasEnoughAllies() throws GameActionException
 	{
-		if(enemyNumber(sensorRadius) < allyNumber(sensorRadius))
+		if(goodSoldiers.length > badSoldiers.length)
 		{
 			return true;
 		}
 		return false;
-	}
-	
-	public void attackTarget(MapLocation m) throws GameActionException
-	{
-		c = rc.getLocation();
-		if (c.distanceSquaredTo(m) > 2)
-		{
-			mover.setTarget(m);
-		}
 	}
 }
