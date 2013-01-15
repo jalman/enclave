@@ -22,7 +22,7 @@ public class Micro {
 	
 	MapLocation enemySoldierTarget;
 	
-	public static int sensorRadius = 4; // The radius the rc uses to detect enemies and allies. This distance.
+	public static int sensorRadius = 11; // The radius the rc uses to detect enemies and allies. This distance.
 	
 
 	public Micro(SoldierBehavior sb) throws GameActionException {
@@ -43,7 +43,7 @@ public class Micro {
 		enemySoldierTarget = closestSoldierTarget(badSoldiers);
 //		System.out.println("Checkpoint 1 " + Clock.getBytecodeNum());
 		
-		setRetreatEncampment();
+		setRetreatBack();
 		if (!hasEnoughAllies())
 		{
 //			System.out.println("Checkpoint 2 " + Clock.getBytecodeNum());
@@ -66,6 +66,10 @@ public class Micro {
 		if (enemySoldierNearby(Micro.sensorRadius))
 		{
 			retreatTarget = c.add(rc.getLocation().directionTo(enemySoldierTarget).opposite());
+			if (retreatTarget == null)
+			{
+				retreatTarget = Utils.ALLY_HQ;
+			}
 		}
 	}
 	public void setRetreatEncampment() throws GameActionException //makes the retreat target the nearest encampment
@@ -74,6 +78,7 @@ public class Micro {
 		if (rc.senseAlliedEncampmentSquares() != null)
 			retreatTarget = Utils.closest(rc.senseAlliedEncampmentSquares(), c);
 		else
+			//retreatTarget = Utils.ALLY_HQ;
 			setRetreatBack();
 	}
 
