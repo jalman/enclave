@@ -21,7 +21,7 @@ public class RobotBehavior {
 	 * Whether we want to send messages this round.
 	 */
 	public boolean messaging;
-	protected MessagingSystem messagingSystem;
+	public MessagingSystem messagingSystem;
 	protected MessageHandler[] messageHandlers;
 
 	public RobotBehavior(RobotController rc) {

@@ -42,7 +42,11 @@ public class Micro {
 		badSoldiers = findEnemySoldiers(sensorRadius);
 		enemySoldierTarget = closestSoldierTarget(badSoldiers);
 //		System.out.println("Checkpoint 1 " + Clock.getBytecodeNum());
-		
+		if ((Clock.getRoundNum() + rc.getRobot().getID()) % 10 == 0)
+		{
+			sb.messagingSystem.writeAttackMessage(closestSoldierTarget(findEnemySoldiers(Micro.sensorRadius)), 0);
+//			messageWritten = true;
+		}
 		setRetreatBack();
 		if (!hasEnoughAllies())
 		{
@@ -65,7 +69,8 @@ public class Micro {
 		c = rc.getLocation();
 		if (enemySoldierNearby(Micro.sensorRadius))
 		{
-			retreatTarget = c.add(rc.getLocation().directionTo(enemySoldierTarget).opposite());
+			
+			retreatTarget = c.	add(rc.getLocation().directionTo(enemySoldierTarget).opposite(), 2);
 			if (retreatTarget == null)
 			{
 				retreatTarget = Utils.ALLY_HQ;

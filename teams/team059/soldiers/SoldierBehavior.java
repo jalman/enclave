@@ -97,7 +97,7 @@ public class SoldierBehavior extends RobotBehavior {
 		if(!rc.isActive()) return;
 		
 		messagingSystem.handleMessages(messageHandlers);
-		//enemyInVicinity = false;
+		enemyInVicinity = false;
 		curLoc = rc.getLocation();
 		try {
 			considerSwitchingModes();
@@ -106,11 +106,9 @@ public class SoldierBehavior extends RobotBehavior {
 			switch(mode) {
 			case IDLE:
 				idleBehavior();
-				enemyInVicinity = false;
 				break;
 			case ATTACK:
 				attackBehavior();
-				enemyInVicinity = false;
 				break;
 			case DEFEND:
 				break;
@@ -119,18 +117,19 @@ public class SoldierBehavior extends RobotBehavior {
 				break;
 			case MICRO:
 				microBehavior();
-				enemyInVicinity = false;
 				break;
 			case EXPLORE:
 				exploreBehavior();
-				enemyInVicinity = false;
 				break;
 			case TAKE_ENCAMPMENT:
 				takeEncampmentBehavior();
-				enemyInVicinity = false;
 				break;
 			default:
 				break;
+			}
+			if (mode != CHARGING_TO_BATTLE)
+			{
+				enemyInVicinity = false;
 			}
 			stepOffMine();
 			if(rc.isActive())
@@ -140,11 +139,7 @@ public class SoldierBehavior extends RobotBehavior {
 		}
 		
 		//Possible issue; microSystem uses its own targets. Could this be bad?
-		if (mode == CHARGING_TO_BATTLE)
-		{
-			rc.setIndicatorString(1, "Charging target is" + messageTarget.toString()); 	
-		}
-		else if (target !=null)
+		if (mover.getTarget() !=null)
 		{
 			try {
 				rc.setIndicatorString(1, "Target is " + mover.getTarget().toString() + " " + Clock.getRoundNum());
@@ -205,12 +200,6 @@ public class SoldierBehavior extends RobotBehavior {
 	private void considerSwitchingModes() throws GameActionException {
 		
 		if(microSystem.enemySoldierNearby(Micro.sensorRadius)){
-			// this is a hack that should be amended. This limits the messaging from going too crazy
-			if ((Clock.getRoundNum() + rc.getRobot().getID()) % 10 == 0)
-			{
-				messagingSystem.writeAttackMessage(microSystem.closestSoldierTarget(microSystem.findEnemySoldiers(Micro.sensorRadius)), 0);
-//				messageWritten = true;
-			}
 			mode = MICRO;
 		}
 		else if (enemyInVicinity){
@@ -361,9 +350,10 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void battleBehavior() throws GameActionException {
-		mover.toggleDefuseMoving();
-		mover.setTarget(messageTarget);
+		mover.toggleDefuseMoving(false);
+		attackTarget(messageTarget);
 	}
+	
 	private void microBehavior() throws GameActionException {
 		microSystem.run();
 	}
