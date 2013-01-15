@@ -18,7 +18,12 @@ public enum Strategy {
 		int mines = RC.senseMineLocations(halfway, dx*dx + dy*dy, Team.NEUTRAL).length;
 		
 		
-		
-		return NORMAL;
+		if (distance > 50 && mines > dx*dx + dy*dy) {
+			return NUKE;
+		} else if (distance < 20) {
+			return RUSH;
+		} else {
+			return NORMAL;
+		}
 	}
 }
