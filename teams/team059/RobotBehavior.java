@@ -4,7 +4,6 @@ import team059.messaging.MessageHandler;
 import team059.messaging.MessageType;
 import team059.messaging.MessagingSystem;
 import static team059.utils.Utils.*;
-import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
@@ -91,5 +90,13 @@ public class RobotBehavior {
 	 * Override in order to respond to this type of message.
 	 * @return The default message handler (does nothing).
 	 */
-	protected MessageHandler getHQHandler() {return new DefaultMessageHandler();}	
+	protected MessageHandler getHQHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				strategy = Strategy.values()[message[1]];
+				System.out.println(strategy);
+			}
+		};
+	}
 }
