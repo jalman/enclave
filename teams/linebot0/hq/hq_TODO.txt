@@ -1,0 +1,6 @@
+HQ:
+
+Macro:
+- Decide power management (when to build soldiers, when to build generators)
+- Decide when to build suppliers
+- Decide when to research upgrades

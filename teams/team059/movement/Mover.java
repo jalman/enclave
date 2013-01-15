@@ -10,22 +10,13 @@ public class Mover {
 	private Utils ut;
 	public MapLocation dest;
 	public final NavSystem navsys;
-	public boolean defuseMoving;
+	private boolean defuseMoving;
 	
 	public Mover(RobotBehavior rb) { 
 		this.rb = rb;
 		this.rc = rb.rc;
 		this.dest = null;
 		this.navsys = new NavSystem(rb);
-		this.defuseMoving = true;
-	}
-	
-	public void toggleDefuseMoving(boolean b) {
-		this.defuseMoving = b;
-	}
-	
-	public void toggleDefuseMoving() {
-		defuseMoving = !defuseMoving;
 	}
 	
 	public void setTarget(MapLocation dest) {
@@ -34,6 +25,28 @@ public class Mover {
 
 	public MapLocation getTarget() {
 		return dest;
+	}
+	
+	public boolean getDefuseMoving() {
+		return defuseMoving;
+	}
+	
+	public void toggleDefuseMoving(boolean b) { 
+		defuseMoving = b;
+		if(defuseMoving) {
+			navsys.changeNavType(NavType.BUG_STRAIGHT_DIG);
+		} else {
+			navsys.changeNavType(NavType.BUG);
+		}
+	}
+	
+	public void toggleDefuseMoving() {
+		defuseMoving = !defuseMoving;
+		if(defuseMoving) {
+			navsys.changeNavType(NavType.BUG_STRAIGHT_DIG);
+		} else {
+			navsys.changeNavType(NavType.BUG);
+		}
 	}
 	
 	public void execute() {
@@ -46,11 +59,7 @@ public class Mover {
 				//System.out.println("d = " + d.toString());
 
 			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
-				if(defuseMoving) {
-					moveMine(d);
-				} else {
-					aboutMoveMine(d);
-				}
+				moveMine(d);
 			}
 		}
 		//System.out.println("Bytecodes used by Mover.execute() = " + Integer.toString(bc-Clock.getBytecodesLeft()));
@@ -69,32 +78,12 @@ public class Mover {
 		}
 	}
 	
-	public void aboutMoveMine(Direction dir) {
-		try {
-			if(!rc.isActive() || dir == Direction.NONE || dir == Direction.OMNI) {
-				return;
+	/*public void aboutMoveMine(Direction dir) {
+		if (!moveMine(dir)) {
+			if(!moveMine(dir.rotateLeft())) {
+				moveMine(dir.rotateRight());
 			}
-			if(empty(dir)) {
-				rc.move(dir);
-			} else if (empty(dir.rotateLeft())) {
-				rc.move(dir.rotateLeft());
-			} else if (empty(dir.rotateRight())) {
-				rc.move(dir.rotateRight());
-			} else {
-				moveMine(dir);
-			}
-
-		} catch (GameActionException e) {
-			e.printStackTrace();
 		}
-	}
-	
-	private boolean empty(Direction dir) {
-		MapLocation nextSquare = rc.getLocation().add(dir);
-		if(Utils.isEnemyMine(nextSquare) || !rc.canMove(dir)) {
-			return false;
-		}
-		return true;
-	}
+	}*/
 
 }
