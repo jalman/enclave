@@ -30,6 +30,8 @@ public class BuggingDigMove extends NavAlg {
 	public Direction getNextDir() {
 		this.start = RC.getLocation();
 		
+		if(finish == null) return Direction.NONE;
+		
 		tryDir = start.directionTo(finish);
 		
 		if(!bugging) {
