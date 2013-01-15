@@ -2,6 +2,8 @@ package team059.messaging;
 
 import java.util.Random;
 
+import team059.Strategy;
+
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.GameConstants;
@@ -128,7 +130,7 @@ public class MessagingSystem {
 	 * This method should be called once per turn.
 	 * @throws GameActionException
 	 */
-	public void readMessages() throws GameActionException {
+	private void readMessages() throws GameActionException {
 		int[] header = new int[MESSAGE_SIZE];
 		if(!readMessage(0, header)) return;
 
@@ -184,7 +186,7 @@ public class MessagingSystem {
 	 * @param message The message data.
 	 * @throws GameActionException
 	 */
-	public void writeMessageAtIndex(int index, int... message) throws GameActionException {		
+	private void writeMessageAtIndex(int index, int... message) throws GameActionException {		
 		int off = index * BLOCK_SIZE;
 
 		for(int i = 0; i < COPIES; i++) {
@@ -261,26 +263,12 @@ public class MessagingSystem {
 		}
 	}
 
-	/**
-	 * Reads messages from last round, and initializes the new header message.
-	 * Should be called by HQ at the start of each round, instead of {@link #readMessages()}.
-	 * @throws GameActionException 
-	 */
-	public void initMessagingSystem() throws GameActionException {
-		valid_messages = 0;
-
-		//do something with messages from last round?
-		if(Clock.getRoundNum() > 0) {
-			//readMessagesNoChannels();
-		}
-
-		setChannels();
-		total_messages = 1;
-		message_written = true;
-	}
-
 	public void writeAttackMessage(MapLocation loc, int priority) throws GameActionException {
 		writeMessage(MessageType.ATTACK_LOCATION.ordinal(), loc.x, loc.y, priority);
+	}
+	
+	public void writeHQMessage(Strategy strategy) throws GameActionException {
+		writeMessage(MessageType.HQ_INFO.ordinal(), strategy.ordinal());
 	}
 
 	public void debug() throws GameActionException {
