@@ -161,7 +161,7 @@ public class SoldierBehavior extends RobotBehavior {
 		
 		if(microSystem.enemySoldierNearby(Micro.sensorRadius)){
 			// this is a hack that should be amended. This limits the messaging from going too crazy
-			if ((Clock.getRoundNum() + rc.getRobot().getID()) % 6 == 0)
+			if ((Clock.getRoundNum() + rc.getRobot().getID()) % 10 == 0)
 			{
 				messagingSystem.writeAttackMessage(microSystem.closestSoldierTarget(microSystem.findEnemySoldiers(Micro.sensorRadius)), 0);
 //				messageWritten = true;
