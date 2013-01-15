@@ -104,7 +104,11 @@ public class SoldierBehavior extends RobotBehavior {
 		}
 		
 		//Possible issue; microSystem uses its own targets. Could this be bad?
-		if (target !=null)
+		if (mode == CHARGING_TO_BATTLE)
+		{
+			rc.setIndicatorString(1, "Charging target is" + messageTarget.toString()); 	
+		}
+		else if (target !=null)
 		{
 			rc.setIndicatorString(1, "Target is " + mover.getTarget().toString() + " " + Clock.getRoundNum());
 		}
