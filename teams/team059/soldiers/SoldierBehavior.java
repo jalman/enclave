@@ -23,6 +23,12 @@ public class SoldierBehavior extends RobotBehavior {
 	private MapLocation curLoc = null, previousLocation = null;
 	private boolean enemyInVicinity = false; //messaging system tells if there's an enemy within battleDistance away.
 	
+	
+	int myAssignment; //mid, left, right
+	MapLocation[] sequence;
+	int attackSequenceState = 0;
+	int timeSinceSwitch = 0;
+	
 	Random rand;
 	
 	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
@@ -41,19 +47,48 @@ public class SoldierBehavior extends RobotBehavior {
 		mode = SoldierMode.IDLE; // for now
 		microSystem = new Micro(this);
 		rand = new Random(Clock.getRoundNum() * rc.getRobot().getID() + Clock.getBytecodeNum());
+		
+		
+		//set gather points and assignment
 		gather = new MapLocation[3]; 
 		
-		gather[0] = new MapLocation((myBase.x * 2 + enemyBase.x ) / 3, (myBase.y * 2 + enemyBase.y ) / 3);
-		gather[1] = gather[0].add((myBase.y - enemyBase.y)/3, (- myBase.x + enemyBase.x)/3);
-		gather[2] = gather[0].add((- myBase.y + enemyBase.y)/3, (myBase.x - enemyBase.x)/3);
+		gather[0] = new MapLocation((myBase.x * 4 + enemyBase.x ) / 5, (myBase.y * 4 + enemyBase.y ) / 5);
+		MapLocation third = new MapLocation((myBase.x * 2 + enemyBase.x ) / 3, (myBase.y * 2 + enemyBase.y ) / 3);
+		MapLocation twothird = new MapLocation((myBase.x + enemyBase.x * 2) / 3, (myBase.y + enemyBase.y * 2) / 3);
+		int thirdy = (myBase.y - enemyBase.y)/3;
+		int thirdx = (- myBase.x + enemyBase.x)/3;
+		gather[1] = third.add(thirdy, thirdx);
+		gather[2] = third.add(-thirdy, -thirdx);
 		
 		double r = rand.nextDouble();
 		if (r > 0.5) {
-			myGather = gather[0];
+			myAssignment = 0;
 		} else if (r > 0.25) {
-			myGather = gather[1];
+			myAssignment = 1;
 		} else {
-			myGather = gather[2];
+			myAssignment = 2;
+		}
+		
+		myGather = gather[myAssignment];
+		
+		if(myAssignment == 0) {  //later: reorder these things to be reasonable
+			sequence = new MapLocation[4];
+			sequence[0] = myGather;
+			sequence[1] = myGather;
+			sequence[2] = myGather;
+			sequence[3] = myGather;
+		} else if (myAssignment == 1) {
+			sequence = new MapLocation[4];
+			sequence[0] = myGather;
+			sequence[1] = twothird.add((int)(1.4 * thirdy), (int)(1.4 * thirdx));
+			sequence[2] = enemyBase.add((int)(1.4 * thirdy), (int)(1.4 * thirdx));
+			sequence[3] = enemyBase;
+		} else if (myAssignment == 2) {
+			sequence = new MapLocation[4];
+			sequence[0] = myGather;
+			sequence[1] = twothird.add((int)(-1.4 * thirdy), (int)(-1.4 * thirdx));
+			sequence[2] = enemyBase.add((int)(-1.4 * thirdy), (int)(-1.4 * thirdx));
+			sequence[3] = enemyBase;
 		}
 	}
 
@@ -188,7 +223,7 @@ public class SoldierBehavior extends RobotBehavior {
 				goingToBattle = 0;
 			}
 		}
-		else if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
+		else if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 20) {
 			mode = ATTACK;
 		} 
 		else {
@@ -295,7 +330,21 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void attackBehavior() {
-		mover.toggleDefuseMoving(true);
+		charging = attackSequenceState >= 3;
+		
+		if(attackSequenceState < 3 && (rc.senseNearbyGameObjects(Robot.class, sequence[attackSequenceState], 20, myTeam).length >= 6 || timeSinceSwitch >= 40)) {
+			attackSequenceState++;
+			timeSinceSwitch = 0;
+		} else {
+			timeSinceSwitch ++;
+		}
+		
+		target = sequence[attackSequenceState];
+		
+		mover.setTarget(target);
+		mover.execute();
+		
+/*		mover.toggleDefuseMoving(true);
 		if(rc.senseNearbyGameObjects(Robot.class, gather[0], 20, myTeam).length > 13 || rc.senseNearbyGameObjects(Robot.class, rc.getLocation(), 30, myTeam).length > 10) {
 			charging = true;
 		}
@@ -303,7 +352,7 @@ public class SoldierBehavior extends RobotBehavior {
 		
 		//mover.aboutMoveMine(rc.getLocation().directionTo(target));
 		mover.setTarget(target);
-		mover.execute();
+		mover.execute();*/
 	}
 
 	private void battleBehavior() throws GameActionException {
