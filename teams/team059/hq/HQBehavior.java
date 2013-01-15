@@ -56,7 +56,11 @@ public class HQBehavior extends RobotBehavior {
 					e.printStackTrace();
 				}
 			} else {
-				
+				try {
+					researchUpgrade(Upgrade.NUKE);
+				} catch (GameActionException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
