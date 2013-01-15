@@ -96,7 +96,7 @@ public class RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				strategy = Strategy.values()[message[1]];
-				System.out.println(strategy);
+				//System.out.println(strategy);
 			}
 		};
 	}
