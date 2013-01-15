@@ -32,7 +32,7 @@ public class BackCode{
 		mover = micro.mover;
 	}
 	public void run() throws GameActionException{
-		mover.defuseMoving = false;
+		mover.toggleDefuseMoving(false);
 		setRetreatEncampment();
 		d = micro.c.directionTo(retreatTarget);
 		if (!micro.hasEnoughAllies())
@@ -63,7 +63,7 @@ public class BackCode{
 
 	public void setRetreatBack() throws GameActionException
 	{
-		c = micro.c;
+		c = rc.getLocation();
 		if (micro.enemySoldierNearby(Micro.sensorRadius))
 		{
 			retreatTarget = c.add(rc.getLocation().directionTo(micro.closestSoldierTarget(micro.findEnemySoldiers(Micro.sensorRadius))).opposite());
@@ -72,7 +72,7 @@ public class BackCode{
 	
 	public void setRetreatEncampment() throws GameActionException //makes the retreat target the nearest encampment
 	{
-		c = micro.c;
+		c = rc.getLocation();
 		if (rc.senseAlliedEncampmentSquares() != null)
 			retreatTarget = Utils.closest(rc.senseAlliedEncampmentSquares(), c);
 		else
