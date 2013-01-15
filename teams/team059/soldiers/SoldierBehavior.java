@@ -14,7 +14,7 @@ import static team059.soldiers.SoldierMode.*;
 public class SoldierBehavior extends RobotBehavior {
 
 	private SoldierMode mode;
-	private MapLocation target = null, waypoint1 = null, waypoint2 = null;
+	private MapLocation target = null, waypoint1 = null, waypoint2 = null, messageTarget;
 //	private int priority;
 	private MapLocation[] gather;
 	private MapLocation myGather;
@@ -28,7 +28,7 @@ public class SoldierBehavior extends RobotBehavior {
 	GameObject[] enemies = new GameObject[0], allies = new GameObject[0];
 	RobotInfo[] enemySoldiers = new RobotInfo[0], alliedSoldiers = new RobotInfo[0];
 	
-	
+	int goingToBattle = 0;
 	public final Mover mover;
 	public final MineLayer mineLayer;
 	
@@ -62,7 +62,7 @@ public class SoldierBehavior extends RobotBehavior {
 		if(!rc.isActive()) return;
 		
 		messagingSystem.handleMessages(messageHandlers);
-		
+		//enemyInVicinity = false;
 		curLoc = rc.getLocation();
 		try {
 			considerSwitchingModes();
@@ -70,28 +70,28 @@ public class SoldierBehavior extends RobotBehavior {
 			switch(mode) {
 			case IDLE:
 				idleBehavior();
-				messageWritten = false;
+				enemyInVicinity = false;
 				break;
 			case ATTACK:
 				attackBehavior();
-				messageWritten = false;
+				enemyInVicinity = false;
 				break;
 			case DEFEND:
 				break;
 			case CHARGING_TO_BATTLE:
 				battleBehavior();
-				messageWritten = false;
 				break;
 			case MICRO:
 				microBehavior();
+				enemyInVicinity = false;
 				break;
 			case EXPLORE:
 				exploreBehavior();
-				messageWritten = false;
+				enemyInVicinity = false;
 				break;
 			case TAKE_ENCAMPMENT:
 				takeEncampmentBehavior();
-				messageWritten = false;
+				enemyInVicinity = false;
 				break;
 			default:
 				break;
@@ -122,8 +122,9 @@ public class SoldierBehavior extends RobotBehavior {
 			public void handleMessage(int[] message) {
 				MapLocation new_target = new MapLocation(message[1], message[2]);
 				int new_priority = message[3];
-				if (mode != mode.MICRO && PrioritySystem.rate(Utils.naiveDistance(curLoc, new_target)) == 1)
+				if (PrioritySystem.rate(Utils.naiveDistance(curLoc, new_target)) == 1)
 				{
+					messageTarget = new_target;
 					target = new_target;
 					enemyInVicinity = true;
 				}
@@ -159,17 +160,28 @@ public class SoldierBehavior extends RobotBehavior {
 	private void considerSwitchingModes() throws GameActionException {
 		
 		if(microSystem.enemySoldierNearby(Micro.sensorRadius)){
-			if (!messageWritten)
+			// this is a hack that should be amended. This limits the messaging from going too crazy
+			if ((Clock.getRoundNum() + rc.getRobot().getID()) % 6 == 0)
 			{
 				messagingSystem.writeAttackMessage(microSystem.closestSoldierTarget(microSystem.findEnemySoldiers(Micro.sensorRadius)), 0);
-				messageWritten = true;
+//				messageWritten = true;
 			}
 			mode = MICRO;
 		}
 		else if (enemyInVicinity){
-			mover.setTarget(target);
+			
+			mover.setTarget(messageTarget);
 			if (mode != CHARGING_TO_BATTLE)
+			{
 				mode = CHARGING_TO_BATTLE;
+				goingToBattle = 0;
+			}
+			goingToBattle ++;
+			
+			if(goingToBattle == 10)
+			{
+				mode = IDLE;
+			}
 		}
 		else if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
 			mode = ATTACK;
@@ -248,7 +260,7 @@ public class SoldierBehavior extends RobotBehavior {
 
 		if(rc.senseEncampmentSquare(rc.getLocation()) && rc.senseCaptureCost() < rc.getTeamPower()) {
 			try {
-				rc.captureEncampment(RobotType.ARTILLERY);
+				rc.captureEncampment(RobotType.SUPPLIER);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -290,7 +302,7 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void battleBehavior() throws GameActionException {
-		mover.setTarget(target);
+		mover.setTarget(messageTarget);
 	}
 	private void microBehavior() throws GameActionException {
 		microSystem.run();

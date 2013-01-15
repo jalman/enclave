@@ -22,7 +22,7 @@ public class Micro {
 	
 	MapLocation enemySoldierTarget;
 	
-	public static int sensorRadius = 4; // The radius the rc uses to detect enemies and allies. This distance.
+	public static int sensorRadius = 11; // The radius the rc uses to detect enemies and allies. This distance.
 	
 
 	public Micro(SoldierBehavior sb) throws GameActionException {

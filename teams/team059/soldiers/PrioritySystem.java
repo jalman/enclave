@@ -10,7 +10,7 @@ import team059.soldiers.micro.Micro;
 
 public class PrioritySystem {
 
-	private static int battleDistance = 6;
+	private static int battleDistance = 5;
 	
 	public static int rate(int distance) {
 		if(distance < battleDistance){
