@@ -178,9 +178,10 @@ public class SoldierBehavior extends RobotBehavior {
 			}
 			goingToBattle ++;
 			
-			if(goingToBattle == 10)
+			if(goingToBattle >= 10)
 			{
 				mode = IDLE;
+				goingToBattle = 0;
 			}
 		}
 		else if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 8) {
@@ -302,6 +303,7 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void battleBehavior() throws GameActionException {
+		mover.toggleDefuseMoving();
 		mover.setTarget(messageTarget);
 	}
 	private void microBehavior() throws GameActionException {
