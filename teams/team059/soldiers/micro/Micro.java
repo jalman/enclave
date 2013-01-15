@@ -18,7 +18,6 @@ public class Micro {
 	
 	SoldierBehavior sb;
 	RobotController rc;
-	MessagingSystem messageSystem;
 	
 	MapLocation enemySoldierTarget;
 	
@@ -36,34 +35,50 @@ public class Micro {
 	}
 	
 	public void run() throws GameActionException{
-//		System.out.println("Checkpoint 0 " + Clock.getBytecodeNum());
 		mover.toggleDefuseMoving(false);
 		goodSoldiers = findAlliedSoldiers(sensorRadius); 
 		badSoldiers = findEnemySoldiers(sensorRadius);
 		enemySoldierTarget = closestSoldierTarget(badSoldiers);
-//		System.out.println("Checkpoint 1 " + Clock.getBytecodeNum());
-		if ((Clock.getRoundNum() + rc.getRobot().getID()) % 10 == 0)
-		{
-			sb.messagingSystem.writeAttackMessage(closestSoldierTarget(findEnemySoldiers(Micro.sensorRadius)), 0);
-//			messageWritten = true;
-		}
+
+		signalEnemyNearby(); // signals if enemies are nearby
+	 	
+		fightOrRetreat();
+	}
+	
+	/**
+	 * Determines whether to retreat or fight during micro
+	 * @throws GameActionException
+	 */
+	
+	public void fightOrRetreat() throws GameActionException{
 		setRetreatBack();
 		if (!hasEnoughAllies())
 		{
-//			System.out.println("Checkpoint 2 " + Clock.getBytecodeNum());
 			mover.setTarget(retreatTarget);
-//			System.out.println("Checkpoint 3 " + Clock.getBytecodeNum());
-
 		}
+		
 		else
 		{	
-//			System.out.println("Checkpoint 4 " + Clock.getBytecodeNum());
-
 			this.sb.attackTarget(enemySoldierTarget);
-//			System.out.println("Checkpoint 5 " + Clock.getBytecodeNum());
 		}
 	}
 	
+	/**
+	 * Writes a message when enemies are nearby
+	 * @throws GameActionException
+	 */
+	
+	public void signalEnemyNearby() throws GameActionException{
+		if ((Clock.getRoundNum() + rc.getRobot().getID()) % 10 == 0)
+		{
+			sb.messagingSystem.writeAttackMessage(closestSoldierTarget(findEnemySoldiers(Micro.sensorRadius)), 0);
+		}
+	}
+	
+	/**
+	 * Sets the destinations to retreat to.
+	 * @throws GameActionException
+	 */
 	public void setRetreatBack() throws GameActionException
 	{
 		c = rc.getLocation();

@@ -127,10 +127,9 @@ public class SoldierBehavior extends RobotBehavior {
 			default:
 				break;
 			}
-			if (mode != CHARGING_TO_BATTLE)
-			{
-				enemyInVicinity = false;
-			}
+			
+			resetConstants(); // rests choice constants each turn.
+			
 			stepOffMine();
 			if(rc.isActive())
 				mover.execute();
@@ -160,14 +159,8 @@ public class SoldierBehavior extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				MapLocation new_target = new MapLocation(message[1], message[2]);
+				messageTarget = new MapLocation(message[1], message[2]);
 				int new_priority = message[3];
-				if (PrioritySystem.rate(Utils.naiveDistance(curLoc, new_target)) == 1)
-				{
-					messageTarget = new_target;
-					target = new_target;
-					enemyInVicinity = true;
-				}
 				
 				/*if(target == null || PrioritySystem.rate(new_priority, Utils.naiveDistance(rc.getLocation(), new_target)) >
 					PrioritySystem.rate(priority, Utils.naiveDistance(rc.getLocation(), target))) {
@@ -202,21 +195,9 @@ public class SoldierBehavior extends RobotBehavior {
 		if(microSystem.enemySoldierNearby(Micro.sensorRadius)){
 			mode = MICRO;
 		}
-		else if (enemyInVicinity){
-			
-			mover.setTarget(messageTarget);
-			if (mode != CHARGING_TO_BATTLE)
-			{
-				mode = CHARGING_TO_BATTLE;
-				goingToBattle = 0;
-			}
-			goingToBattle ++;
-			
-			if(goingToBattle >= 10)
-			{
-				mode = IDLE;
-				goingToBattle = 0;
-			}
+		else if (messageTarget != null && PrioritySystem.rate(Utils.naiveDistance(curLoc, messageTarget)) == 1)
+		{
+			setChargeMode(); // sets the robot into charge mode, and breaks out of charge mode if charging for too long	
 		}
 		else if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 20) {
 			mode = ATTACK;
@@ -351,7 +332,8 @@ public class SoldierBehavior extends RobotBehavior {
 
 	private void battleBehavior() throws GameActionException {
 		mover.toggleDefuseMoving(false);
-		attackTarget(messageTarget);
+		target = messageTarget;
+		attackTarget(target);
 	}
 	
 	private void microBehavior() throws GameActionException {
@@ -404,6 +386,28 @@ public class SoldierBehavior extends RobotBehavior {
 			{
 				mover.setTarget(previousLocation);
 			}
+		}
+	}
+	
+	public void setChargeMode(){
+		if (mode != CHARGING_TO_BATTLE)
+		{
+			mode = CHARGING_TO_BATTLE;
+			goingToBattle = 0;
+		}
+		goingToBattle ++;
+		
+		if(goingToBattle >= 10)
+		{
+			mode = IDLE;
+			goingToBattle = 0;
+		}
+	}
+	
+	public void resetConstants(){
+		if (mode != CHARGING_TO_BATTLE)
+		{
+			enemyInVicinity = false;
 		}
 	}
 	/**
