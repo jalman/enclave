@@ -3,13 +3,9 @@ package team059.movement;
 import battlecode.common.*;
 import team059.RobotBehavior;
 import team059.utils.*;
+import static team059.utils.Utils.*;
 
-public class AStar1 {
-	private RobotBehavior rb;
-	private RobotController rc;
-	private Utils ut;
-	private int width, height;
-	private MapLocation start, finish;
+public class AStar1 extends NavAlg {
 	
 	private MapLocation[] path; // reversed path!!!
 	private int pathlength; //, pathpos;
@@ -19,19 +15,13 @@ public class AStar1 {
 	
 	private int bc, total_bc, loop_bc;
 	
-	public AStar1(RobotBehavior rb, MapLocation finish) {
-		this.rb = rb;
-		this.rc = rb.rc;
-		this.start = rc.getLocation();
-		this.finish = finish;
-		this.width = rb.width;
-		this.height = rb.height;
+	public AStar1() {
 		this.path = new MapLocation[70*70];
 		this.pathlength = 0;
 	}
 	
 	public void recompute() {
-		this.start = rc.getLocation();
+		this.start = RC.getLocation();
 		this.pathlength = 0;
 		//this.pathpos = 0;
 		this.compute_shortest(start, finish);
@@ -52,12 +42,12 @@ public class AStar1 {
 		FastIterableLocSet unchecked = new FastIterableLocSet(); // nodes not yet checked
 		unchecked.add(start);
 		
-		MapLocation[][] previous = new MapLocation[width][height];
+		MapLocation[][] previous = new MapLocation[MAP_WIDTH][MAP_HEIGHT];
 		previous[start.x][start.y] = null;
 
 		int tentative_pre_score;
-		int[][] pre_score = new int[width][height];
-		FibonacciHeap.FibonacciNode<MapLocation>[][] nodesInHeap = new FibonacciHeap.FibonacciNode[width][height];
+		int[][] pre_score = new int[MAP_WIDTH][MAP_HEIGHT];
+		FibonacciHeap.FibonacciNode<MapLocation>[][] nodesInHeap = new FibonacciHeap.FibonacciNode[MAP_WIDTH][MAP_HEIGHT];
 		FibonacciHeap<MapLocation> score = new FibonacciHeap<MapLocation>();
 		
 		MapLocation current, neighbor;
@@ -84,8 +74,8 @@ public class AStar1 {
 				//bc = Clock.getBytecodesLeft();
 				neighbor = new MapLocation(current.x+Utils.DX[idx], current.y+Utils.DY[idx]);
 				if(checked.contains(neighbor) || 
-						neighbor.x >= rb.width || neighbor.x < 0 || 
-						neighbor.y >= rb.height || neighbor.y < 0) {
+						neighbor.x >= MAP_WIDTH || neighbor.x < 0 || 
+						neighbor.y >= MAP_HEIGHT || neighbor.y < 0) {
 					continue;
 				}
 				tentative_pre_score = pre_score[current.x][current.y] + neighbor_move_cost(neighbor);
@@ -160,10 +150,10 @@ public class AStar1 {
 		try{
 			if(Utils.isEnemyMine(dest)) {
 				return MINE_MOVE_COST;
-			} else if (rc.canSenseSquare(dest) && rc.senseObjectAtLocation(dest) != null) {
-				int distance = ut.naiveDistance(rc.getLocation(), dest);
+			} else if (RC.canSenseSquare(dest) && RC.senseObjectAtLocation(dest) != null) {
+				int distance = naiveDistance(RC.getLocation(), dest);
 				if(distance == 1) return 100000;
-				return (width + height)/( 2 * (distance - 1) ) ;
+				return (MAP_WIDTH + MAP_HEIGHT)/( 2 * (distance - 1) ) ;
 			} else {
 				return NORMAL_MOVE_COST;
 			}
@@ -197,7 +187,7 @@ public class AStar1 {
 			pathlength = 0;
 			return Direction.NONE;
 		}
-		Direction d = rc.getLocation().directionTo(path[pathlength]);
+		Direction d = RC.getLocation().directionTo(path[pathlength]);
 		return d;
 	}
 
