@@ -8,23 +8,21 @@ import team059.utils.Utils;
 import battlecode.common.*;
 
 public class HQBehavior extends RobotBehavior {
-
-	final Upgrade[] SPARSE_UPGRADES = {Upgrade.PICKAXE, Upgrade.VISION, Upgrade.NUKE}; //upgrades in the order we should research them
-	final Upgrade[] DENSE_UPGRADES = {Upgrade.PICKAXE, Upgrade.VISION, Upgrade.NUKE}; //upgrades in the order we should research them
-	Upgrade[] upgradeList;
-	int currentUpgrade = 0;
-
-	double mineDensity;
-
+	
+	HQAction[] buildOrder;
+	int buildOrderProgress = 0;
+	
 	public HQBehavior(RobotController therc) {
 		super(therc);
-		MapLocation[] mines = therc.senseNonAlliedMineLocations(therc.getLocation(), 100000);
-		mineDensity = (mines.length / (double) therc.getMapHeight()) / (double) therc.getMapWidth();
-		upgradeList = mineDensity > 0.4 ? DENSE_UPGRADES : SPARSE_UPGRADES;
 	}
 
 	@Override
 	public void beginRound() {
+		if(Clock.getRoundNum() == 0) {
+			strategy = Strategy.decide();
+			buildOrder = strategy.buildOrder;
+		}
+		
 		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
 		//messaging = false;
 		if(messaging) {
@@ -35,62 +33,67 @@ public class HQBehavior extends RobotBehavior {
 				e1.printStackTrace();
 			}
 		}
+		
+		messagingSystem.handleMessages(messageHandlers);
 	}
 
 	@Override
 	public void run() {
-		if(Clock.getRoundNum() == 0) {
-			strategy = Strategy.decide();
-		}
-		
-		messagingSystem.handleMessages(messageHandlers);
-
-		if(rc.isActive()) {
-			if(Clock.getRoundNum() < 100 || (rc.getTeamPower() - 40.0 > 15.0 && rc.hasUpgrade(upgradeList[upgradeList.length - 2]))) {
+		if(buildOrderProgress < buildOrder.length) {
+			try {
+				if(buildOrder[buildOrderProgress].execute(this)) {
+					buildOrderProgress++;
+				}
+			} catch (GameActionException e) {
+				e.printStackTrace();
+			}
+		} else if(rc.isActive()) {
+			if(Clock.getRoundNum() < 100 || (rc.getTeamPower() - 40.0 > 15.0)) {
 				try {
 					rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  asdf");
 					buildSoldier(rc.getLocation().directionTo(rc.senseEnemyHQLocation()));
 				} catch (Exception e) {
 					e.printStackTrace();
-				}			
-			} else {
-				rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  fdsa");
-				if(!rc.hasUpgrade(upgradeList[currentUpgrade])) {
-					try{
-						rc.researchUpgrade(upgradeList[currentUpgrade]);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				} else {
-					currentUpgrade++;
 				}
+			} else {
+				
 			}
 		}
 
 	}
-
-	public void buildSoldier(Direction dir) throws GameActionException {
+	
+	void rushStrategy() {
+		
+	}
+	
+	boolean buildSoldier() throws GameActionException {
+		return buildSoldier(ALLY_HQ.directionTo(ENEMY_HQ));
+	}
+	
+	boolean buildSoldier(Direction dir) throws GameActionException {
 		if (rc.isActive()) {
 			// Spawn a soldier
 			for(int i = 0; i < 8; i++) {
 				if(goodPlaceToMakeSoldier(dir)) {
 					rc.spawn(dir);
 					messagingSystem.writeHQMessage(strategy);
-					break;
+					return true;
 				}
 				dir = dir.rotateRight();
 			}
-
 			//message guys to get out of the way??
 		}
+		return false;
 	}
 
 	private boolean goodPlaceToMakeSoldier(Direction dir) {
 		return rc.canMove(dir) && !Utils.isEnemyMine(rc.getLocation().add(dir));
 	}
 
-	public void researchUpgrade(Upgrade upg) {
-
+	void researchUpgrade(Upgrade upg) throws GameActionException {
+		if(RC.isActive()) {
+			RC.researchUpgrade(upg);
+		}
 	}
 
 }

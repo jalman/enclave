@@ -39,7 +39,17 @@ public class Utils {
 		int dy = Math.abs(loc0.y-loc1.y);
 		return Math.max(dx, dy);
 	}
+	
+	public static int mapLocationToInt(MapLocation loc) {
+		return (loc.x << 16) ^ loc.y;
+	}
 
+	public static final int YMASK = (1 << 16) - 1;
+	
+	public static MapLocation intToMapLocation(int loc) {
+		return new MapLocation(loc >> 16, loc & YMASK);
+	}
+	
 	/**
 	 * Finds the closest (by naive distance) map location to the target among a set of map locations.
 	 * @param locs The set of map locations.
