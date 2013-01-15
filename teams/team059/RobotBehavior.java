@@ -75,6 +75,7 @@ public class RobotBehavior {
 		}
 	}
 
+	
 	private static class DefaultMessageHandler implements MessageHandler {
 		@Override
 		public void handleMessage(int[] message) {}

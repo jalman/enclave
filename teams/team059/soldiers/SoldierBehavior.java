@@ -36,7 +36,6 @@ public class SoldierBehavior extends RobotBehavior {
 		c = rc.getLocation();
 		previousLocation = rc.getLocation();
 		mover = new Mover((RobotBehavior) this);
-		mover.toggleDefuseMoving(false);
 		mineLayer = new MineLayer(rc);
 		mode = SoldierMode.IDLE; // for now
 		microSystem = new Micro(this);
@@ -176,6 +175,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	private void idleBehavior() throws GameActionException {
 		charging = false;
+		mover.defuseMoving = true;
 		
 		//see if there is an encampment nearby to take
 		
