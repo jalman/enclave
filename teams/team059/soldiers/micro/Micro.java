@@ -4,6 +4,7 @@ import team059.soldiers.SoldierBehavior;
 import team059.movement.Mover;
 import team059.utils.Utils;
 import battlecode.common.*;
+import team059.messaging.MessagingSystem;
 
 public class Micro {
 
@@ -16,12 +17,13 @@ public class Micro {
 	
 	SoldierBehavior sb;
 	RobotController rc;
+	MessagingSystem messageSystem;
 	
 	BackCode backcode;
 	AttackCode attackcode;
 	
 	public static int sensorRadius = 14; // The radius the rc uses to detect enemies and allies. This distance.
-	public static int battleRadius = 36;
+	public static int battleDistance = 6;
 	
 	public Micro(SoldierBehavior sb) throws GameActionException {
 		mover = sb.mover;
@@ -34,13 +36,12 @@ public class Micro {
 	
 	public void run() throws GameActionException
 	{	
-		mover.defuseMoving = false;
+		mover.toggleDefuseMoving(false);
 		c=rc.getLocation();
 //		enemies = rc.senseNearbyGameObjects(Robot.class, radius, sb.enemyTeam);
 //		allies = rc.senseNearbyGameObjects(Robot.class, radius+3, sb.myTeam);
-		findEnemySoldiers(sensorRadius);
-		findAlliedSoldiers(sensorRadius);
-		
+
+
 		if(enemySoldierNearby(sensorRadius))
 		{
 			backcode.run();
