@@ -11,8 +11,7 @@ public class BugMove extends NavAlg {
 	private boolean bugging, hugLeft, waiting;
 	private MapLocation beganBugging;
 	
-	public BugMove(RobotBehavior rb, MapLocation finish) {
-		super(rb, finish);
+	public BugMove() {
 		//lastDir = Direction.NONE;
 	}
 	

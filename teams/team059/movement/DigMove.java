@@ -6,10 +6,6 @@ import static team059.utils.Utils.*;
 
 public class DigMove extends NavAlg {
 	
-	public DigMove(RobotBehavior rb, MapLocation finish) {
-		super(rb, finish);
-	}
-	
 	public void recompute() { }
 	
 	public void recompute(MapLocation finish) {
