@@ -20,7 +20,7 @@ public class SoldierBehavior extends RobotBehavior {
 	private MapLocation myGather;
 	private boolean charging = false;
 	private Micro microSystem;
-	private MapLocation c = null, previousLocation = null; // c = current location, p = past location.
+	private MapLocation curLoc = null, previousLocation = null; // c = current location, p = past location.
 
 	Random rand;
 	
@@ -33,7 +33,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	public SoldierBehavior(RobotController therc) throws GameActionException {
 		super(therc);
-		c = rc.getLocation();
+		curLoc = rc.getLocation();
 		previousLocation = rc.getLocation();
 		mover = new Mover((RobotBehavior) this);
 		mineLayer = new MineLayer(rc);
@@ -64,7 +64,7 @@ public class SoldierBehavior extends RobotBehavior {
 		if(!rc.isActive()) return;
 
 		messagingSystem.handleMessages(messageHandlers);
-		
+		curLoc = rc.getLocation();
 		try {
 			considerSwitchingModes();
 
@@ -103,28 +103,47 @@ public class SoldierBehavior extends RobotBehavior {
 		{
 			rc.setIndicatorString(1, "No Target " + Clock.getRoundNum());
 		}
-		previousLocation = c; //updates the past location.
+		previousLocation = curLoc; //updates the past location.
 	}
 
+	@Override
 	protected MessageHandler getAttackHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
 				MapLocation new_target = new MapLocation(message[1], message[2]);
 				int new_priority = message[3];
-
-				if(target == null || PrioritySystem.rate(new_priority, Utils.naiveDistance(rc.getLocation(), new_target)) >
+				if (mode != mode.MICRO && PrioritySystem.rate(Utils.naiveDistance(curLoc, new_target)) == 1)
+				{
+					target = new_target;
+					mode = MICRO;
+				}
+				
+				/*if(target == null || PrioritySystem.rate(new_priority, Utils.naiveDistance(rc.getLocation(), new_target)) >
 					PrioritySystem.rate(priority, Utils.naiveDistance(rc.getLocation(), target))) {
 					target = new_target;
 					priority = new_priority;
 					mode = ATTACK;
-				}
+				}*/
+			}
+		};
+	}
+
+	@Override
+	protected MessageHandler getBattleHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				MapLocation new_target = new MapLocation(message[1], message[2]);
+				int new_priority = message[3];
+
+				
 			}
 		};
 	}
 	
 	private void considerSwitchingModes() throws GameActionException {
-		if(microSystem.enemySoldierNearby(Micro.battleRadius))
+		if(microSystem.enemySoldierNearby(Micro.battleDistance))
 		{
 			mode = MICRO;
 		}
@@ -260,8 +279,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	public boolean onMine()
 	{
-		c = rc.getLocation();
-		if (Utils.isEnemyMine(c)){
+		if (Utils.isEnemyMine(curLoc)){
 			return true;
 		}
 		return false;
