@@ -4,6 +4,7 @@ import team059.messaging.MessageHandler;
 import team059.messaging.MessageType;
 import team059.messaging.MessagingSystem;
 import static team059.utils.Utils.*;
+import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
@@ -49,8 +50,7 @@ public class RobotBehavior {
 		
 		if(messaging) {
 			try {
-				messagingSystem.readMessages();
-				//messagingSystem.writeAttackMessage(RC.getLocation(), 5);
+				messagingSystem.beginRound();
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}
@@ -68,7 +68,7 @@ public class RobotBehavior {
 	public void endRound() {
 		if(messaging) {
 			try {
-				messagingSystem.writeHeaderMessage();
+				messagingSystem.endRound();
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}

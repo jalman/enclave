@@ -28,7 +28,8 @@ public class HQBehavior extends RobotBehavior {
 		//messaging = false;
 		if(messaging) {
 			try {
-				messagingSystem.initMessagingSystem();
+				messagingSystem.beginRoundHQ();
+				//messagingSystem.writeAttackMessage(RC.getLocation(), 5);
 			} catch (GameActionException e1) {
 				e1.printStackTrace();
 			}

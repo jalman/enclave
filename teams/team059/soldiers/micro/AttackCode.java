@@ -29,7 +29,10 @@ public class AttackCode {
 	
 	public void goToBattle() throws GameActionException
 	{
-		target = micro.closestSoldierTarget((micro.findEnemySoldiers(Micro.battleRadius))); 
-		mover.setTarget(target);
+		if (micro.enemyNearby(Micro.battleRadius))
+		{
+			target = micro.closestSoldierTarget((micro.findEnemySoldiers(Micro.battleRadius))); 
+			micro.attackTarget(target);
+		}
 	}
 }
