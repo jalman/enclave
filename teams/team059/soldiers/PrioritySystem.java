@@ -1,6 +1,6 @@
 package team059.soldiers;
 
-import preSprintBot.soldiers.micro.Micro;
+import team059.soldiers.micro.Micro;
 import battlecode.common.MapLocation;
 
 /**

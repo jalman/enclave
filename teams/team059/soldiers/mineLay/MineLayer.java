@@ -1,6 +1,6 @@
 package team059.soldiers.mineLay;
 
-import preSprintBot.utils.Utils;
+import team059.utils.Utils;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;

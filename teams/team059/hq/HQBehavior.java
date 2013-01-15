@@ -1,10 +1,10 @@
 package team059.hq;
 
-import static preSprintBot.utils.Utils.*;
-import preSprintBot.RobotBehavior;
-import preSprintBot.Strategy;
-import preSprintBot.messaging.MessagingSystem;
-import preSprintBot.utils.Utils;
+import static team059.utils.Utils.*;
+import team059.RobotBehavior;
+import team059.Strategy;
+import team059.messaging.MessagingSystem;
+import team059.utils.Utils;
 import battlecode.common.*;
 
 public class HQBehavior extends RobotBehavior {

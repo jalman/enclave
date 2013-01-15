@@ -2,16 +2,16 @@ package team059.soldiers;
 
 import java.util.Random;
 
-import preSprintBot.RobotBehavior;
-import preSprintBot.messaging.MessageHandler;
-import preSprintBot.movement.Mover;
-import preSprintBot.movement.NavType;
-import preSprintBot.soldiers.micro.Micro;
-import preSprintBot.soldiers.mineLay.MineLayer;
-import preSprintBot.utils.Utils;
+import team059.RobotBehavior;
+import team059.messaging.MessageHandler;
+import team059.movement.Mover;
+import team059.movement.NavType;
+import team059.soldiers.micro.Micro;
+import team059.soldiers.mineLay.MineLayer;
+import team059.utils.Utils;
 
 import battlecode.common.*;
-import static preSprintBot.soldiers.SoldierMode.*;
+import static team059.soldiers.SoldierMode.*;
 
 public class SoldierBehavior extends RobotBehavior {
 

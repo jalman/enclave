@@ -1,10 +1,10 @@
 package team059.encampment;
 
-import preSprintBot.RobotBehavior;
+import team059.RobotBehavior;
 import battlecode.common.GameActionException;
 import battlecode.common.Robot;
 import battlecode.common.RobotController;
-import static preSprintBot.utils.Utils.*;
+import static team059.utils.Utils.*;
 
 public class EncampmentBehavior extends RobotBehavior {
 

@@ -1,10 +1,10 @@
 package team059.soldiers.micro;
 
-import preSprintBot.messaging.MessagingSystem;
-import preSprintBot.movement.Mover;
-import preSprintBot.movement.NavType;
-import preSprintBot.soldiers.SoldierBehavior;
-import preSprintBot.utils.Utils;
+import team059.messaging.MessagingSystem;
+import team059.movement.Mover;
+import team059.movement.NavType;
+import team059.soldiers.SoldierBehavior;
+import team059.utils.Utils;
 import battlecode.common.*;
 
 public class Micro {

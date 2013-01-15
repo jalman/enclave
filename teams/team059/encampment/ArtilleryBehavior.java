@@ -1,7 +1,7 @@
 package team059.encampment;
 
-import preSprintBot.RobotBehavior;
-import preSprintBot.utils.Utils;
+import team059.RobotBehavior;
+import team059.utils.Utils;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;

@@ -1,7 +1,7 @@
 package team059.movement;
 
 import battlecode.common.*;
-import static preSprintBot.utils.Utils.*;
+import static team059.utils.Utils.*;
 
 public abstract class NavAlg {
 	protected MapLocation start = null, finish = null;

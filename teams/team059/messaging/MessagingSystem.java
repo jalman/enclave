@@ -2,14 +2,14 @@ package team059.messaging;
 
 import java.util.Random;
 
-import preSprintBot.Strategy;
+import team059.Strategy;
 
 
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.GameConstants;
 import battlecode.common.MapLocation;
-import static preSprintBot.utils.Utils.*;
+import static team059.utils.Utils.*;
 
 /**
  * Securely send and receive messages.

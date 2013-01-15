@@ -1,8 +1,8 @@
 package team059.movement;
 
-import preSprintBot.*;
+import team059.*;
 import battlecode.common.*;
-import static preSprintBot.utils.Utils.*;
+import static team059.utils.Utils.*;
 
 public class BugMoveFun extends NavAlg {
         final static int[][] d = new int[8][2];

@@ -1,10 +1,10 @@
 package team059;
 
-import preSprintBot.encampment.ArtilleryBehavior;
-import preSprintBot.encampment.EncampmentBehavior;
-import preSprintBot.hq.HQBehavior;
-import preSprintBot.soldiers.SoldierBehavior;
-import preSprintBot.utils.Utils;
+import team059.encampment.ArtilleryBehavior;
+import team059.encampment.EncampmentBehavior;
+import team059.hq.HQBehavior;
+import team059.soldiers.SoldierBehavior;
+import team059.utils.Utils;
 import battlecode.common.RobotController;
 
 

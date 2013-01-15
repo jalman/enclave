@@ -1,8 +1,8 @@
 package team059.movement;
 
-import preSprintBot.RobotBehavior;
+import team059.RobotBehavior;
 import battlecode.common.*;
-import static preSprintBot.utils.Utils.*;
+import static team059.utils.Utils.*;
 
 public class BuggingDigMove extends NavAlg {
 	

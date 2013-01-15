@@ -1,9 +1,9 @@
 package team059;
 
-import static preSprintBot.hq.UpgradeAction.*;
-import static preSprintBot.utils.Utils.*;
-import preSprintBot.hq.BuildSoldier;
-import preSprintBot.hq.HQAction;
+import static team059.hq.UpgradeAction.*;
+import static team059.utils.Utils.*;
+import team059.hq.BuildSoldier;
+import team059.hq.HQAction;
 import battlecode.common.MapLocation;
 import battlecode.common.Team;
 

@@ -1,7 +1,7 @@
 package team059.utils;
 
-import preSprintBot.utils.BucketPriorityQueue.BucketNode;
-import preSprintBot.utils.PriorityQueue.Node;
+import team059.utils.BucketPriorityQueue.BucketNode;
+import team059.utils.PriorityQueue.Node;
 
 /**
  * A one-pass priority queue using buckets.

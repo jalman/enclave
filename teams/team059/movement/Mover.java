@@ -1,9 +1,9 @@
 package team059.movement;
 
-import preSprintBot.RobotBehavior;
-import preSprintBot.utils.*;
+import team059.RobotBehavior;
+import team059.utils.*;
 import battlecode.common.*;
-import static preSprintBot.utils.Utils.*;
+import static team059.utils.Utils.*;
 
 public class Mover {
 	private RobotBehavior rb;

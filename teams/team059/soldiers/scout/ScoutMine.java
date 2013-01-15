@@ -1,10 +1,10 @@
 package team059.soldiers.scout;
 
-import preSprintBot.RobotBehavior;
-import preSprintBot.messaging.MessageHandler;
-import preSprintBot.movement.Mover;
-import preSprintBot.soldiers.mineLay.MineLayer;
-import preSprintBot.utils.Utils;
+import team059.RobotBehavior;
+import team059.messaging.MessageHandler;
+import team059.movement.Mover;
+import team059.soldiers.mineLay.MineLayer;
+import team059.utils.Utils;
 import battlecode.common.*;
 
 public class ScoutMine {

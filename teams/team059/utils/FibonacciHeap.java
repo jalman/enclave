@@ -23,8 +23,8 @@
 //package com.bluemarsh.graphmaker.core.util;
 package team059.utils;
 
-import preSprintBot.utils.FibonacciHeap.FibonacciNode;
-import preSprintBot.utils.PriorityQueue.Node;
+import team059.utils.FibonacciHeap.FibonacciNode;
+import team059.utils.PriorityQueue.Node;
 
 /**
  * This class implements a Fibonacci heap data structure. Much of the

@@ -1,6 +1,6 @@
 package team059.utils;
 
-import preSprintBot.utils.PriorityQueue.Node;
+import team059.utils.PriorityQueue.Node;
 
 public interface PriorityQueue<V, N extends Node<V>> {
 	public N insert(int key, V value);

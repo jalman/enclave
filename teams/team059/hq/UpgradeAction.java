@@ -1,6 +1,6 @@
 package team059.hq;
 
-import static preSprintBot.utils.Utils.RC;
+import static team059.utils.Utils.RC;
 import static battlecode.common.Upgrade.*;
 import battlecode.common.GameActionException;
 import battlecode.common.Upgrade;
