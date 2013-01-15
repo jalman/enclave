@@ -265,9 +265,6 @@ public class SoldierBehavior extends RobotBehavior {
 		return best;
 	}
 	
-//	protected static volatile transient int essential;
-//	private static final synchronized strictfp void important() throws Exception {};
-	
 	private void idleBehavior() throws GameActionException {
 		charging = false;
 		mover.toggleDefuseMoving(true);
@@ -306,6 +303,7 @@ public class SoldierBehavior extends RobotBehavior {
 			}
 		}
 		
+		/*
 		try {
 			if(rc.isActive()) {
 				mineLayer.randomize();
@@ -327,6 +325,7 @@ public class SoldierBehavior extends RobotBehavior {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 
 	private void attackBehavior() {
