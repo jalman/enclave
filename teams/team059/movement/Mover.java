@@ -6,15 +6,11 @@ import battlecode.common.*;
 import static team059.utils.Utils.*;
 
 public class Mover {
-	private RobotBehavior rb;
-	private RobotController rc;
 	private MapLocation dest, here;
 	private boolean defuseMoving;
 	private NavAlg navAlg;
 	
 	public Mover(RobotBehavior rb) { 
-		this.rb = rb;
-		this.rc = rb.rc;
 		this.dest = null;
 		this.navAlg = NavType.BUG_DIG_1.navAlg;
 		this.defuseMoving = true;
@@ -54,10 +50,10 @@ public class Mover {
 	
 	public void execute() {
 		//int bc = Clock.getBytecodesLeft();
-		//rc.setIndicatorString(1, "my x = " + Integer.toString(rc.getLocation().x) + ", my y = " + Integer.toString(rc.getLocation().y)
+		//RC.setIndicatorString(1, "my x = " + Integer.toString(RC.getLocation().x) + ", my y = " + Integer.toString(RC.getLocation().y)
 		//		+ "x = " + Integer.toString(dest.x) + ", y = " + Integer.toString(dest.y)); 
-		rc.setIndicatorString(1, dest + "");
-		if(rc.isActive()) {
+		RC.setIndicatorString(1, dest + "");
+		if(RC.isActive()) {
 			here = RC.getLocation();
 			if(dest == null || dest.equals(here)) {
 				return;
@@ -74,11 +70,11 @@ public class Mover {
 
 	public void moveMine(Direction dir) {
 		try {
-			MapLocation nextSquare = rc.getLocation().add(dir);
+			MapLocation nextSquare = RC.getLocation().add(dir);
 			if(Utils.isEnemyMine(nextSquare)) {
-					rc.defuseMine(rc.getLocation().add(dir));
-			} if(rc.canMove(dir) && rc.isActive()) {
-				rc.move(dir);
+					RC.defuseMine(RC.getLocation().add(dir));
+			} if(RC.canMove(dir) && RC.isActive()) {
+				RC.move(dir);
 			}
 		} catch (GameActionException e) {
 			e.printStackTrace();

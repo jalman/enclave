@@ -10,11 +10,7 @@ public class EncampmentBehavior extends RobotBehavior {
 
 	public static final int SAFETY_DISTANCE = 50;
 	public static final int SAFETY_THRESHOLD = 1;
-	
-	public EncampmentBehavior(RobotController rc) {
-		super(rc);
-	}
-	
+
 	@Override
 	public void run() {
 		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, SAFETY_DISTANCE, ENEMY_TEAM);

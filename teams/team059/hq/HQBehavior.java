@@ -11,10 +11,6 @@ public class HQBehavior extends RobotBehavior {
 	
 	HQAction[] buildOrder;
 	int buildOrderProgress = 0;
-	
-	public HQBehavior(RobotController therc) {
-		super(therc);
-	}
 
 	@Override
 	public void beginRound() {
@@ -47,11 +43,11 @@ public class HQBehavior extends RobotBehavior {
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}
-		} else if(rc.isActive()) {
-			if(Clock.getRoundNum() < 100 || (rc.getTeamPower() - 40.0 > 15.0)) {
+		} else if(RC.isActive()) {
+			if(Clock.getRoundNum() < 100 || (RC.getTeamPower() - 40.0 > 15.0)) {
 				try {
-					rc.setIndicatorString(0, Double.toString(rc.getTeamPower()) + "  asdf");
-					buildSoldier(rc.getLocation().directionTo(rc.senseEnemyHQLocation()));
+					RC.setIndicatorString(0, Double.toString(RC.getTeamPower()) + "  asdf");
+					buildSoldier(RC.getLocation().directionTo(RC.senseEnemyHQLocation()));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -75,11 +71,11 @@ public class HQBehavior extends RobotBehavior {
 	}
 	
 	boolean buildSoldier(Direction dir) throws GameActionException {
-		if (rc.isActive()) {
+		if (RC.isActive()) {
 			// Spawn a soldier
 			for(int i = 0; i < 8; i++) {
 				if(goodPlaceToMakeSoldier(dir)) {
-					rc.spawn(dir);
+					RC.spawn(dir);
 					messagingSystem.writeHQMessage(strategy);
 					return true;
 				}
@@ -91,7 +87,7 @@ public class HQBehavior extends RobotBehavior {
 	}
 
 	private boolean goodPlaceToMakeSoldier(Direction dir) {
-		return rc.canMove(dir) && !Utils.isEnemyMine(rc.getLocation().add(dir));
+		return RC.canMove(dir) && !Utils.isEnemyMine(RC.getLocation().add(dir));
 	}
 
 	void researchUpgrade(Upgrade upg) throws GameActionException {
