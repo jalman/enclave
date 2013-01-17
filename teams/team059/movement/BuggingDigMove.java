@@ -28,11 +28,11 @@ public class BuggingDigMove extends NavAlg {
 	*/
 	
 	public Direction getNextDir() {
-		this.start = RC.getLocation();
+		this.curLoc = RC.getLocation();
 		
 		if(finish == null) return Direction.NONE;
 		
-		tryDir = start.directionTo(finish);
+		tryDir = curLoc.directionTo(finish);
 		
 		if(tryDir == Direction.NONE) return Direction.NONE;
 		
@@ -41,8 +41,8 @@ public class BuggingDigMove extends NavAlg {
 				return tryDir;
 			} else {
 				bugging = true;
-				hugLeft = ( naiveDistance(start.add(tryDir.rotateRight()), finish) 
-								< naiveDistance(start.add(tryDir.rotateLeft()), finish) ? true : false );
+				hugLeft = ( naiveDistance(curLoc.add(tryDir.rotateRight()), finish) 
+								< naiveDistance(curLoc.add(tryDir.rotateLeft()), finish) ? true : false );
 			}
 		}
 		

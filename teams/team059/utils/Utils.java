@@ -1,5 +1,6 @@
 package team059.utils;
 
+import battlecode.common.Clock;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
@@ -35,10 +36,13 @@ public class Utils {
 	}
 	
 	public static int naiveDistance(MapLocation loc0, MapLocation loc1) {
-		int dx = Math.abs(loc0.x-loc1.x);
-		int dy = Math.abs(loc0.y-loc1.y);
-		return Math.max(dx, dy);
+		return Math.max(Math.abs(loc0.x-loc1.x), Math.abs(loc0.y-loc1.y));
 	}
+
+	public static int naiveDistance(int x1, int y1, int x2, int y2) {
+		return Math.max(Math.abs(x1-x2), Math.abs(y1-y2));
+	}
+	
 	
 	public static int mapLocationToInt(MapLocation loc) {
 		return (loc.x << 16) ^ loc.y;

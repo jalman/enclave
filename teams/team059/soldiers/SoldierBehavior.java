@@ -270,11 +270,14 @@ public class SoldierBehavior extends RobotBehavior {
 		//rc.setIndicatorString(0, encampTarget.toString());
 
 		if(rc.senseEncampmentSquare(rc.getLocation()) && rc.senseCaptureCost() < rc.getTeamPower()) {
+			//System.out.println(rc.senseCaptureCost());
 			try {
-				if(rc.senseCaptureCost() <= 40) {
+				if(rc.senseCaptureCost() <= 20) {
 					rc.captureEncampment(RobotType.ARTILLERY);
-				} else {
+				} else if(rc.senseCaptureCost() % 20 == 0){
 					rc.captureEncampment(RobotType.SUPPLIER);
+				} else {
+					rc.captureEncampment(RobotType.GENERATOR);
 				}
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -307,7 +310,7 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void attackBehavior() {
-		mover.setNavType(NavType.BUG_DIG_3);
+		mover.setNavType(NavType.BUG_DIG_1);
 		charging = attackSequenceState >= 3;
 		
 		if(attackSequenceState < 3 && (rc.senseNearbyGameObjects(Robot.class, sequence[attackSequenceState], 20, myTeam).length >= 6 || timeSinceSwitch >= 40)) {

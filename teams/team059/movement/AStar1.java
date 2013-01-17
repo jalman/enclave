@@ -21,10 +21,10 @@ public class AStar1 extends NavAlg {
 	}
 	
 	public void recompute() {
-		this.start = RC.getLocation();
+		this.curLoc = RC.getLocation();
 		this.pathlength = 0;
 		//this.pathpos = 0;
-		this.compute_shortest(start, finish);
+		this.compute_shortest(curLoc, finish);
 	}
 	
 	public void recompute(MapLocation finish) {
@@ -182,12 +182,13 @@ public class AStar1 extends NavAlg {
 	}*/
 	
 	public Direction getNextDir() {
+		this.curLoc = RC.getLocation();
 		pathlength--; // path is reversed!
 		if(pathlength < 0) {
 			pathlength = 0;
 			return Direction.NONE;
 		}
-		Direction d = RC.getLocation().directionTo(path[pathlength]);
+		Direction d = curLoc.directionTo(path[pathlength]);
 		return d;
 	}
 

@@ -4,7 +4,7 @@ import battlecode.common.*;
 import static team059.utils.Utils.*;
 
 public abstract class NavAlg {
-	protected MapLocation start = null, finish = null;
+	protected MapLocation curLoc = null, finish = null;
 	
 	public static final int MINE_MOVE_COST = 13;
 	public static final int NORMAL_MOVE_COST = 1;
