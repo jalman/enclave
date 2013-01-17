@@ -1,6 +1,8 @@
 package team059.utils;
 
 import battlecode.common.Clock;
+import team059.Strategy;
+import team059.messaging.MessagingSystem;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
@@ -11,9 +13,11 @@ public class Utils {
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
 	
+	public static Strategy strategy;
+	
 	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
 	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
-		
+	
 	public static void initUtils(RobotController rc) {
 		RC = rc;
 		

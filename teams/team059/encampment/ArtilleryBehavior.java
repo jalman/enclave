@@ -1,15 +1,12 @@
 package team059.encampment;
 
 import team059.RobotBehavior;
-import team059.utils.Utils;
-import battlecode.common.Clock;
+import static team059.utils.Utils.*;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
-import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import battlecode.common.RobotType;
-import battlecode.common.Team;
 
 public class ArtilleryBehavior extends RobotBehavior {
 
@@ -33,20 +30,15 @@ public class ArtilleryBehavior extends RobotBehavior {
 			{false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false}
 	};
 
-
-	public ArtilleryBehavior(RobotController rc) {
-		super(rc);
-	}
-
 	@Override
 	public void run() {
 
-		if(rc.isActive()){
+		if(RC.isActive()){
 
 
-			MapLocation me = rc.getLocation();
+			MapLocation me = RC.getLocation();
 
-			Robot[] robots = rc.senseNearbyGameObjects(Robot.class, 98);
+			Robot[] robots = RC.senseNearbyGameObjects(Robot.class, 98);
 			int[][] weight = new int[17][17];
 			
 			int[] enemiesX = new int[robots.length];
@@ -58,7 +50,7 @@ public class ArtilleryBehavior extends RobotBehavior {
 			for(Robot robot : robots) {
 				try {
 
-					info = rc.senseRobotInfo(robot);
+					info = RC.senseRobotInfo(robot);
 
 					int x = info.location.x;
 					int y = info.location.y;
@@ -70,7 +62,7 @@ public class ArtilleryBehavior extends RobotBehavior {
 					y += 8;
 
 					if(0 <= x && x <= 16 && 0 <= y && y <= 16) {
-						if (info.team == Utils.ALLY_TEAM) {
+						if (info.team == ALLY_TEAM) {
 							weight[x][y] = -weight(info.type);
 
 						} else {
@@ -127,10 +119,10 @@ public class ArtilleryBehavior extends RobotBehavior {
 
 			if(attackX != 0 || attackY != 0) {
 				try {
-					rc.attackSquare(new MapLocation(me.x + attackX - 8, me.y + attackY - 8));
-					rc.setIndicatorString(0, weight[attackX - 1][attackY - 1] + " " + weight[attackX][attackY - 1] + " " + weight[attackX + 1][attackY - 1]);
-					rc.setIndicatorString(1, weight[attackX - 1][attackY] + " " + weight[attackX][attackY] + " " + weight[attackX + 1][attackY]);
-					rc.setIndicatorString(2, weight[attackX - 1][attackY + 1] + " " + weight[attackX][attackY + 1] + " " + weight[attackX + 1][attackY + 1]);
+					RC.attackSquare(new MapLocation(me.x + attackX - 8, me.y + attackY - 8));
+					RC.setIndicatorString(0, weight[attackX - 1][attackY - 1] + " " + weight[attackX][attackY - 1] + " " + weight[attackX + 1][attackY - 1]);
+					RC.setIndicatorString(1, weight[attackX - 1][attackY] + " " + weight[attackX][attackY] + " " + weight[attackX + 1][attackY]);
+					RC.setIndicatorString(2, weight[attackX - 1][attackY + 1] + " " + weight[attackX][attackY + 1] + " " + weight[attackX + 1][attackY + 1]);
 				} catch (GameActionException e) {
 					e.printStackTrace();
 				}

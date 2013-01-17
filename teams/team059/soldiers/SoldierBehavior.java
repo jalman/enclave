@@ -8,7 +8,7 @@ import team059.movement.Mover;
 import team059.movement.NavType;
 import team059.soldiers.micro.Micro;
 import team059.soldiers.mineLay.MineLayer;
-import team059.utils.Utils;
+import static team059.utils.Utils.*;
 
 import battlecode.common.*;
 import static team059.soldiers.SoldierMode.*;
@@ -40,25 +40,24 @@ public class SoldierBehavior extends RobotBehavior {
 	public final Mover mover;
 	public final MineLayer mineLayer;
 	
-	public SoldierBehavior(RobotController therc) throws GameActionException {
-		super(therc);
-		curLoc = rc.getLocation();
-		previousLocation = rc.getLocation();
+	public SoldierBehavior() throws GameActionException {
+		curLoc = RC.getLocation();
+		previousLocation = RC.getLocation();
 		mover = new Mover((RobotBehavior) this);
-		mineLayer = new MineLayer(rc);
+		mineLayer = new MineLayer(RC);
 		mode = SoldierMode.IDLE; // for now
 		microSystem = new Micro(this);
-		rand = new Random(Clock.getRoundNum() * rc.getRobot().getID() + Clock.getBytecodeNum());
+		rand = new Random(Clock.getRoundNum() * RC.getRobot().getID() + Clock.getBytecodeNum());
 		
 		
 		//set gather points and assignment
 		gather = new MapLocation[3]; 
 		
-		gather[0] = new MapLocation((myBase.x * 4 + enemyBase.x ) / 5, (myBase.y * 4 + enemyBase.y ) / 5);
-		MapLocation third = new MapLocation((myBase.x * 2 + enemyBase.x ) / 3, (myBase.y * 2 + enemyBase.y ) / 3);
-		MapLocation twothird = new MapLocation((myBase.x + enemyBase.x * 2) / 3, (myBase.y + enemyBase.y * 2) / 3);
-		int thirdy = (myBase.y - enemyBase.y)/3;
-		int thirdx = (- myBase.x + enemyBase.x)/3;
+		gather[0] = new MapLocation((ALLY_HQ.x * 4 + ENEMY_HQ.x ) / 5, (ALLY_HQ.y * 4 + ENEMY_HQ.y ) / 5);
+		MapLocation third = new MapLocation((ALLY_HQ.x * 2 + ENEMY_HQ.x ) / 3, (ALLY_HQ.y * 2 + ENEMY_HQ.y ) / 3);
+		MapLocation twothird = new MapLocation((ALLY_HQ.x + ENEMY_HQ.x * 2) / 3, (ALLY_HQ.y + ENEMY_HQ.y * 2) / 3);
+		int thirdy = (ALLY_HQ.y - ENEMY_HQ.y)/3;
+		int thirdx = (- ALLY_HQ.x + ENEMY_HQ.x)/3;
 		gather[1] = third.add(thirdy, thirdx);
 		gather[2] = third.add(-thirdy, -thirdx);
 		
@@ -83,27 +82,27 @@ public class SoldierBehavior extends RobotBehavior {
 			sequence = new MapLocation[4];
 			sequence[0] = myGather;
 			sequence[1] = twothird.add((int)(1.4 * thirdy), (int)(1.4 * thirdx));
-			sequence[2] = enemyBase.add((int)(1.4 * thirdy), (int)(1.4 * thirdx));
-			sequence[3] = enemyBase;
+			sequence[2] = ENEMY_HQ.add((int)(1.4 * thirdy), (int)(1.4 * thirdx));
+			sequence[3] = ENEMY_HQ;
 		} else if (myAssignment == 2) {
 			sequence = new MapLocation[4];
 			sequence[0] = myGather;
 			sequence[1] = twothird.add((int)(-1.4 * thirdy), (int)(-1.4 * thirdx));
-			sequence[2] = enemyBase.add((int)(-1.4 * thirdy), (int)(-1.4 * thirdx));
-			sequence[3] = enemyBase;
+			sequence[2] = ENEMY_HQ.add((int)(-1.4 * thirdy), (int)(-1.4 * thirdx));
+			sequence[3] = ENEMY_HQ;
 		}
 	}
 
 	@Override
 	public void run() {
-		if(!rc.isActive()) return;
+		if(!RC.isActive()) return;
 		
 		messagingSystem.handleMessages(messageHandlers);
 		enemyInVicinity = false;
-		curLoc = rc.getLocation();
+		curLoc = RC.getLocation();
 		try {
 			considerSwitchingModes();
-			rc.setIndicatorString(0, mode.name());
+			RC.setIndicatorString(0, mode.name());
 			
 			switch(mode) {
 			case IDLE:
@@ -136,7 +135,7 @@ public class SoldierBehavior extends RobotBehavior {
 			resetEnemyInVicinityStatus(); // rests choice constants each turn.
 			
 			stepOffMine();
-			if(rc.isActive())
+			if(RC.isActive())
 				mover.execute();
 		} catch (GameActionException e) {
 			e.printStackTrace();
@@ -146,7 +145,7 @@ public class SoldierBehavior extends RobotBehavior {
 		if (mover.getTarget() !=null)
 		{
 			try {
-				rc.setIndicatorString(1, "Target is " + mover.getTarget().toString() + " " + Clock.getRoundNum());
+				RC.setIndicatorString(1, "Target is " + mover.getTarget().toString() + " " + Clock.getRoundNum());
 			} catch(NullPointerException e) {
 				System.out.println(mover.getTarget());
 				throw e;
@@ -154,7 +153,7 @@ public class SoldierBehavior extends RobotBehavior {
 		}
 		else 
 		{
-			rc.setIndicatorString(1, "No Target " + Clock.getRoundNum());
+			RC.setIndicatorString(1, "No Target " + Clock.getRoundNum());
 		}
 		previousLocation = curLoc; //updates the past location.
 	}
@@ -193,17 +192,17 @@ public class SoldierBehavior extends RobotBehavior {
 		if(microSystem.enemySoldierNearby(Micro.sensorRadius)){
 			mode = MICRO;
 		}
-		else if (messageTarget != null && PrioritySystem.rate(Utils.naiveDistance(curLoc, messageTarget)) == 1)
+		else if (messageTarget != null && PrioritySystem.rate(naiveDistance(curLoc, messageTarget)) == 1)
 		{
 			setChargeMode(); // sets the robot into charge mode, and breaks out of charge mode if charging for too long	
 		}
-		else if(rc.senseNearbyGameObjects(Robot.class, Utils.ENEMY_HQ, 1000000, Utils.ALLY_TEAM).length > 20) {
+		else if(RC.senseNearbyGameObjects(Robot.class, ENEMY_HQ, 1000000, ALLY_TEAM).length > 20) {
 			mode = ATTACK;
 		} 
 		else {
 			mode = IDLE;
 		}
-		rc.setIndicatorString(0, mode.name() + " " + Clock.getRoundNum());
+		RC.setIndicatorString(0, mode.name() + " " + Clock.getRoundNum());
 		
 	}
 
@@ -218,17 +217,17 @@ public class SoldierBehavior extends RobotBehavior {
 		int distance = Integer.MAX_VALUE;
 		
 		for(int i = 3; i <= 6; i++) {
-			MapLocation[] encampments = rc.senseEncampmentSquares(rc.getLocation(), 1 << (2*i), Team.NEUTRAL);
+			MapLocation[] encampments = RC.senseEncampmentSquares(RC.getLocation(), 1 << (2*i), Team.NEUTRAL);
 			for(int j = 0; j < encampments.length; j++) {
 				MapLocation loc = encampments[j];
 				
-				if(i > 3 && rc.getLocation().distanceSquaredTo(loc) < 1 << (2*(i-1)))
+				if(i > 3 && RC.getLocation().distanceSquaredTo(loc) < 1 << (2*(i-1)))
 					continue;
 				
-				if(rc.canSenseSquare(loc) && rc.senseObjectAtLocation(loc) != null)
+				if(RC.canSenseSquare(loc) && RC.senseObjectAtLocation(loc) != null)
 					continue;
 				
-				int d = Utils.naiveDistance(rc.getLocation(), loc);
+				int d = naiveDistance(RC.getLocation(), loc);
 				if(d < distance) {
 					best = loc;
 					distance = d;
@@ -245,12 +244,12 @@ public class SoldierBehavior extends RobotBehavior {
 		
 		//see if there is an encampment nearby to take
 		
-		if(target == null && rc.getTeamPower() > (1 + rc.senseAlliedEncampmentSquares().length)* 20.0) {
-			MapLocation[] encampments = rc.senseEncampmentSquares(rc.getLocation(), 100, Team.NEUTRAL);
+		if(target == null && RC.getTeamPower() > (1 + RC.senseAlliedEncampmentSquares().length)* 20.0) {
+			MapLocation[] encampments = RC.senseEncampmentSquares(RC.getLocation(), 100, Team.NEUTRAL);
 			if(encampments.length > 0) {
 				int maxdist = 20;
 				for(MapLocation encampment : encampments) {
-					int dist = encampment.distanceSquaredTo(rc.getLocation());
+					int dist = encampment.distanceSquaredTo(RC.getLocation());
 					if(dist < maxdist) {
 						maxdist = dist;
 						target = encampment;
@@ -258,26 +257,26 @@ public class SoldierBehavior extends RobotBehavior {
 				}
 			}
 		} else if (target != null) { //see if the encampment is taken
-			int dist = rc.getLocation().distanceSquaredTo(target);
+			int dist = RC.getLocation().distanceSquaredTo(target);
 			if(dist > 0 && dist <= 14) {//change this to deal with upgrades!
-				GameObject there = rc.senseObjectAtLocation(target);
+				GameObject there = RC.senseObjectAtLocation(target);
 				if(there != null) {
 					target = null;
 				}
 			}
 		}
 
-		//rc.setIndicatorString(0, encampTarget.toString());
+		//RC.setIndicatorString(0, encampTarget.toString());
 
-		if(rc.senseEncampmentSquare(rc.getLocation()) && rc.senseCaptureCost() < rc.getTeamPower()) {
+		if(RC.senseEncampmentSquare(RC.getLocation()) && RC.senseCaptureCost() < RC.getTeamPower()) {
 			//System.out.println(rc.senseCaptureCost());
 			try {
-				if(rc.senseCaptureCost() <= 20) {
-					rc.captureEncampment(RobotType.ARTILLERY);
-				} else if(rc.senseCaptureCost() % 20 == 0){
-					rc.captureEncampment(RobotType.SUPPLIER);
+				if(RC.senseCaptureCost() <= 20) {
+					RC.captureEncampment(RobotType.ARTILLERY);
+				} else if(RC.senseCaptureCost() % 20 == 0){
+					RC.captureEncampment(RobotType.SUPPLIER);
 				} else {
-					rc.captureEncampment(RobotType.GENERATOR);
+					RC.captureEncampment(RobotType.GENERATOR);
 				}
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -288,17 +287,17 @@ public class SoldierBehavior extends RobotBehavior {
 
 		/*
 		try {
-			if(rc.isActive()) {
+			if(RC.isActive()) {
 				mineLayer.randomize();
 				if (mineLayer.adjacentToEncampment()&& Math.random() < mineLayer.mineProb*3)
 				{
-					rc.setIndicatorString(0, "ENCAMPMENT MINE");
+					RC.setIndicatorString(0, "ENCAMPMENT MINE");
 					mineLayer.mineAroundEncampment();
 				}
 				else{
 					if(Math.random() < mineLayer.mineProb*3/4) {
-						rc.setIndicatorString(0, "RANDOM MINE");
-						rc.layMine();
+						RC.setIndicatorString(0, "RANDOM MINE");
+						RC.layMine();
 					} else {
 					}
 				}
@@ -313,7 +312,7 @@ public class SoldierBehavior extends RobotBehavior {
 		mover.setNavType(NavType.BUG_DIG_1);
 		charging = attackSequenceState >= 3;
 		
-		if(attackSequenceState < 3 && (rc.senseNearbyGameObjects(Robot.class, sequence[attackSequenceState], 20, myTeam).length >= 6 || timeSinceSwitch >= 40)) {
+		if(attackSequenceState < 3 && (RC.senseNearbyGameObjects(Robot.class, sequence[attackSequenceState], 20, ALLY_TEAM).length >= 6 || timeSinceSwitch >= 40)) {
 			attackSequenceState++;
 			timeSinceSwitch = 0;
 		} else {
@@ -326,19 +325,19 @@ public class SoldierBehavior extends RobotBehavior {
 		mover.execute();
 		
 /*		mover.toggleDefuseMoving(true);
-		if(rc.senseNearbyGameObjects(Robot.class, gather[0], 20, myTeam).length > 13 || rc.senseNearbyGameObjects(Robot.class, rc.getLocation(), 30, myTeam).length > 10) {
+		if(RC.senseNearbyGameObjects(Robot.class, gather[0], 20, myTeam).length > 13 || RC.senseNearbyGameObjects(Robot.class, RC.getLocation(), 30, myTeam).length > 10) {
 			charging = true;
 		}
-		target = enemyBase;
+		target = ENEMY_HQ;
 		
-		//mover.aboutMoveMine(rc.getLocation().directionTo(target));
+		//mover.aboutMoveMine(RC.getLocation().directionTo(target));
 		mover.setTarget(target);
 		mover.execute();*/
 	}
 	
 	private void emergencyAttackBehavior() {
 		mover.setNavType(NavType.STRAIGHT_DIG);
-		target = Utils.ENEMY_HQ;
+		target = ENEMY_HQ;
 		mover.setTarget(target);
 		mover.execute();
 	}
@@ -356,7 +355,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	private void exploreBehavior() {
 		// very dumb
-		mover.setTarget(enemyBase);
+		mover.setTarget(ENEMY_HQ);
 		mover.execute();
 	}
 	
@@ -367,7 +366,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	public boolean onMine()
 	{
-		if (Utils.isEnemyMine(curLoc)){
+		if (isEnemyMine(curLoc)){
 			return true;
 		}
 		return false;

@@ -16,16 +16,16 @@ public class RobotPlayer {
 			RobotBehavior robot = null;
 			switch(rc.getType()) {
 			case HQ:
-				robot = new HQBehavior(rc);
+				robot = new HQBehavior();
 				break;
 			case SOLDIER:
-				robot = new SoldierBehavior(rc);
+				robot = new SoldierBehavior();
 				break;
 			case ARTILLERY:
-				robot = new ArtilleryBehavior(rc);
+				robot = new ArtilleryBehavior();
 				break;
 			default:
-				robot = new EncampmentBehavior(rc);
+				robot = new EncampmentBehavior();
 				break;
 			}
 			while(true) {
