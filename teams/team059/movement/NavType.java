@@ -8,9 +8,12 @@ public enum NavType {
 	TANGENT_BUG,  // Tangent bug
 	RANDOM, // Wiggle randomly? 
 	BEELINE, // Go straight there, disregarding mines?
-	BUG_DIG_3(new BuggingDigMove()),  // Normal bug, defuse when only option is to go backwards
-	BUG_DIG_2(new DiggingBugMoveFun2()), // Normal bug, defuse when bugging for too long
-	BUG_DIG_1(new DiggingBugMoveFun1()); // Dig-move with a bit of bugging
+	BUG_HIGH_DIG(new BuggingDigMove()),  // Dig-move with a bit of bugging
+	BUG_LOW_DIG(new DiggingBugMoveFunLong()), // Normal bug, defuse when bugging for too long. Probably sucks.
+	BUG_DIG_1(new DiggingBugMoveFun1()), // Normal bug, defuse when only option is to go backwards
+	BUG_DIG_2(new DiggingBugMoveFun2()), // Normal bug, defuse when only option is to go backwards
+	BUG_DIG_I1(new DigBugMoveFunIterative()),
+	ASTAR2_I1;
 	
 	public final NavAlg navAlg;
 

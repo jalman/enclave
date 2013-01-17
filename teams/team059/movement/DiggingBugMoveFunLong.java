@@ -4,7 +4,7 @@ import team059.*;
 import battlecode.common.*;
 import static team059.utils.Utils.*;
 
-public class BugMoveFun extends NavAlg {
+public class DiggingBugMoveFunLong extends NavAlg {
         final static int[][] d = new int[8][2];
         public static final Direction[] directions = Direction.values();
         static {
@@ -26,12 +26,13 @@ public class BugMoveFun extends NavAlg {
         /** the default direction to trace. Changes every time we trace too far. */
         int defaultTraceDirection = 0;
         /** trace threshold to reset to every time we get a new destination. */
-        static final int INITIAL_TRACE_THRESHOLD = 8;
+        static final int INITIAL_TRACE_THRESHOLD = 10;
         /** number of turns to trace before resetting. */
         int traceThreshold = -1;
         /** if we've hit the edge of the map by tracing in the other direction, 
          * then there's no use switching directions. */
         boolean hitEdgeInOtherTraceDirection = false;
+        boolean digging = false;
         
         int bugTurnsBlocked = 0;
         
@@ -44,7 +45,7 @@ public class BugMoveFun extends NavAlg {
         public int edgeXMin, edgeXMax, edgeYMin, edgeYMax;
         
         
-        public BugMoveFun() {
+        public DiggingBugMoveFunLong() {
             edgeXMin = 0;
             edgeXMax = MAP_HEIGHT;
             edgeYMin = 0;
@@ -85,19 +86,11 @@ public class BugMoveFun extends NavAlg {
         public Direction getNextDir() {
         	curLoc = RC.getLocation();
         	int hx = curLoc.x, hy = curLoc.y;
-        	Direction dir;
 
-            boolean movable[] = new boolean[8];
-            for(int i=0; i<8; i++) {
-            	dir = directions[i];
-                TerrainTile tt = RC.senseTerrainTile(curLoc.add(dir));
-                if(bugTurnsBlocked < 3) {
-                	if(tt==null) movable[i] = canMoveNoMine(dir);
-                	else movable[i] = (tt == TerrainTile.LAND && !isEnemyMine(curLoc.add(dir))); 
-                } else {
-                        movable[i] = canMoveNoMine(dir);
-                }
-            }
+        	if(digging && turnsTraced > INITIAL_TRACE_THRESHOLD/2) {
+	            digging = false;
+        	}
+            boolean[] movable = findMovable();
             
             int[] toMove = computeMove(curLoc.x, curLoc.y, movable);
             if(toMove==null) return Direction.NONE;
@@ -106,12 +99,44 @@ public class BugMoveFun extends NavAlg {
             else bugTurnsBlocked=0;
             return ret;
         }
+        
+        private boolean[] findMovable() {
+        	Direction dir;
+        	boolean movable[] = new boolean[8];
+        	if(digging) {
+	            for(int i=0; i<8; i++) {
+	            	dir = directions[i];
+	                if(bugTurnsBlocked < 2) {
+	                        movable[i] = (curLoc.add(dir).x >= MAP_HEIGHT || curLoc.add(dir).x < 0 || 
+	                        		curLoc.add(dir).y >= MAP_WIDTH || curLoc.add(dir).y < 0) ? false : canMoveYesMine(dir);
+	                } else {
+	                        movable[i] = canMoveYesMine(dir);
+	                }
+	            }
+        	} else {
+	            for(int i=0; i<8; i++) {
+	            	dir = directions[i];
+	                if(bugTurnsBlocked < 2) {
+	                        movable[i] = (curLoc.add(dir).x >= MAP_HEIGHT || curLoc.add(dir).x < 0 || 
+	                        		curLoc.add(dir).y >= MAP_WIDTH || curLoc.add(dir).y < 0) ? false : canMoveNoMine(dir);
+	                } else {
+	                        movable[i] = canMoveNoMine(dir);
+	                }
+	            }
+        	}
+            return movable;
+        }
 
     	private boolean canMoveNoMine(Direction d) {
-    		//System.out.println(d);
     		if(d==null) return true;
     		return ( RC.canMove(d) && !isEnemyMine(curLoc.add(d)) );
     	}
+    	
+    	private boolean canMoveYesMine(Direction d) {
+    		if(d==null) return true;
+    		return RC.canMove(d);
+    	}
+    	
         /** Returns a (dx, dy) indicating which way to move. 
          * <br/>
          * <br/>May return null for various reasons:
@@ -132,11 +157,20 @@ public class BugMoveFun extends NavAlg {
                                 tracing = -1;
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(turnsTraced>=traceThreshold) {
-                                tracing = -1;
-                                traceThreshold *= 2;
-                            	//System.out.println("turnsTraced >= traceThreshold! New threshold: " + traceThreshold);
-                                defaultTraceDirection = 1-defaultTraceDirection;
-                                hitEdgeInOtherTraceDirection = false;
+                        	if(traceThreshold >= 2*INITIAL_TRACE_THRESHOLD) {
+                        		//System.out.println("Digging now! - " + traceThreshold);
+                        		digging = true;
+                        		tracing = -1;
+                        		traceThreshold = INITIAL_TRACE_THRESHOLD;
+                        		return computeMove(sx, sy, findMovable());
+                        	}
+                        	else {
+	                            tracing = -1;
+	                            traceThreshold *= 2;
+                        	}
+                        	//System.out.println("turnsTraced >= traceThreshold! New threshold: " + traceThreshold);
+                            defaultTraceDirection = 1-defaultTraceDirection;
+                            hitEdgeInOtherTraceDirection = false;
                         } else if(!(sx==expectedsx && sy==expectedsy)) {
                                 int i = getDirTowards(expectedsx-sx, expectedsy-sy);
                                 if(movableTerrain[i])
@@ -151,7 +185,7 @@ public class BugMoveFun extends NavAlg {
                         } else if(!hitEdgeInOtherTraceDirection) {
                                 int x = sx + d[wallDir][0];
                                 int y = sy + d[wallDir][1];
-                                if(x<edgeXMin || x>=edgeXMax || y<edgeYMin || y>=edgeYMax) {
+                                if(x<=edgeXMin || x>=edgeXMax || y<=edgeYMin || y>=edgeYMax) {
                                         tracing = 1 - tracing;
                                         defaultTraceDirection = 1 - defaultTraceDirection;
                                         hitEdgeInOtherTraceDirection = true;

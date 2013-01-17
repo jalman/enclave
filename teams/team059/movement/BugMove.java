@@ -36,9 +36,9 @@ public class BugMove extends NavAlg {
 	}
 		
 	private Direction getNextDirPrivate() {
-		this.start = RC.getLocation();
+		this.curLoc = RC.getLocation();
 		
-		wantDir = start.directionTo(finish);
+		wantDir = curLoc.directionTo(finish);
 		
 		if(!bugging) {
 			if(canMoveNoMine(wantDir)) {
@@ -46,14 +46,14 @@ public class BugMove extends NavAlg {
 			} else {
 				bugging = true;
 				beganBugging = RC.getLocation();
-				hugLeft = ( naiveDistance(start.add(wantDir.rotateRight()), finish) 
-								< naiveDistance(start.add(wantDir.rotateLeft()), finish) ? true : false );
+				hugLeft = ( naiveDistance(curLoc.add(wantDir.rotateRight()), finish) 
+								< naiveDistance(curLoc.add(wantDir.rotateLeft()), finish) ? true : false );
 			}
 		}
 		
 		// if bugging...
 
-		if(canMoveNoMine(wantDir) && start.distanceSquaredTo(finish) < beganBugging.distanceSquaredTo(finish)) {
+		if(canMoveNoMine(wantDir) && curLoc.distanceSquaredTo(finish) < beganBugging.distanceSquaredTo(finish)) {
 			bugging = false;
 			return wantDir;
 		} 
@@ -82,6 +82,6 @@ public class BugMove extends NavAlg {
 	private boolean canMoveNoMine(Direction d) {
 		//System.out.println(d);
 		if(d==null) return true;
-		return ( RC.canMove(d) && !isEnemyMine(start.add(d)) );
+		return ( RC.canMove(d) && !isEnemyMine(curLoc.add(d)) );
 	}
 }

@@ -21,10 +21,10 @@ public class AStar2 extends NavAlg {
 	}
 	
 	public void recompute() {
-		this.start = RC.getLocation();
+		this.curLoc = RC.getLocation();
 		this.pathlength = 0;
-		//this.pathpos = 0;
-		this.compute_shortest(start, finish);
+		//this.pathpos = 0;ere
+		this.compute_shortest(curLoc, finish);
 	}
 	
 	public void recompute(MapLocation finish) {
@@ -65,7 +65,7 @@ public class AStar2 extends NavAlg {
 			while(true) {
 				loop_bc = bc = Clock.getBytecodesLeft();
 				
-				if(queue.size < 5)
+				/*if(queue.size < 5)
 				System.out.println(queue);
 				
 				if(queue.size == 0) {
@@ -78,7 +78,7 @@ public class AStar2 extends NavAlg {
 					}
 					
 					throw new Exception("A* queue empty! No path to target.");
-				}
+				}*/
 				current = queue.deleteMin();
 				if(current.equals(finish)) {
 					System.out.println("Bytecodes used by A* pre-reconstruction = " + total_bc);
@@ -201,12 +201,13 @@ public class AStar2 extends NavAlg {
 	}*/
 	
 	public Direction getNextDir() {
+		curLoc = RC.getLocation();
 		pathlength--; // path is reversed!
 		if(pathlength < 0) {
 			pathlength = 0;
 			return Direction.NONE;
 		}
-		Direction d = RC.getLocation().directionTo(path[pathlength]);
+		Direction d = curLoc.directionTo(path[pathlength]);
 		if(!RC.canMove(d)) {
 			recompute();
 			return getNextDir();
