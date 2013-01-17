@@ -24,13 +24,11 @@ public class HQBehavior extends RobotBehavior {
 		if(messaging) {
 			try {
 				messagingSystem.beginRoundHQ();
-				//messagingSystem.writeAttackMessage(RC.getLocation(), 5);
 			} catch (GameActionException e1) {
 				e1.printStackTrace();
 			}
+			messagingSystem.handleMessages(messageHandlers);
 		}
-		
-		messagingSystem.handleMessages(messageHandlers);
 	}
 
 	@Override
@@ -47,7 +45,7 @@ public class HQBehavior extends RobotBehavior {
 			if(Clock.getRoundNum() < 100 || (RC.getTeamPower() - 40.0 > 15.0)) {
 				try {
 					RC.setIndicatorString(0, Double.toString(RC.getTeamPower()) + "  asdf");
-					buildSoldier(RC.getLocation().directionTo(RC.senseEnemyHQLocation()));
+					buildSoldier();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -62,14 +60,21 @@ public class HQBehavior extends RobotBehavior {
 
 	}
 	
-	void rushStrategy() {
-		
-	}
-	
+	/**
+	 * Tries to build a soldier.
+	 * @return Whether successful.
+	 * @throws GameActionException
+	 */
 	boolean buildSoldier() throws GameActionException {
 		return buildSoldier(ALLY_HQ.directionTo(ENEMY_HQ));
 	}
 	
+	/**
+	 * Tries to build a soldier.
+	 * @param dir The direction in which to build.
+	 * @return Whether successful.
+	 * @throws GameActionException
+	 */
 	boolean buildSoldier(Direction dir) throws GameActionException {
 		if (RC.isActive()) {
 			// Spawn a soldier

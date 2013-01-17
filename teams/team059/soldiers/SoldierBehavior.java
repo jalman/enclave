@@ -97,7 +97,6 @@ public class SoldierBehavior extends RobotBehavior {
 	public void run() {
 		if(!RC.isActive()) return;
 		
-		messagingSystem.handleMessages(messageHandlers);
 		enemyInVicinity = false;
 		curLoc = RC.getLocation();
 		try {
@@ -250,7 +249,9 @@ public class SoldierBehavior extends RobotBehavior {
 				int maxdist = 20;
 				for(MapLocation encampment : encampments) {
 					int dist = encampment.distanceSquaredTo(RC.getLocation());
+					int mindist = -1;
 					if(dist < maxdist) {
+						maxdist = mindist;
 						maxdist = dist;
 						target = encampment;
 					}

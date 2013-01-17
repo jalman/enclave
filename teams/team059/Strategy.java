@@ -8,20 +8,35 @@ import battlecode.common.MapLocation;
 import battlecode.common.Team;
 
 public enum Strategy {
-	NORMAL(),
-	NUCLEAR(new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(4)),
-	RUSH(new BuildSoldier(2), UPGRADE_DEFUSION);
+	NORMAL(10, 5),
+	NUCLEAR(5, 5, new BuildSoldier(4), UPGRADE_PICKAXE, new BuildSoldier(4)),
+	RUSH(5, 10, new BuildSoldier(2), UPGRADE_DEFUSION);
 	
+	/**
+	 * How quickly to expand at the beginning.
+	 */
+	public final int greed;
+	
+	/**
+	 * How willing we are to launch an attack on the enemy.
+	 */
+	public final int aggression;
 	
 	public final HQAction[] buildOrder;
 	
 	
-	private Strategy(HQAction... buildOrder) {
+	private Strategy(int greed, int aggression, HQAction... buildOrder) {
+		this.greed = greed;
+		this.aggression = aggression;
 		this.buildOrder = buildOrder;
 	}
 	
+	/**
+	 * Decides what strategy to use at the beginning of the game.
+	 * @return The decided-upon strategy.
+	 */
 	public static Strategy decide() {
-		return RUSH;
+		return NUCLEAR;
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		

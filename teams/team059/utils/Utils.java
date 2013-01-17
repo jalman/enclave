@@ -1,27 +1,36 @@
 package team059.utils;
 
 import team059.Strategy;
-import team059.messaging.MessagingSystem;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
 
 public class Utils {
+	//actual constants
+	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
+	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+	
+	//these are set from the beginning of the game
 	public static RobotController RC;
 	public static int MAP_WIDTH, MAP_HEIGHT;
+	private static MapLocation[][] map;
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
 	
+	//these might be set at the beginning of the round
 	public static Strategy strategy;
 	
-	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
-	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
+	public static MapLocation currentLocation;
+	private static MapLocation[] alliedEncampments;
+	
 	
 	public static void initUtils(RobotController rc) {
 		RC = rc;
 		
 		MAP_WIDTH = rc.getMapWidth();
 		MAP_HEIGHT = rc.getMapHeight();
+		map = new MapLocation[MAP_WIDTH][MAP_HEIGHT];
 		
 		ALLY_TEAM = rc.getTeam();
 		ENEMY_TEAM = (ALLY_TEAM == Team.A) ? Team.B : Team.A;
@@ -29,6 +38,18 @@ public class Utils {
 		ENEMY_HQ = rc.senseEnemyHQLocation();
 	}
 	
+	/**
+	 * Called at the beginning of each round.
+	 */
+	public static void updateUtils() {
+		currentLocation = RC.getLocation();
+		alliedEncampments = null;
+	}
+	
+	public static MapLocation mapLocation(int x, int y) {
+		MapLocation loc = map[x][y];
+		return loc != null ? loc : (map[x][y] = new MapLocation(x, y));
+	}
 	
 	public static boolean isEnemyMine(Team team) {
 		return !(team == ALLY_TEAM || team == null);
@@ -73,5 +94,12 @@ public class Utils {
 		}
 		
 		return close;
+	}
+	
+	public static MapLocation[] getAlliedEncampments() {
+		if(alliedEncampments == null) {
+			alliedEncampments = RC.senseAlliedEncampmentSquares();
+		}
+		return alliedEncampments;
 	}
 }

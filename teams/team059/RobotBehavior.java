@@ -3,20 +3,23 @@ package team059;
 import team059.messaging.MessageHandler;
 import team059.messaging.MessageType;
 import team059.messaging.MessagingSystem;
+import team059.utils.ArraySet;
 import static team059.utils.Utils.*;
 import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
-import battlecode.common.Team;
 
 public class RobotBehavior {
 
+	public static final int TASK_SWITCH_THRESHOLD = 5;
+	
 	/**
 	 * Whether we want to send messages this round.
 	 */
 	public boolean messaging;
 	public MessagingSystem messagingSystem;
 	protected MessageHandler[] messageHandlers;
+
+	protected ArraySet<Task> pendingTasks;
+	protected Task currentTask = null;
 	
 	public RobotBehavior() {
 		messagingSystem = new MessagingSystem();
@@ -24,12 +27,18 @@ public class RobotBehavior {
 		messageHandlers[MessageType.HQ_INFO.ordinal()] = getHQHandler();		
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();
 		messageHandlers[MessageType.CHECKPOINT_NUMBER.ordinal()] = getCheckpointHandler();
+		
+		pendingTasks = new ArraySet<Task>(1000);
 	}
 
-	protected int danger(MapLocation loc) {return 0;}
-
+	/**
+	 * Initializes the persistent tasks.
+	 */
+	public void initTasks() {};
+	
 	/**
 	 * Called at the beginning of each round.
+	 * By default, reads and handles messages.
 	 */
 	public void beginRound() {
 		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
@@ -41,16 +50,52 @@ public class RobotBehavior {
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}
+			messagingSystem.handleMessages(messageHandlers);
 		}
 	}
 
 	/**
-	 * Called every round.
+	 * Chooses new tasks each round.
 	 */
-	public void run() {}
+	protected void chooseTasks() {}
+	
+	/**
+	 * Called every round.
+	 * @throws GameActionException 
+	 */
+	public void run() throws GameActionException {
+		if(!RC.isActive()) return;
+		chooseTasks();
+		
+		int max_appeal = currentTask != null ? currentTask.appeal()  + TASK_SWITCH_THRESHOLD : 0;
+		
+		for(int i = 0; i < pendingTasks.size; i++) {
+			Task task = pendingTasks.get(i);
+			int appeal = task.appeal();
+			
+			if(appeal < 0) {
+				pendingTasks.delete(i);
+			} else if(appeal > max_appeal) {
+				max_appeal = appeal;
+				if(currentTask == null) {
+					currentTask = task;
+					pendingTasks.delete(i);
+				} else {
+					Task swap = currentTask;
+					currentTask = task;
+					pendingTasks.set(i, swap);
+				}
+			}
+		}
+		
+		if(currentTask != null && currentTask.execute()) {
+			currentTask = null;
+		}
+	}
 
 	/**
 	 * Called at the end of each round.
+	 * By default, writes the header message.
 	 */
 	public void endRound() {
 		if(messaging) {
@@ -61,7 +106,7 @@ public class RobotBehavior {
 			}
 		}
 	}
-
+	
 	private static class DefaultMessageHandler implements MessageHandler {
 		@Override
 		public void handleMessage(int[] message) {}
