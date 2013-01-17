@@ -10,29 +10,15 @@ import battlecode.common.RobotController;
 import battlecode.common.Team;
 
 public class RobotBehavior {
-	public final RobotController rc;
-	public final Team myTeam;
-	public final Team enemyTeam;
-	public final MapLocation myBase, enemyBase;
-	public final int width, height;
-	public Strategy strategy;
-	
+
 	/**
 	 * Whether we want to send messages this round.
 	 */
 	public boolean messaging;
 	public MessagingSystem messagingSystem;
 	protected MessageHandler[] messageHandlers;
-
-	public RobotBehavior(RobotController rc) {
-		this.rc = rc;
-		myTeam = rc.getTeam();
-		enemyTeam = (myTeam == Team.A) ? Team.B : Team.A;
-		myBase = rc.senseHQLocation();
-		enemyBase = rc.senseEnemyHQLocation();
-		width = rc.getMapWidth();
-		height = rc.getMapHeight();
-
+	
+	public RobotBehavior() {
 		messagingSystem = new MessagingSystem();
 		messageHandlers = new MessageHandler[MessageType.values().length];
 		messageHandlers[MessageType.HQ_INFO.ordinal()] = getHQHandler();		
