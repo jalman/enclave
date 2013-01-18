@@ -31,6 +31,7 @@ public class Micro {
 		goodSoldiers = null; 
 		badSoldiers = null;
 		this.sb = sb;
+		rc = RC;
 		
 		enemySoldierTarget = null;
 	}
@@ -57,7 +58,7 @@ public class Micro {
 			sb.target = curLoc;
 			mover.setTarget(curLoc);
 		}
-		if (!hasEnoughAllies())
+		else if (!hasEnoughAllies())
 		{
 			sb.target = retreatTarget;
 			setRetreatBack();
