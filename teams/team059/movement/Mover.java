@@ -12,7 +12,7 @@ public class Mover {
 	
 	public Mover(RobotBehavior rb) { 
 		this.dest = null;
-		this.navAlg = NavType.BUG_DIG_1.navAlg;
+		this.navAlg = NavType.ASTAR3.navAlg;
 		this.defuseMoving = true;
 	}
 
@@ -38,7 +38,7 @@ public class Mover {
 	public void toggleDefuseMoving(boolean b) { 
 		defuseMoving = b;
 		if(defuseMoving) {
-			setNavType(NavType.BUG_DIG_1);
+			setNavType(NavType.ASTAR3);
 		} else {
 			setNavType(NavType.BUG);
 		}
@@ -73,7 +73,7 @@ public class Mover {
 			MapLocation nextSquare = RC.getLocation().add(dir);
 			if(Utils.isEnemyMine(nextSquare)) {
 					RC.defuseMine(RC.getLocation().add(dir));
-			} if(RC.canMove(dir) && RC.isActive()) {
+			} else if(RC.canMove(dir) && RC.isActive()) {
 				RC.move(dir);
 			}
 		} catch (GameActionException e) {
