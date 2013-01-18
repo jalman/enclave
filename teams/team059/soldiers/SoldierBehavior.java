@@ -240,7 +240,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	private void idleBehavior() throws GameActionException {
 		charging = false;
-		mover.setNavType(NavType.BUG_DIG_1);
+		mover.setNavType(NavType.ASTAR3);
 		
 		//see if there is an encampment nearby to take
 		
@@ -309,7 +309,7 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void attackBehavior() {
-		mover.setNavType(NavType.BUG_DIG_1);
+		mover.setNavType(NavType.ASTAR3);
 		charging = attackSequenceState >= 3;
 		
 		if(attackSequenceState < 3 && (RC.senseNearbyGameObjects(Robot.class, sequence[attackSequenceState], 20, ALLY_TEAM).length >= 6 || timeSinceSwitch >= 40)) {
