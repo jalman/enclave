@@ -62,9 +62,10 @@ public class SoldierBehavior extends RobotBehavior {
 		gather[2] = third.add(-thirdy, -thirdx);
 		
 		double r = rand.nextDouble();
-		if (r > 0.6) {
+		myAssignment = 0;
+		if (r > 0.2) {
 			myAssignment = 0;
-		} else if (r > 0.3) {
+		} else if (r > 0.1) {
 			myAssignment = 1;
 		} else {
 			myAssignment = 2;
@@ -76,8 +77,8 @@ public class SoldierBehavior extends RobotBehavior {
 			sequence = new MapLocation[4];
 			sequence[0] = myGather;
 			sequence[1] = myGather;
-			sequence[2] = myGather;
-			sequence[3] = myGather;
+			sequence[2] = new MapLocation((ENEMY_HQ.x+myGather.x)/2, (ENEMY_HQ.y+myGather.y)/2);
+			sequence[3] = ENEMY_HQ;
 		} else if (myAssignment == 1) {
 			sequence = new MapLocation[4];
 			sequence[0] = myGather;
@@ -240,7 +241,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	private void idleBehavior() throws GameActionException {
 		charging = false;
-		mover.setNavType(NavType.ASTAR3);
+		mover.setNavType(NavType.BUG_DIG_2);
 		
 		//see if there is an encampment nearby to take
 		
@@ -309,7 +310,7 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void attackBehavior() {
-		mover.setNavType(NavType.ASTAR3);
+		mover.setNavType(NavType.BUG_DIG_2);
 		charging = attackSequenceState >= 3;
 		
 		if(attackSequenceState < 3 && (RC.senseNearbyGameObjects(Robot.class, sequence[attackSequenceState], 20, ALLY_TEAM).length >= 6 || timeSinceSwitch >= 40)) {
