@@ -4,6 +4,7 @@ import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
 import team059.soldiers.SoldierBehavior;
+import team059.utils.Utils;
 import static team059.utils.Utils.*;
 import battlecode.common.*;
 
@@ -17,9 +18,10 @@ public class Micro {
 	Direction d = null;
 	public final Mover mover;
 	
+	RobotController rc;
 	SoldierBehavior sb;
 	
-	MapLocation enemySoldierTarget;
+	MapLocation enemySoldierTarget, curLoc;
 	
 	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
 	
@@ -38,26 +40,33 @@ public class Micro {
 		goodSoldiers = findAlliedSoldiers(sensorRadius); 
 		badSoldiers = findEnemySoldiers(sensorRadius);
 		enemySoldierTarget = closestSoldierTarget(badSoldiers);
-
 		signalEnemyNearby(); // signals if enemies are nearby
 	 	
 		fightOrRetreat();
 	}
 	
 	/**
-	 * Determines whether to retreat or fight during micro
+	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
 	 * @throws GameActionException
 	 */
 	
 	public void fightOrRetreat() throws GameActionException{
-		setRetreatBack();
+		curLoc = rc.getLocation();
+		if (enemySoldierTarget.distanceSquaredTo(rc.getLocation())<= 2)
+		{
+			sb.target = curLoc;
+			mover.setTarget(curLoc);
+		}
 		if (!hasEnoughAllies())
 		{
+			sb.target = retreatTarget;
+			setRetreatBack();
 			mover.setTarget(retreatTarget);
 		}
 		
 		else
 		{	
+			sb.target = enemySoldierTarget;
 			this.sb.attackTarget(enemySoldierTarget);
 		}
 	}

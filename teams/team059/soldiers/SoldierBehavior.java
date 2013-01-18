@@ -16,7 +16,7 @@ import static team059.soldiers.SoldierMode.*;
 public class SoldierBehavior extends RobotBehavior {
 
 	private SoldierMode mode;
-	private MapLocation target = null, waypoint1 = null, waypoint2 = null, messageTarget;
+	public MapLocation target = null, waypoint1 = null, waypoint2 = null, messageTarget;
 //	private int priority;
 	private MapLocation[] gather;
 	private MapLocation myGather;
