@@ -14,6 +14,7 @@ public enum NavType {
 	BUG_DIG_1(new DiggingBugMoveFun1()), // Normal bug, defuse when only option is to go backwards
 	BUG_DIG_2(new DiggingBugMoveFun2()), // Normal bug, try defuse when trying to go away from target
 	BUG_DIG_I1(new DigBugMoveFunIterative()),
+	PARTIAL_ASTAR3(new PartialAStar3()),
 	ASTAR2_I1;
 	
 	public final NavAlg navAlg;
