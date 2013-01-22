@@ -11,7 +11,7 @@ import static team059.utils.Utils.*;
 
 public class ExpandTask extends TravelTask {
 
-	private static final Mover mover = new Mover(NavType.BUG_DIG_I1);
+	private static final Mover mover = new Mover();
 	
 	private final RobotType buildType;
 	
@@ -57,7 +57,6 @@ public class ExpandTask extends TravelTask {
 			super.execute();
 		}
 	}
-
 	
 	private RobotType getCaptureType() {
 		if(buildType != null) return buildType;

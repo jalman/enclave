@@ -25,7 +25,7 @@ public class RobotPlayer {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			robot = new SoldierBehavior2();
+			robot = new SoldierBehavior2();
 			break;
 		case ARTILLERY:
 			robot = new ArtilleryBehavior();
