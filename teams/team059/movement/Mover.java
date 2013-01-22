@@ -12,7 +12,7 @@ public class Mover {
 	
 	public Mover(RobotBehavior rb) { 
 		this.dest = null;
-		this.navAlg = NavType.PARTIAL_ASTAR3.navAlg;
+		this.navAlg = NavType.BUG_DIG_2.navAlg;
 		this.defuseMoving = true;
 	}
 
@@ -38,7 +38,7 @@ public class Mover {
 	public void toggleDefuseMoving(boolean b) { 
 		defuseMoving = b;
 		if(defuseMoving) {
-			setNavType(NavType.PARTIAL_ASTAR3);
+			setNavType(NavType.BUG_DIG_2);
 		} else {
 			setNavType(NavType.BUG);
 		}
