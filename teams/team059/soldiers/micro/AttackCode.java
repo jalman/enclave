@@ -10,13 +10,11 @@ public class AttackCode {
 	 * Nearby allies will flock to a battle.
 	 */
 	Micro micro;
-	public final Mover mover;
 	MapLocation target;
 	SoldierBehavior sb;
 	
 	public AttackCode(Micro micro){
 		this.micro = micro;
-		mover = micro.mover;
 	}
 	
 	public void run(){
@@ -29,6 +27,6 @@ public class AttackCode {
 	
 	public void goToBattle() throws GameActionException
 	{ 
-		micro.sb.attackTarget(mover.getTarget());
+		
 	}
 }

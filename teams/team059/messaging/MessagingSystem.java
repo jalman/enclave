@@ -266,6 +266,9 @@ public class MessagingSystem {
 	public void writeAttackMessage(MapLocation loc, int priority) throws GameActionException {
 		writeMessage(MessageType.ATTACK_LOCATION.ordinal(), loc.x, loc.y, priority);
 	}
+	public void writeMicroMessage(MapLocation loc, int goIn) throws GameActionException {
+		writeMessage(MessageType.MICRO_INFO.ordinal(), loc.x, loc.y, goIn);
+	}
 	
 	public void writeHQMessage(Strategy strategy) throws GameActionException {
 		writeMessage(MessageType.HQ_INFO.ordinal(), strategy.ordinal());

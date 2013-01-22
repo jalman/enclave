@@ -24,6 +24,7 @@ public class RobotBehavior {
 		messageHandlers[MessageType.HQ_INFO.ordinal()] = getHQHandler();		
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();
 		messageHandlers[MessageType.CHECKPOINT_NUMBER.ordinal()] = getCheckpointHandler();
+		messageHandlers[MessageType.MICRO_INFO.ordinal()] = getMicroHandler();
 	}
 
 	protected int danger(MapLocation loc) {return 0;}
@@ -92,4 +93,6 @@ public class RobotBehavior {
 	 * @return The default message handler (does nothing).
 	 */
 	protected MessageHandler getCheckpointHandler() {return new DefaultMessageHandler();}	
+	
+	protected MessageHandler getMicroHandler() {return new DefaultMessageHandler();}
 }

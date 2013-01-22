@@ -46,7 +46,7 @@ public class HQBehavior extends RobotBehavior {
 		} else if(RC.isActive()) {
 			if(Clock.getRoundNum() < 100 || (RC.getTeamPower() - 40.0 > 15.0)) {
 				try {
-					RC.setIndicatorString(0, Double.toString(RC.getTeamPower()) + "  asdf");
+			//		RC.setIndicatorString(0, Double.toString(RC.getTeamPower()) + "  asdf");
 					buildSoldier(RC.getLocation().directionTo(RC.senseEnemyHQLocation()));
 				} catch (Exception e) {
 					e.printStackTrace();

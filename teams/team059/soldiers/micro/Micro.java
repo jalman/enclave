@@ -1,74 +1,67 @@
 package team059.soldiers.micro;
 
 import team059.messaging.MessagingSystem;
-import team059.movement.Mover;
 import team059.movement.NavType;
 import team059.soldiers.SoldierBehavior;
 import team059.utils.Utils;
 import static team059.utils.Utils.*;
 import battlecode.common.*;
+import team059.soldiers.SoldierUtils;
 
 public class Micro {
 
 //	GameObject[] foe = new GameObject[0], friends = new GameObject[0];
-	RobotInfo[] badSoldiers = new RobotInfo[0], goodSoldiers = new RobotInfo[0];
+	RobotInfo[] badSoldiers, goodSoldiers;
 	
 	MapLocation retreatTarget = null;
 	MapLocation encampTarget = null, c = null;
 	Direction d = null;
-	public final Mover mover;
-	
-	RobotController rc;
+	public boolean shouldIretreat;
+		
 	SoldierBehavior sb;
 	
-	MapLocation enemySoldierTarget, curLoc;
+	public MapLocation enemySoldierTarget, curLoc;
 	
 	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
 	
-
 	public Micro(SoldierBehavior sb) throws GameActionException {
-		mover = sb.mover;
-		goodSoldiers = null; 
-		badSoldiers = null;
+		goodSoldiers = new RobotInfo[0]; 
+		badSoldiers = new RobotInfo[0];
 		this.sb = sb;
-		rc = RC;
-		
 		enemySoldierTarget = null;
 	}
 	
 	public void run() throws GameActionException{
-		mover.setNavType(NavType.BUG);
-		goodSoldiers = findAlliedSoldiers(sensorRadius); 
-		badSoldiers = findEnemySoldiers(sensorRadius);
-		enemySoldierTarget = closestSoldierTarget(badSoldiers);
-		signalEnemyNearby(); // signals if enemies are nearby
-	 	
+		sb.mover.setNavType(NavType.BUG);
+//		enemySoldierTarget = SoldierUtils.findClosebySoldier();
 		fightOrRetreat();
 	}
 	
+	public void setVariables() throws GameActionException{
+		enemySoldierTarget = SoldierUtils.findClosebySoldier();
+	}
 	/**
 	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
 	 * @throws GameActionException
 	 */
 	
 	public void fightOrRetreat() throws GameActionException{
-		curLoc = rc.getLocation();
-		if (enemySoldierTarget.distanceSquaredTo(rc.getLocation())<= 2)
+		curLoc = RC.getLocation();
+
+		if (enemySoldierTarget.distanceSquaredTo(curLoc)<= 2)
 		{
-			sb.target = curLoc;
-			mover.setTarget(curLoc);
+			sb.mover.setTarget(curLoc);
 		}
-		else if (!hasEnoughAllies())
+		else if (shouldIretreat)
 		{
-			sb.target = retreatTarget;
 			setRetreatBack();
-			mover.setTarget(retreatTarget);
+			RC.setIndicatorString(2, "Retreating " + Clock.getRoundNum());
+			sb.mover.setTarget(retreatTarget);
 		}
 		
 		else
 		{	
-			sb.target = enemySoldierTarget;
-			this.sb.attackTarget(enemySoldierTarget);
+			attackTarget(enemySoldierTarget);
 		}
 	}
 	
@@ -80,7 +73,7 @@ public class Micro {
 	public void signalEnemyNearby() throws GameActionException{
 		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 10 == 0)
 		{
-			sb.messagingSystem.writeAttackMessage(closestSoldierTarget(findEnemySoldiers(Micro.sensorRadius)), 0);
+			sb.messagingSystem.writeAttackMessage(SoldierUtils.closestSoldierTarget(SoldierUtils.findEnemySoldiers(Micro.sensorRadius)), 0);
 		}
 	}
 	
@@ -91,10 +84,9 @@ public class Micro {
 	public void setRetreatBack() throws GameActionException
 	{
 		c = RC.getLocation();
-		if (enemySoldierNearby(Micro.sensorRadius))
+		if (enemySoldierTarget != null)
 		{
-			
-			retreatTarget = c.	add(RC.getLocation().directionTo(enemySoldierTarget).opposite(), 2);
+			retreatTarget = c.add(RC.getLocation().directionTo(enemySoldierTarget).opposite(), 2);
 			if (retreatTarget == null)
 			{
 				retreatTarget = ALLY_HQ;
@@ -103,12 +95,7 @@ public class Micro {
 	}
 	public void setRetreatEncampment() throws GameActionException //makes the retreat target the nearest encampment
 	{
-		c = RC.getLocation();
-		if (RC.senseAlliedEncampmentSquares() != null)
-			retreatTarget = closest(RC.senseAlliedEncampmentSquares(), c);
-		else
-			//retreatTarget = Utils.ALLY_HQ;
-			setRetreatBack();
+		// fill in with messaging
 	}
 
 	/**
@@ -136,7 +123,7 @@ public class Micro {
 	
 	public boolean enemySoldierNearby(int radius) throws GameActionException
 	{
-		if (findEnemySoldiers(radius) == null || findEnemySoldiers(radius).length == 0)
+		if (SoldierUtils.findEnemySoldiers(radius) == null || SoldierUtils.findEnemySoldiers(radius).length == 0)
 		{
 			return false;
 		}
@@ -187,74 +174,17 @@ public class Micro {
 			}
 		}
 	}
-	public RobotInfo[] findEnemySoldiers(int radius) throws GameActionException
-	{
-		GameObject[] enemies = RC.senseNearbyGameObjects(Robot.class, radius, ENEMY_TEAM);
-		RobotInfo[] enemySoldiers = new RobotInfo[0];
-		if (enemyNearby(radius))
-		{
-			int l = 0;
-			RobotInfo r = null;
-			for (int i = 0; i < enemies.length; i++)
-			{
-				if (RC.senseRobotInfo((Robot)enemies[i]).type == RobotType.SOLDIER) 
-				{
-					l++;
-				}
-			}
-			enemySoldiers = new RobotInfo[l];
-			l = 0;
-			for (int i = 0; i < enemies.length; i++)
-			{
-				r = RC.senseRobotInfo((Robot)enemies[i]);
-				if (r.type == RobotType.SOLDIER)
-				{
-					enemySoldiers[l] = r;
-					l++;
-				}
-			}
-		}
-		return enemySoldiers;
-	}
 	
-	public RobotInfo[] findAlliedSoldiers(int radius) throws GameActionException // might be useless
-	{
-		GameObject[] allies = RC.senseNearbyGameObjects(Robot.class, radius, ALLY_TEAM); 
-		RobotInfo[] alliedSoldiers = new RobotInfo[0];
-		if (allies!=null && allies.length != 0)
-		{
-			int l = 0;
-			RobotInfo r = null;
-			for (int i = 0; i < allies.length; i++)
-			{
-				if (RC.senseRobotInfo((Robot)allies[i]).type == RobotType.SOLDIER) 
-				{
-					l++;
-				}
-			}
-			alliedSoldiers = new RobotInfo[l];
-			l = 0;
-			for (int i = 0; i < allies.length; i++)
-			{
-				r = RC.senseRobotInfo((Robot)allies[i]);
-				if (r.type == RobotType.SOLDIER)
-				{
-					alliedSoldiers[l] = r;
-					l++;
-				}
-			}
-		}
-		return alliedSoldiers;
-	}
+	
 	
 	public int enemyNumber(int radius) throws GameActionException
 	{
-		return findEnemySoldiers(radius).length;
+		return SoldierUtils.findEnemySoldiers(radius).length;
 	}
 	
 	public int allyNumber(int radius) throws GameActionException
 	{
-		return findAlliedSoldiers(radius).length;
+		return SoldierUtils.findAlliedSoldiers(radius).length;
 	}
 	
 	/**
@@ -264,7 +194,7 @@ public class Micro {
 	 */
 	public MapLocation closestTarget(GameObject[] enemies) throws GameActionException
 	{
-		c=RC.getLocation();
+		c = RC.getLocation();
 		MapLocation m = new MapLocation(10000,10000);
 		int d = 10000;
 		MapLocation loc;
@@ -284,28 +214,16 @@ public class Micro {
 		else
 			return null;
 	}
-	
-	public MapLocation closestSoldierTarget(RobotInfo[] enemySoldiers) throws GameActionException // find closest enemy target nearby; use in battle
+	public void attackTarget(MapLocation m) throws GameActionException
 	{
-		c=RC.getLocation();
-		MapLocation m = new MapLocation(10000,10000);
-		int d = 10000;
-		MapLocation loc;
-		if (enemySoldiers != null && enemySoldiers.length!=0)
+		if (RC.getLocation().distanceSquaredTo(m) > 2)
 		{
-			for(int i =0; i < enemySoldiers.length; i++)
-			{
-				loc = enemySoldiers[i].location;//RC.senseRobotInfo((Robot)enemies[i]).location;
-				if (naiveDistance(loc, c) < d)
-				{
-					m = loc;
-					d = naiveDistance(loc, c);
-				}
-			}
-			return m;
+			sb.mover.setTarget(m);
 		}
 		else
-			return null;
-	}	
-	
+		{
+			sb.mover.setTarget(RC.getLocation());
+		}
+	}
+		
 }

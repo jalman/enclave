@@ -30,7 +30,7 @@ public class BugMove extends NavAlg {
 	
 	public Direction getNextDir() {
 		Direction d = getNextDirPrivate();
-		RC.setIndicatorString(2, "Bugging: " + bugging + ", hugLeft: " + hugLeft + ", direction: " + d);
+		//RC.setIndicatorString(2, "Bugging: " + bugging + ", hugLeft: " + hugLeft + ", direction: " + d);
 		lastDir = d;
 		return d;
 	}

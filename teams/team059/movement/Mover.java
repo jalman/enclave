@@ -12,7 +12,7 @@ public class Mover {
 	
 	public Mover(RobotBehavior rb) { 
 		this.dest = null;
-		this.navAlg = NavType.ASTAR3.navAlg;
+		this.navAlg = NavType.BUG_DIG_2.navAlg;
 		this.defuseMoving = true;
 	}
 
@@ -38,7 +38,7 @@ public class Mover {
 	public void toggleDefuseMoving(boolean b) { 
 		defuseMoving = b;
 		if(defuseMoving) {
-			setNavType(NavType.ASTAR3);
+			setNavType(NavType.BUG_DIG_2);
 		} else {
 			setNavType(NavType.BUG);
 		}
@@ -52,7 +52,7 @@ public class Mover {
 		//int bc = Clock.getBytecodesLeft();
 		//RC.setIndicatorString(1, "my x = " + Integer.toString(RC.getLocation().x) + ", my y = " + Integer.toString(RC.getLocation().y)
 		//		+ "x = " + Integer.toString(dest.x) + ", y = " + Integer.toString(dest.y)); 
-		RC.setIndicatorString(1, dest + "");
+		//RC.setIndicatorString(1, dest + "");
 		if(RC.isActive()) {
 			here = RC.getLocation();
 			if(dest == null || dest.equals(here)) {
