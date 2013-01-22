@@ -16,6 +16,7 @@ import battlecode.common.Upgrade;
 public class RobotPlayer {
 	public static void run(RobotController rc) {
 		while (true) {
+			MapLocation here = rc.getLocation();
 			try {
 				if (rc.getType() == RobotType.HQ) {
 					if (rc.isActive()) {
@@ -26,7 +27,7 @@ public class RobotPlayer {
 							Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
 							Direction tryDir = dir;
 							do {
-								if (rc.canMove(tryDir)) {
+								if (rc.canMove(tryDir) && rc.senseMine(here.add(tryDir)) == null) {
 									rc.spawn(tryDir);
 									break;
 								}

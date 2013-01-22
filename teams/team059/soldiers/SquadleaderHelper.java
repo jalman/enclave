@@ -93,7 +93,7 @@ public class SquadleaderHelper{
 	 */
 	
 	private void sendMicroTargetSignal(int shouldIretreat) throws GameActionException{
-		sb.messagingSystem.writeMicroMessage(enemySoldierTarget, shouldIretreat);
+		Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, shouldIretreat);
 	}
 	public void sendMicroSignal() throws GameActionException{
 		if(!hasEnoughAllies()){

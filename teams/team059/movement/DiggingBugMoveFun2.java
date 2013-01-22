@@ -45,8 +45,8 @@ public class DiggingBugMoveFun2 extends NavAlg {
         int expectedsx = -1;
         int expectedsy = -1;
         
-        // Map edge variables - these need to be updated from the outside
-        public int edgeXMin, edgeXMax, edgeYMin, edgeYMax;
+        // Map edge variables
+        public final int edgeXMin, edgeXMax, edgeYMin, edgeYMax;
         
         
         public DiggingBugMoveFun2() {
@@ -150,11 +150,12 @@ public class DiggingBugMoveFun2 extends NavAlg {
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(!(sx==expectedsx && sy==expectedsy)) {
                                 int i = getDirTowards(expectedsx-sx, expectedsy-sy);
-                                if(movableTerrain[i]==passability)
+                                if(movableTerrain[i]==passability) {
                                         return d[i];
+                                }
                                 else
                                         wallDir = i;
-                        } else if(movableTerrain[wallDir]==passability) {
+                        } else if(movableTerrain[wallDir]==PASSABLE) {
                                 // Tracing around phantom wall 
                                 //   (could happen if a wall was actually a moving unit)
                                 tracing = -1;
@@ -181,19 +182,22 @@ public class DiggingBugMoveFun2 extends NavAlg {
                         for(int ti=1; ti<8; ti++) {
                                 int dir = ((1-tracing*2)*ti + wallDir + 8) % 8;
                                 if(movableTerrain[dir]==passability) {
+                                	if(passability == PASSABLE && naiveDistance(sx,sy,tx,ty) < naiveDistance(sx+d[dir][0],sy+d[dir][1],tx,ty)) { // if moving away from target, dig
+                                		return computeMove(sx, sy, movableTerrain, HAS_ENEMY_MINE) ;
+                                	}
                                     /*if(lastDir >= 0 && (dir - lastDir + 8) % 8 == 4) { //if turning around, dig!
                                     	//System.out.println("dir = " + directions[dir] + ", lastDir = " + directions[lastDir] + ", so trying to mine...");
                                     	return computeMove(sx, sy, movableTerrain, HAS_ENEMY_MINE) ;
                                     }*/
-                                	if(passability == PASSABLE && naiveDistance(sx,sy,tx,ty) < naiveDistance(sx+d[dir][0],sy+d[dir][1],tx,ty)) { // if moving away from target, dig
-                                		return computeMove(sx, sy, movableTerrain, HAS_ENEMY_MINE) ;
-                                	}
                                         wallDir = (dir+6+5*tracing)/2%4*2; //magic formula
                                         expectedsx = sx + d[dir][0];
                                         expectedsy = sy + d[dir][1];
                                         return d[dir];
                                 }
                         }
+                }
+                if(passability == PASSABLE) {
+                	return computeMove(sx, sy, movableTerrain, HAS_ENEMY_MINE);
                 }
                 return null;
         }

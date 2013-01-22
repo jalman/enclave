@@ -16,7 +16,7 @@ public class SoldierUtils {
 		m = findSomeEnemySoldier(8);
 		if (m != null)
 			return m;
-		m = findSomeEnemySoldier(14);
+		m = findSomeEnemySoldier(16);
 		return m;
 	}
 	

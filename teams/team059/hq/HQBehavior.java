@@ -14,11 +14,12 @@ public class HQBehavior extends RobotBehavior {
 	boolean enemyNukeHalfDone = false;
 	int enemyNukeHalfRound;
 	
-	
+	ExpandSystem expandSystem;
 	
 	public HQBehavior() {
 		strategy = Strategy.decide();
-		buildOrder = strategy.buildOrder;		
+		buildOrder = strategy.buildOrder;	
+		expandSystem = new ExpandSystem();
 	}
 	
 	@Override

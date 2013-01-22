@@ -15,12 +15,10 @@ public class RobotBehavior {
 	 * Whether we want to send messages this round.
 	 */
 	public boolean messaging;
-	public MessagingSystem messagingSystem;
 	protected MessageHandler[] messageHandlers;
 	protected Strategy strategy;
 	
 	public RobotBehavior() {
-		messagingSystem = new MessagingSystem();
 		messageHandlers = new MessageHandler[MessageType.values().length];
 		messageHandlers[MessageType.HQ_INFO.ordinal()] = getHQHandler();		
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();

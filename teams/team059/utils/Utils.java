@@ -4,6 +4,7 @@ import java.util.Random;
 
 import battlecode.common.Clock;
 import team059.Strategy;
+import team059.messaging.MessagingSystem;
 import battlecode.common.Direction;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
@@ -26,6 +27,8 @@ public class Utils {
 	public static Random random;
 	
 	public static final Mover mover = new Mover();
+	//this is for messaging
+	public static MessagingSystem messagingSystem;
 	
 	//these might be set at the beginning of the round
 	public static Strategy strategy = Strategy.NORMAL;
@@ -34,7 +37,7 @@ public class Utils {
 	private static MapLocation[] alliedEncampments;
 	public static final int ENEMY_RADIUS = 4;
 	public static final int ENEMY_RADIUS2 = ENEMY_RADIUS * ENEMY_RADIUS;
-	public static Robot[] enemyRobots;
+	public static Robot[] enemyRobots = new Robot[0];
 	public static double forward;
 	
 	public static void initUtils(RobotController rc) {
@@ -49,6 +52,8 @@ public class Utils {
 		ENEMY_HQ = rc.senseEnemyHQLocation();
 		
 		random = new Random(RC.getRobot().getID() + Clock.getRoundNum());
+
+		messagingSystem = new MessagingSystem();
 	}
 	
 	/**
@@ -71,10 +76,21 @@ public class Utils {
 	
 	private static int dx, dy;
 	
-	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { // call takes 33 bytecodes
-		dx = loc0.x > loc1.x ? loc0.x - loc1.x : loc1.x - loc0.x;
-		dy = loc0.y > loc1.y ? loc0.y - loc1.y : loc1.y - loc0.y;
-		return dx > dy ? dx : dy;
+	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { 
+		// call takes 33 bytecodes
+//		dx = loc0.x > loc1.x ? loc0.x - loc1.x : loc1.x - loc0.x;
+//		dy = loc0.y > loc1.y ? loc0.y - loc1.y : loc1.y - loc0.y;
+//		int c = dx > dy ? dx : dy;
+//		int bc = Clock.getBytecodeNum();
+		dx = loc0.x - loc1.x; // call takes 31 bytecodes
+		dy = loc0.y - loc1.y;
+		dx = dx*dx > dy*dy ? dx : dy;
+		return dx > 0? dx : -dx;
+//		int c = dx > 0 ? dx : -dx;
+//		int c = Math.max(Math.max(dx, dy), Math.max(-dx, -dy));
+		//return naiveDistance(loc0.x, loc0.y, loc1.x, loc1.y);
+//		System.out.println("bc used by naiveDistance: " + (Clock.getBytecodeNum()-bc));
+//		return c;
 	}
 	
 //	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { // call takes 36 bytecodes
@@ -85,6 +101,10 @@ public class Utils {
 		dx = x1 > x2 ? x1-x2 : x2-x1;
 		dy = y1 > y2 ? y1-y2 : y2-y1;
 		return dx > dy ? dx : dy;
+//		dx = x1 - x2;
+//		dy = y1 - y2;
+//		dx = dx*dx > dy*dy ? dx : dy;
+//		return dx > 0 ? dx : -dx;
 		//return Math.max(Math.abs(x1-x2), Math.abs(y1-y2));
 	}
 	
