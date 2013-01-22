@@ -30,7 +30,7 @@ public class Utils {
 	private static MapLocation[] alliedEncampments;
 	public static final int ENEMY_RADIUS = 5;
 	public static final int ENEMY_RADIUS2 = ENEMY_RADIUS * ENEMY_RADIUS;
-	public static Robot[] enemyRobots;
+	public static Robot[] enemyRobots = new Robot[0];
 	public static double forward;
 	
 	public static void initUtils(RobotController rc) {
