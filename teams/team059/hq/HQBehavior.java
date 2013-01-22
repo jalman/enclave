@@ -72,7 +72,13 @@ public class HQBehavior extends RobotBehavior {
 	}
 	
 	private void expand() {
-		
+		if(RC.senseCaptureCost() + 10 < RC.getTeamPower()) {
+			try {
+				expandSystem.considerExpanding(1); //fix this
+			} catch (GameActionException e) {
+				e.printStackTrace();
+			} 
+		}
 	}
 	
 	@Override

@@ -48,8 +48,8 @@ public class ExpandSystem {
 	}
 	
 	public void findEncampments() throws GameActionException {
-		encampments[0] = RC.senseEncampmentSquares(currentLocation, delimit[0], Team.NEUTRAL);
-		encampments[1] = RC.senseEncampmentSquares(currentLocation, delimit[1], Team.NEUTRAL);
+		encampments[0] = RC.senseEncampmentSquares(ALLY_HQ, delimit[0], Team.NEUTRAL);
+		encampments[1] = RC.senseEncampmentSquares(ALLY_HQ, delimit[1], Team.NEUTRAL);
 		encampments[2] = RC.senseAllEncampmentSquares();
 	}
 	
@@ -61,7 +61,7 @@ public class ExpandSystem {
 	**/
 	public void considerExpanding(int far) throws GameActionException {
 		for(MapLocation loc : encampments[far]) {
-			if(RC.senseObjectAtLocation(loc) == null) {
+			if(!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null) {
 				messagingSystem.writeTakeEncampmentMessage(loc, 30 - 5*far, generators > suppliers ? RobotType.SUPPLIER : RobotType.GENERATOR);
 				return;
 			}
