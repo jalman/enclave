@@ -80,7 +80,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		};
 	}
 
-	@Override
+	//@Override
 	protected MessageHandler getTakeEncampmentHandler() {
 		return new MessageHandler() {
 			@Override
