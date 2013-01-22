@@ -12,7 +12,7 @@ public class Mover {
 	
 	public Mover() { 
 		this.dest = null;
-		this.navAlg = NavType.ASTAR3.navAlg;
+		this.navAlg = NavType.BUG_DIG_2.navAlg;
 		this.defuseMoving = true;
 	}
 	
