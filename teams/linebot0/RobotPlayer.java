@@ -20,10 +20,19 @@ public class RobotPlayer {
 				if (rc.getType() == RobotType.HQ) {
 					if (rc.isActive()) {
 						// Spawn a soldier
-						Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
-						if (rc.canMove(dir))
-							rc.spawn(dir);
-
+						if(!rc.hasUpgrade(Upgrade.DEFUSION)) {
+							rc.researchUpgrade(Upgrade.DEFUSION);
+						} else {
+							Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
+							Direction tryDir = dir;
+							do {
+								if (rc.canMove(tryDir)) {
+									rc.spawn(tryDir);
+									break;
+								}
+								tryDir = tryDir.rotateLeft();
+							} while(!tryDir.equals(dir));
+						}
 					}
 				} else if (rc.getType() == RobotType.SOLDIER) {
 					//System.out.println("(" + (Clock.getRoundNum() - 20) + ", " + (Clock.getRoundNum() - 20) + "): " + rc.senseTerrainTile(new MapLocation(Clock.getRoundNum() - 20, Clock.getRoundNum() - 20)));
