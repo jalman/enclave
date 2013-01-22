@@ -131,7 +131,7 @@ public class PartialAStar3 extends NavAlg {
 
 					loop_bc = Clock.getBytecodeNum();
 
-					System.out.println("@ bc used for naiveDistance for neighbor " + neighbor + " of " + current + " = " + (loop_bc-bc) );
+					//System.out.println("@ bc used for naiveDistance for neighbor " + neighbor + " of " + current + " = " + (loop_bc-bc) );
 					//System.out.println(Clock.getBytecodeNum());
 
 					//System.out.print(neighbor + ": " + cost_to_neighbor + ", ");
@@ -194,7 +194,7 @@ public class PartialAStar3 extends NavAlg {
 	}
 
 	public Direction getNextDir() {
-		System.out.println(Clock.getBytecodeNum() +  " - getNextDir");
+		//System.out.println(Clock.getBytecodeNum() +  " - getNextDir");
 		if(next != null) {
 			return curLoc.directionTo(next);
 		} else {

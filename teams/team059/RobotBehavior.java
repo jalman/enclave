@@ -17,6 +17,7 @@ public class RobotBehavior {
 	public boolean messaging;
 	public MessagingSystem messagingSystem;
 	protected MessageHandler[] messageHandlers;
+	protected Strategy strategy;
 	
 	public RobotBehavior() {
 		messagingSystem = new MessagingSystem();
