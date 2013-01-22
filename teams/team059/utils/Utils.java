@@ -24,12 +24,13 @@ public class Utils {
 	public static Random random;
 	
 	//these might be set at the beginning of the round
-	public static Strategy strategy;
+	public static Strategy strategy = Strategy.NORMAL;
 	
 	public static MapLocation currentLocation;
 	private static MapLocation[] alliedEncampments;
 	public static final int ENEMY_RADIUS = 5;
-	private static Robot[] enemyRobots;
+	public static final int ENEMY_RADIUS2 = ENEMY_RADIUS * ENEMY_RADIUS;
+	public static Robot[] enemyRobots;
 	public static double forward;
 	
 	public static void initUtils(RobotController rc) {
@@ -52,7 +53,8 @@ public class Utils {
 	public static void updateUtils() {
 		currentLocation = RC.getLocation();
 		alliedEncampments = null;
-		forward = Math.log((double)naiveDistance(currentLocation, ALLY_HQ) / naiveDistance(currentLocation, ALLY_HQ));
+		forward = Math.log((double)naiveDistance(currentLocation, ALLY_HQ) / naiveDistance(currentLocation, ENEMY_HQ));
+		RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
 	}
 	
 	public static boolean isEnemyMine(Team team) {

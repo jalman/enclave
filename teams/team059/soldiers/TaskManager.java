@@ -1,6 +1,5 @@
 package team059.soldiers;
 
-import team059.Task;
 import team059.utils.ArraySet;
 
 public class TaskManager extends TaskGiver {
