@@ -1,36 +1,20 @@
-package team059.utils;
-
-import java.util.Random;
+package movertest;
 
 import battlecode.common.Clock;
-import team059.Strategy;
-import battlecode.common.Direction;
 import battlecode.common.MapLocation;
-import battlecode.common.Robot;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
 
 public class Utils {
-	//actual constants
-	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
-	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
-	public static Direction[] DIRECTIONS = Direction.values();
-	
-	//these are set from the beginning of the game
 	public static RobotController RC;
 	public static int MAP_WIDTH, MAP_HEIGHT;
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
-	public static Random random;
 	
-	//these might be set at the beginning of the round
-	public static Strategy strategy;
+	//public static Strategy strategy;
 	
-	public static MapLocation currentLocation;
-	private static MapLocation[] alliedEncampments;
-	public static final int ENEMY_RADIUS = 5;
-	private static Robot[] enemyRobots;
-	public static double forward;
+	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
+	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
 	
 	public static void initUtils(RobotController rc) {
 		RC = rc;
@@ -42,18 +26,8 @@ public class Utils {
 		ENEMY_TEAM = (ALLY_TEAM == Team.A) ? Team.B : Team.A;
 		ALLY_HQ = rc.senseHQLocation();
 		ENEMY_HQ = rc.senseEnemyHQLocation();
-		
-		random = new Random(RC.getRobot().getID() + Clock.getRoundNum());
 	}
 	
-	/**
-	 * Called at the beginning of each round.
-	 */
-	public static void updateUtils() {
-		currentLocation = RC.getLocation();
-		alliedEncampments = null;
-		forward = Math.log((double)naiveDistance(currentLocation, ALLY_HQ) / naiveDistance(currentLocation, ALLY_HQ));
-	}
 	
 	public static boolean isEnemyMine(Team team) {
 		return !(team == ALLY_TEAM || team == null);
@@ -111,18 +85,5 @@ public class Utils {
 		}
 		
 		return close;
-	}
-	
-	public static MapLocation[] getAlliedEncampments() {
-		if(alliedEncampments == null) {
-			alliedEncampments = RC.senseAlliedEncampmentSquares();
-		}
-		return alliedEncampments;
-	}
-	
-	public static int clamp(int i, int min, int max) {
-		if(i < min) return min;
-		if(i > max) return max;
-		return i;
 	}
 }

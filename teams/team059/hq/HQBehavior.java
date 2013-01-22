@@ -11,30 +11,39 @@ public class HQBehavior extends RobotBehavior {
 	
 	HQAction[] buildOrder;
 	int buildOrderProgress = 0;
-
+	boolean enemyNukeHalfDone = false;
+	int enemyNukeHalfRound;
+	
+	
+	
+	public HQBehavior() {
+		strategy = Strategy.decide();
+		buildOrder = strategy.buildOrder;		
+	}
+	
 	@Override
-	public void beginRound() {
-		if(Clock.getRoundNum() == 0) {
-			strategy = Strategy.decide();
-			buildOrder = strategy.buildOrder;
-		}
-		
+	public void beginRound() throws GameActionException {		
 		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
 		//messaging = false;
 		if(messaging) {
 			try {
 				messagingSystem.beginRoundHQ();
-				//messagingSystem.writeAttackMessage(RC.getLocation(), 5);
 			} catch (GameActionException e1) {
 				e1.printStackTrace();
 			}
+			messagingSystem.handleMessages(messageHandlers);
 		}
 		
-		messagingSystem.handleMessages(messageHandlers);
+		if(!enemyNukeHalfDone && Clock.getRoundNum() > Upgrade.NUKE.numRounds / 2) {
+			enemyNukeHalfDone = RC.senseEnemyNukeHalfDone();
+			enemyNukeHalfRound = Clock.getRoundNum();
+		}
 	}
 
-	@Override
-	public void run() {
+	/**
+	 * Handle upgrades and robots.
+	 */
+	private void macro() {
 		if(buildOrderProgress < buildOrder.length) {
 			try {
 				if(buildOrder[buildOrderProgress].execute(this)) {
@@ -46,8 +55,8 @@ public class HQBehavior extends RobotBehavior {
 		} else if(RC.isActive()) {
 			if(Clock.getRoundNum() < 100 || (RC.getTeamPower() - 40.0 > 15.0)) {
 				try {
-			//		RC.setIndicatorString(0, Double.toString(RC.getTeamPower()) + "  asdf");
-					buildSoldier(RC.getLocation().directionTo(RC.senseEnemyHQLocation()));
+					//RC.setIndicatorString(0, Double.toString(RC.getTeamPower()) + "  asdf");
+					buildSoldier();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -59,17 +68,42 @@ public class HQBehavior extends RobotBehavior {
 				}
 			}
 		}
-
 	}
 	
-	void rushStrategy() {
+	private void expand() {
 		
 	}
 	
+	@Override
+	public void run() {
+		macro();
+		expand();
+	}
+	
+	public boolean panic() {
+		try {
+			return enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE);
+		} catch (GameActionException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
+	 * Tries to build a soldier.
+	 * @return Whether successful.
+	 * @throws GameActionException
+	 */
 	boolean buildSoldier() throws GameActionException {
 		return buildSoldier(ALLY_HQ.directionTo(ENEMY_HQ));
 	}
 	
+	/**
+	 * Tries to build a soldier.
+	 * @param dir The direction in which to build.
+	 * @return Whether successful.
+	 * @throws GameActionException
+	 */
 	boolean buildSoldier(Direction dir) throws GameActionException {
 		if (RC.isActive()) {
 			// Spawn a soldier

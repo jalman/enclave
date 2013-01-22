@@ -241,7 +241,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	private void idleBehavior() throws GameActionException {
 		charging = false;
-		mover.setNavType(NavType.BUG_DIG_1);
+		mover.setNavType(NavType.BUG_DIG_2);
 		
 		//see if there is an encampment nearby to take
 		
@@ -307,7 +307,7 @@ public class SoldierBehavior extends RobotBehavior {
 	}
 
 	private void attackBehavior() {
-		mover.setNavType(NavType.BUG_DIG_3);
+		mover.setNavType(NavType.BUG_DIG_2);
 		charging = attackSequenceState >= 3;
 		
 		if(attackSequenceState < 3 && (rc.senseNearbyGameObjects(Robot.class, sequence[attackSequenceState], 20, myTeam).length >= 6 || timeSinceSwitch >= 40)) {

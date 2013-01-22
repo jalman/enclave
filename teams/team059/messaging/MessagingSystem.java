@@ -9,6 +9,7 @@ import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.GameConstants;
 import battlecode.common.MapLocation;
+import battlecode.common.RobotType;
 import static team059.utils.Utils.*;
 
 /**
@@ -273,10 +274,15 @@ public class MessagingSystem {
 	public void writeHQMessage(Strategy strategy) throws GameActionException {
 		writeMessage(MessageType.HQ_INFO.ordinal(), strategy.ordinal());
 	}
+	
 	public void writeCheckpointMessage(int pointNumber) throws GameActionException {
 		writeMessage(MessageType.CHECKPOINT_NUMBER.ordinal(), pointNumber);
 	}
 
+	public void writeTakeEncampmentMessage(MapLocation loc, int priority, RobotType buildType) throws GameActionException {
+		writeMessage(MessageType.TAKE_ENCAMPMENT.ordinal(), loc.x, loc.y, priority, buildType.ordinal());
+	}
+	
 	public void debug() throws GameActionException {
 		for(int i = 0; i < total_messages; i++) {
 			int off = i * BLOCK_SIZE;

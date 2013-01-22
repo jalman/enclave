@@ -17,6 +17,7 @@ public class RobotBehavior {
 	public boolean messaging;
 	public MessagingSystem messagingSystem;
 	protected MessageHandler[] messageHandlers;
+	protected Strategy strategy;
 	
 	public RobotBehavior() {
 		messagingSystem = new MessagingSystem();
@@ -32,7 +33,7 @@ public class RobotBehavior {
 	/**
 	 * Called at the beginning of each round.
 	 */
-	public void beginRound() {
+	public void beginRound() throws GameActionException{
 		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
 		//messaging = false;
 		
@@ -48,7 +49,7 @@ public class RobotBehavior {
 	/**
 	 * Called every round.
 	 */
-	public void run() {}
+	public void run() throws GameActionException {}
 
 	/**
 	 * Called at the end of each round.
