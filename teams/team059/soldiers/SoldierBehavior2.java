@@ -81,11 +81,12 @@ public class SoldierBehavior2 extends RobotBehavior {
 		};
 	}
 
-	//@Override
+	@Override
 	protected MessageHandler getTakeEncampmentHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
+				System.out.println("hi");
 				taskManager.insertTask(new ExpandTask(new MapLocation(message[1], message[2]), message[3], RobotType.values()[message[4]]));
 			}
 		};
