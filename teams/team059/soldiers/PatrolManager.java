@@ -1,6 +1,5 @@
 package team059.soldiers;
 
-import team059.Task;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import static team059.utils.Utils.*;
@@ -21,6 +20,8 @@ public class PatrolManager extends TaskGiver {
 	public void compute() throws GameActionException {
 		double position = forward - strategy.border;
 		
+		RC.setIndicatorString(0, String.valueOf(position));
+		
 		if(position > strategy.margin) {
 			retreat();
 		} else if(position < strategy.margin) {
@@ -32,7 +33,7 @@ public class PatrolManager extends TaskGiver {
 
 	private void retreat() {
 		Direction dir = currentLocation.directionTo(ALLY_HQ);
-		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY);		
+		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY);
 	}
 	
 	private void advance() {
