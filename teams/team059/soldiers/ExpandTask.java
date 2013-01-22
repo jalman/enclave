@@ -69,5 +69,10 @@ public class ExpandTask extends TravelTask {
 		//TODO: do something better
 		return Clock.getRoundNum() % 2 == 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
 	}
+	
+	@Override
+	public String toString() {
+		return "Expand";
+	}
 
 }

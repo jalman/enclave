@@ -24,6 +24,7 @@ public class RobotBehavior {
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();
 		messageHandlers[MessageType.CHECKPOINT_NUMBER.ordinal()] = getCheckpointHandler();
 		messageHandlers[MessageType.MICRO_INFO.ordinal()] = getMicroHandler();
+		messageHandlers[MessageType.TAKE_ENCAMPMENT.ordinal()] = getTakeEncampmentHandler();
 	}
 
 	protected int danger(MapLocation loc) {return 0;}
@@ -38,6 +39,7 @@ public class RobotBehavior {
 		if(messaging) {
 			try {
 				messagingSystem.beginRound();
+				messagingSystem.handleMessages(messageHandlers);
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}
@@ -94,4 +96,6 @@ public class RobotBehavior {
 	protected MessageHandler getCheckpointHandler() {return new DefaultMessageHandler();}	
 	
 	protected MessageHandler getMicroHandler() {return new DefaultMessageHandler();}
+
+	protected MessageHandler getTakeEncampmentHandler() {return new DefaultMessageHandler();}	
 }

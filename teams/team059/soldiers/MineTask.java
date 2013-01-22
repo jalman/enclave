@@ -25,11 +25,15 @@ public class MineTask extends TravelTask {
 	@Override
 	public void execute() throws GameActionException {
 		if(super.done()) {
+			/*
 			if(RC.hasUpgrade(Upgrade.PICKAXE)) {
 				
 			} else {
 				
-			}			
+			}	*/
+			if(RC.senseMine(currentLocation) == null) {
+				RC.layMine();
+			}
 		} else {
 			super.execute();
 		}

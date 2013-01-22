@@ -16,6 +16,8 @@ public class ExpandSystem {
 	public MapLocation[][] encampments = new MapLocation[3][];
 	int[] delimit = new int[2];
 	
+	boolean[] finished = new boolean[3];
+	
 	int suppliers = 0;
 	int generators = 0;
 	
@@ -60,12 +62,18 @@ public class ExpandSystem {
 	 * @throws GameActionException 
 	**/
 	public void considerExpanding(int far) throws GameActionException {
+		while(finished[far]) {
+			far++;
+		}
+		System.out.println("consider expanding " + far);
 		for(MapLocation loc : encampments[far]) {
 			if(!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null) {
-				messagingSystem.writeTakeEncampmentMessage(loc, 30 - 5*far, generators > suppliers ? RobotType.SUPPLIER : RobotType.GENERATOR);
+				messagingSystem.writeTakeEncampmentMessage(loc, 1000000, generators > suppliers ? RobotType.SUPPLIER : RobotType.GENERATOR);
 				return;
 			}
 		}
+		finished[far] = true;
+		considerExpanding(far+1);
 	}
 	
 }
