@@ -6,7 +6,6 @@ import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotType;
 import team059.RobotBehavior;
-import team059.Task;
 import team059.messaging.MessageHandler;
 import team059.movement.Mover;
 import team059.soldiers.micro.Micro;
@@ -21,7 +20,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 
 	public Mover mover;
 
-	
+	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
 	private TaskManager taskManager;
 
@@ -31,10 +30,11 @@ public class SoldierBehavior2 extends RobotBehavior {
 	public SoldierBehavior2() {
 		mover = new Mover();
 
-		expandManager = new ExpandManager(this);
+		patrolManager = new PatrolManager();
+		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
 
-		taskGivers = new TaskGiver[] {taskManager, expandManager};
+		taskGivers = new TaskGiver[] {patrolManager, taskManager, expandManager};
 	}
 
 	@Override
@@ -65,7 +65,8 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		}
 
-		if(currentTask != null) {
+		if(currentTask != null && RC.isActive()) {
+			RC.setIndicatorString(1, currentTask.toString());
 			currentTask.execute();
 		}
 	}

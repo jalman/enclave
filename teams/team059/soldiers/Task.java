@@ -1,4 +1,4 @@
-package team059;
+package team059.soldiers;
 
 import battlecode.common.GameActionException;
 

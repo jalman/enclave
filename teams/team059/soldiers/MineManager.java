@@ -1,6 +1,5 @@
 package team059.soldiers;
 
-import team059.Task;
 import battlecode.common.GameActionException;
 
 public class MineManager extends TaskGiver {
