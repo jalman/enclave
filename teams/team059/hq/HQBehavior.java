@@ -11,14 +11,18 @@ public class HQBehavior extends RobotBehavior {
 	
 	HQAction[] buildOrder;
 	int buildOrderProgress = 0;
-
+	boolean enemyNukeHalfDone = false;
+	int enemyNukeHalfRound;
+	
+	
+	
+	public HQBehavior() {
+		strategy = Strategy.decide();
+		buildOrder = strategy.buildOrder;		
+	}
+	
 	@Override
-	public void beginRound() {
-		if(Clock.getRoundNum() == 0) {
-			strategy = Strategy.decide();
-			buildOrder = strategy.buildOrder;
-		}
-		
+	public void beginRound() throws GameActionException {		
 		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
 		//messaging = false;
 		if(messaging) {
@@ -29,10 +33,17 @@ public class HQBehavior extends RobotBehavior {
 			}
 			messagingSystem.handleMessages(messageHandlers);
 		}
+		
+		if(!enemyNukeHalfDone && Clock.getRoundNum() > Upgrade.NUKE.numRounds / 2) {
+			enemyNukeHalfDone = RC.senseEnemyNukeHalfDone();
+			enemyNukeHalfRound = Clock.getRoundNum();
+		}
 	}
 
-	@Override
-	public void run() {
+	/**
+	 * Handle upgrades and robots.
+	 */
+	private void macro() {
 		if(buildOrderProgress < buildOrder.length) {
 			try {
 				if(buildOrder[buildOrderProgress].execute(this)) {
@@ -57,7 +68,25 @@ public class HQBehavior extends RobotBehavior {
 				}
 			}
 		}
-
+	}
+	
+	private void expand() {
+		
+	}
+	
+	@Override
+	public void run() {
+		macro();
+		expand();
+	}
+	
+	public boolean panic() {
+		try {
+			return enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE);
+		} catch (GameActionException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	/**

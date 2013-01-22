@@ -1,18 +1,93 @@
 package team059.soldiers;
 
+import battlecode.common.Clock;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.Robot;
+import battlecode.common.RobotType;
 import team059.RobotBehavior;
-import team059.utils.Utils;
+import team059.Task;
+import team059.messaging.MessageHandler;
+import team059.movement.Mover;
+import team059.soldiers.micro.Micro;
+import static team059.utils.Utils.*;
 
 public class SoldierBehavior2 extends RobotBehavior {
 
-	@Override
-	public void initTasks() {
-		pendingTasks.insert(new MineTask(this, Utils.ALLY_HQ));
-		pendingTasks.insert(new ExpandTask(this));
-	}
+	public static int ENEMY_RADIUS = 5;
+	public static int ENEMY_RADIUS2 = 25;
+
+	public Robot[] nearbyEnemies;
+
+	public Mover mover;
+
 	
-	@Override
-	public void chooseTasks() {
-		
+	private ExpandManager expandManager;
+	private TaskManager taskManager;
+
+	private TaskGiver[] taskGivers;
+	private Task currentTask;
+
+	public SoldierBehavior2() {
+		mover = new Mover();
+
+		expandManager = new ExpandManager(this);
+		taskManager = new TaskManager();
+
+		taskGivers = new TaskGiver[] {taskManager, expandManager};
 	}
+
+	@Override
+	public void beginRound() throws GameActionException {
+		super.beginRound();
+		nearbyEnemies = RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
+	}
+
+	private static final int THINK_PERIOD = 20;
+
+	@Override
+	public void run() throws GameActionException {
+		boolean compute = currentTask == null || currentTask.done();
+
+		int max_appeal = Integer.MIN_VALUE;
+
+		for(int i = 0; i < taskGivers.length; i++) {
+			TaskGiver tg = taskGivers[i];
+			if(compute || Clock.getRoundNum() % THINK_PERIOD == i) {
+				tg.compute();
+			}
+			Task t = tg.getTask();
+			if(t == null) continue;
+			int appeal = t.appeal();
+			if(appeal > max_appeal) {
+				currentTask = t;
+				max_appeal = appeal;
+			}
+		}
+
+		if(currentTask != null) {
+			currentTask.execute();
+		}
+	}
+
+	@Override
+	protected MessageHandler getAttackHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				taskManager.insertTask(new AttackTask(new MapLocation(message[1], message[2]), message[3]));
+			}
+		};
+	}
+
+	@Override
+	protected MessageHandler getTakeEncampmentHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				taskManager.insertTask(new ExpandTask(new MapLocation(message[1], message[2]), message[3], RobotType.values()[message[4]]));
+			}
+		};
+	}
+
 }

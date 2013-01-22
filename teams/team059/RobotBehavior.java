@@ -3,13 +3,15 @@ package team059;
 import team059.messaging.MessageHandler;
 import team059.messaging.MessageType;
 import team059.messaging.MessagingSystem;
+import team059.soldiers.TaskGiver;
 import team059.utils.ArraySet;
 import static team059.utils.Utils.*;
+import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 
 public class RobotBehavior {
 
-	public static final int TASK_SWITCH_THRESHOLD = 5;
+	public static final int TASK_SWITCH_THRESHOLD = 10;
 	
 	/**
 	 * Whether we want to send messages this round.
@@ -19,6 +21,7 @@ public class RobotBehavior {
 	protected MessageHandler[] messageHandlers;
 
 	protected ArraySet<Task> pendingTasks;
+	protected TaskGiver[] taskGivers = new TaskGiver[0];
 	protected Task currentTask = null;
 	
 	public RobotBehavior() {
@@ -27,20 +30,16 @@ public class RobotBehavior {
 		messageHandlers[MessageType.HQ_INFO.ordinal()] = getHQHandler();		
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();
 		messageHandlers[MessageType.CHECKPOINT_NUMBER.ordinal()] = getCheckpointHandler();
+		messageHandlers[MessageType.TAKE_ENCAMPMENT.ordinal()] = getTakeEncampmentHandler();
 		
 		pendingTasks = new ArraySet<Task>(1000);
 	}
 
 	/**
-	 * Initializes the persistent tasks.
-	 */
-	public void initTasks() {};
-	
-	/**
 	 * Called at the beginning of each round.
 	 * By default, reads and handles messages.
 	 */
-	public void beginRound() {
+	public void beginRound() throws GameActionException {
 		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
 		//messaging = false;
 		
@@ -55,9 +54,9 @@ public class RobotBehavior {
 	}
 
 	/**
-	 * Chooses new tasks each round.
+	 * Add tasks to the list of pending tasks.
 	 */
-	protected void chooseTasks() {}
+	public void chooseTasks() {}
 	
 	/**
 	 * Called every round.
@@ -65,39 +64,41 @@ public class RobotBehavior {
 	 */
 	public void run() throws GameActionException {
 		if(!RC.isActive()) return;
-		chooseTasks();
 		
-		int max_appeal = currentTask != null ? currentTask.appeal()  + TASK_SWITCH_THRESHOLD : 0;
+		if(currentTask.done()) {
+			currentTask = null;
+		}
+		
+		int max_appeal;
+		
+		if(currentTask == null || Clock.getRoundNum() % 25 == 0) {
+			chooseTasks();
+		}
+		
+		max_appeal = currentTask != null ? currentTask.appeal() + TASK_SWITCH_THRESHOLD : 0;
 		
 		for(int i = 0; i < pendingTasks.size; i++) {
-			Task task = pendingTasks.get(i);
-			int appeal = task.appeal();
-			
-			if(appeal < 0) {
+			Task t = pendingTasks.get(i);
+			if(t.done()) {
 				pendingTasks.delete(i);
-			} else if(appeal > max_appeal) {
-				max_appeal = appeal;
-				if(currentTask == null) {
-					currentTask = task;
-					pendingTasks.delete(i);
-				} else {
-					Task swap = currentTask;
-					currentTask = task;
-					pendingTasks.set(i, swap);
-				}
+				continue;
+			}
+			
+			int a = t.appeal();
+			if(a > max_appeal) {
+				currentTask = t;
+				max_appeal = a;
 			}
 		}
 		
-		if(currentTask != null && currentTask.execute()) {
-			currentTask = null;
-		}
+		currentTask.execute();
 	}
 
 	/**
 	 * Called at the end of each round.
 	 * By default, writes the header message.
 	 */
-	public void endRound() {
+	public void endRound() throws GameActionException {
 		if(messaging) {
 			try {
 				messagingSystem.endRound();
@@ -119,8 +120,7 @@ public class RobotBehavior {
 	protected MessageHandler getAttackHandler() {return new DefaultMessageHandler();}
 	
 	/**
-	 * Override in order to respond to this type of message.
-	 * @return The default message handler (does nothing).
+	 * Receives the current strategy from the HQ.
 	 */
 	protected MessageHandler getHQHandler() {
 		return new MessageHandler() {
@@ -137,4 +137,12 @@ public class RobotBehavior {
 	 * @return The default message handler (does nothing).
 	 */
 	protected MessageHandler getCheckpointHandler() {return new DefaultMessageHandler();}	
+	
+	
+	/**
+	 * Override in order to respond to this type of message.
+	 * @return The default message handler (does nothing).
+	 */
+	protected MessageHandler getTakeEncampmentHandler() {return new DefaultMessageHandler();}	
+	
 }

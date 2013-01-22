@@ -1,31 +1,15 @@
 package team059.soldiers;
 
-import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import team059.Task;
+import team059.movement.Mover;
+import team059.movement.NavType;
 
-public class AttackTask implements Task {
-
-	private final SoldierBehavior2 soldierBehavior;
+public class AttackTask extends TravelTask {
 	
-	private final MapLocation target;
-	private final int priority;
+	private static final Mover mover = new Mover(NavType.BUG_DIG_I1);
 	
-	public AttackTask(SoldierBehavior2 sb, MapLocation target, int priority) {
-		soldierBehavior = sb;
-		this.target = target;
-		this.priority = priority;
+	public AttackTask(MapLocation target, int priority) {
+		super(mover, target, priority, 1);
 	}
-	
-	@Override
-	public int appeal() {
-		return priority;
-	}
-
-	@Override
-	public boolean execute() throws GameActionException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

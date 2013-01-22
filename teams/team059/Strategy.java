@@ -8,9 +8,9 @@ import battlecode.common.MapLocation;
 import battlecode.common.Team;
 
 public enum Strategy {
-	NORMAL(10, 5),
-	NUCLEAR(5, 5, new BuildSoldier(4), UPGRADE_PICKAXE, new BuildSoldier(4)),
-	RUSH(5, 10, new BuildSoldier(2), UPGRADE_DEFUSION);
+	NORMAL(10, 0.0),
+	NUCLEAR(5, -1.0, new BuildSoldier(4), UPGRADE_PICKAXE, new BuildSoldier(4)),
+	RUSH(5, 1.0, new BuildSoldier(2), UPGRADE_DEFUSION);
 	
 	/**
 	 * How quickly to expand at the beginning.
@@ -18,16 +18,20 @@ public enum Strategy {
 	public final int greed;
 	
 	/**
-	 * How willing we are to launch an attack on the enemy.
+	 * Roughly defines the border between us and the enemy.
 	 */
-	public final int aggression;
+	public final double border;
+	
+	/**
+	 * Half the "width" of the border.
+	 */
+	public static final double margin = 0.3;
 	
 	public final HQAction[] buildOrder;
 	
-	
-	private Strategy(int greed, int aggression, HQAction... buildOrder) {
+	private Strategy(int greed, double border, HQAction... buildOrder) {
 		this.greed = greed;
-		this.aggression = aggression;
+		this.border = border;
 		this.buildOrder = buildOrder;
 	}
 	

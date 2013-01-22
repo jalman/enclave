@@ -10,6 +10,18 @@ public class Mover {
 	private boolean defuseMoving;
 	private NavAlg navAlg;
 	
+	public Mover() { 
+		this.dest = null;
+		this.navAlg = NavType.ASTAR3.navAlg;
+		this.defuseMoving = true;
+	}
+	
+	public Mover(NavType navType) {
+		this.dest = null;
+		this.navAlg = navType.navAlg;
+		this.defuseMoving = true;		
+	}
+	
 	public Mover(RobotBehavior rb) { 
 		this.dest = null;
 		this.navAlg = NavType.ASTAR3.navAlg;

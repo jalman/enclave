@@ -9,6 +9,11 @@ public class ArraySet<T> {
 		size = 0;
 	}
 	
+	public ArraySet(T... ts) {
+		array = ts;
+		size = ts.length;
+	}
+	
 	public void insert(T t) {
 		array[size++] = t;
 	}

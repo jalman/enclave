@@ -34,8 +34,6 @@ public class RobotPlayer {
 			robot = new EncampmentBehavior();
 			break;
 		}
-		
-		robot.initTasks();
 
 		try {
 			while(true) {
