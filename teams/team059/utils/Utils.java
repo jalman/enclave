@@ -4,6 +4,7 @@ import java.util.Random;
 
 import battlecode.common.Clock;
 import team059.Strategy;
+import team059.messaging.MessagingSystem;
 import battlecode.common.Direction;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
@@ -22,6 +23,9 @@ public class Utils {
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
 	public static Random random;
+	
+	//this is for messaging
+	public static MessagingSystem messagingSystem;
 	
 	//these might be set at the beginning of the round
 	public static Strategy strategy;
@@ -44,6 +48,8 @@ public class Utils {
 		ENEMY_HQ = rc.senseEnemyHQLocation();
 		
 		random = new Random(RC.getRobot().getID() + Clock.getRoundNum());
+
+		messagingSystem = new MessagingSystem();
 	}
 	
 	/**
