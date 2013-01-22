@@ -65,10 +65,21 @@ public class Utils {
 	
 	private static int dx, dy;
 	
-	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { // call takes 33 bytecodes
-		dx = loc0.x > loc1.x ? loc0.x - loc1.x : loc1.x - loc0.x;
-		dy = loc0.y > loc1.y ? loc0.y - loc1.y : loc1.y - loc0.y;
-		return dx > dy ? dx : dy;
+	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { 
+		// call takes 33 bytecodes
+//		dx = loc0.x > loc1.x ? loc0.x - loc1.x : loc1.x - loc0.x;
+//		dy = loc0.y > loc1.y ? loc0.y - loc1.y : loc1.y - loc0.y;
+//		int c = dx > dy ? dx : dy;
+//		int bc = Clock.getBytecodeNum();
+		dx = loc0.x - loc1.x; // call takes 31 bytecodes
+		dy = loc0.y - loc1.y;
+		dx = dx*dx > dy*dy ? dx : dy;
+		return dx > 0? dx : -dx;
+//		int c = dx > 0 ? dx : -dx;
+//		int c = Math.max(Math.max(dx, dy), Math.max(-dx, -dy));
+		//return naiveDistance(loc0.x, loc0.y, loc1.x, loc1.y);
+//		System.out.println("bc used by naiveDistance: " + (Clock.getBytecodeNum()-bc));
+//		return c;
 	}
 	
 //	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { // call takes 36 bytecodes
@@ -79,6 +90,10 @@ public class Utils {
 		dx = x1 > x2 ? x1-x2 : x2-x1;
 		dy = y1 > y2 ? y1-y2 : y2-y1;
 		return dx > dy ? dx : dy;
+//		dx = x1 - x2;
+//		dy = y1 - y2;
+//		dx = dx*dx > dy*dy ? dx : dy;
+//		return dx > 0 ? dx : -dx;
 		//return Math.max(Math.abs(x1-x2), Math.abs(y1-y2));
 	}
 	
