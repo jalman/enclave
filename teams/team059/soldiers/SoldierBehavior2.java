@@ -91,5 +91,13 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};
 	}
-
+	
+	protected MessageHandler getMicroHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
+			}
+		};
+	}
 }

@@ -7,12 +7,12 @@ import team059.movement.NavType;
 import team059.utils.Utils;
 import static team059.utils.Utils.*;
 
-public class AttackTask extends TravelTask {
+public class MicroTask extends TravelTask {
 	
 	private static final Mover mover = new Mover();
 	
 	
-	public AttackTask(MapLocation target, int priority) {
+	public MicroTask(MapLocation target, int priority) {
 		super(mover, target, priority, 1);
 	}
 	

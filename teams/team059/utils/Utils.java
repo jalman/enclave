@@ -26,7 +26,6 @@ public class Utils {
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
 	public static Random random;
 	
-	public static final Mover mover = new Mover();
 	//this is for messaging
 	public static MessagingSystem messagingSystem;
 	

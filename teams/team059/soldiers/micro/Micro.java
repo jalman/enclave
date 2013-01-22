@@ -1,8 +1,10 @@
 package team059.soldiers.micro;
 
 import team059.messaging.MessagingSystem;
+import team059.movement.Mover;
 import team059.movement.NavType;
 import team059.soldiers.SoldierBehavior;
+import team059.soldiers.SoldierBehavior2;
 import team059.utils.Utils;
 import static team059.utils.Utils.*;
 import battlecode.common.*;
@@ -16,10 +18,12 @@ public class Micro {
 	MapLocation retreatTarget = null;
 	MapLocation encampTarget = null, c = null;
 	Direction d = null;
-	int enemySoldierNumber, allyNumber;
-	public static int ALLY_RADIUS2 = 14;
-	
+	int enemyNumber, allyNumber;
+	public static int ALLY_RADIUS2 = 16;
+	public static final Mover mover = new Mover();
 	public MapLocation enemySoldierTarget, curLoc;
+	
+	int count = 0;
 	
 	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
 	
@@ -28,16 +32,21 @@ public class Micro {
 	}
 	
 	public void run() throws GameActionException{
-		if ((Clock.getRoundNum() + RC.getRobot().getID() % 2) == 0)
+		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
+		setVariables();
+		if(count % 5 == 0)
 		{
-			setVariables();
+			Utils.messagingSystem.writeAttackMessage(enemySoldierTarget, 10000);
 		}
 		microCode();
+		if(RC.isActive())
+			mover.execute();
+		count++;
 	}
 	public void setVariables() throws GameActionException{
-		enemySoldierNumber = Utils.enemyRobots.length - RC.senseEncampmentSquares(RC.getLocation(), Utils.ENEMY_RADIUS2, Utils.ENEMY_TEAM).length;
+		enemyNumber = Utils.enemyRobots.length;
 		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, ENEMY_TEAM).length;
-		Utils.mover.setNavType(NavType.BUG);
+		mover.setNavType(NavType.BUG);
 		enemySoldierTarget = SoldierUtils.findClosebySoldier();
 	}
 	/**
@@ -46,18 +55,17 @@ public class Micro {
 	 */
 	
 	public void microCode() throws GameActionException{
-
+		setRetreatBack();
 		if (enemySoldierTarget.distanceSquaredTo(RC.getLocation())<= 2)
 		{
-			Utils.mover.setTarget(RC.getLocation());
+			mover.setTarget(RC.getLocation());
 		}
 		else if (!shouldIAttack())
 		{
 			setRetreatBack();
 			RC.setIndicatorString(2, "Retreating " + Clock.getRoundNum());
-			Utils.mover.setTarget(retreatTarget);
+			mover.setTarget(retreatTarget);
 		}
-		
 		else
 		{	
 			attackTarget(enemySoldierTarget);
@@ -86,10 +94,10 @@ public class Micro {
 		if (enemySoldierTarget != null)
 		{
 			retreatTarget = c.add(RC.getLocation().directionTo(enemySoldierTarget).opposite(), 2);
-			if (retreatTarget == null)
-			{
-				retreatTarget = ALLY_HQ;
-			}
+		}
+		else
+		{
+			retreatTarget = Utils.ALLY_HQ;
 		}
 	}
 	public void setRetreatEncampment() throws GameActionException //makes the retreat target the nearest encampment
@@ -104,7 +112,7 @@ public class Micro {
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(enemySoldierNumber < allyNumber)
+		if(enemyNumber < allyNumber)
 		{
 			return true;
 		}
@@ -208,11 +216,11 @@ public class Micro {
 	{
 		if (RC.getLocation().distanceSquaredTo(m) > 2)
 		{
-			Utils.mover.setTarget(m);
+			mover.setTarget(m);
 		}
 		else
 		{
-			Utils.mover.setTarget(RC.getLocation());
+			mover.setTarget(RC.getLocation());
 		}
 	}
 		

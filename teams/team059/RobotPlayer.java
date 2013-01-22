@@ -19,12 +19,7 @@ public class RobotPlayer {
 			robot = new HQBehavior();
 			break;
 		case SOLDIER:
-			try {
-				robot = new SoldierBehavior();
-			} catch (GameActionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 			robot = new SoldierBehavior2();
 			break;
 		case ARTILLERY:
