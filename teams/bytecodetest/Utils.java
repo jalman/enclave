@@ -1,12 +1,6 @@
-package team059.utils;
+package bytecodetest;
 
-import java.util.Random;
-
-import battlecode.common.Clock;
-import team059.Strategy;
-import battlecode.common.Direction;
 import battlecode.common.MapLocation;
-import battlecode.common.Robot;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
 
@@ -14,36 +8,33 @@ public class Utils {
 	//actual constants
 	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
 	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
-	public static Direction[] DIRECTIONS = Direction.values();
+
 	
 	//these are set from the beginning of the game
 	public static RobotController RC;
 	public static int MAP_WIDTH, MAP_HEIGHT;
+	private static MapLocation[][] map;
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
-	public static Random random;
 	
 	//these might be set at the beginning of the round
-	public static Strategy strategy;
+	//public static Strategy strategy;
 	
 	public static MapLocation currentLocation;
 	private static MapLocation[] alliedEncampments;
-	public static final int ENEMY_RADIUS = 5;
-	private static Robot[] enemyRobots;
-	public static double forward;
+	
 	
 	public static void initUtils(RobotController rc) {
 		RC = rc;
 		
 		MAP_WIDTH = rc.getMapWidth();
 		MAP_HEIGHT = rc.getMapHeight();
+		map = new MapLocation[MAP_WIDTH][MAP_HEIGHT];
 		
 		ALLY_TEAM = rc.getTeam();
 		ENEMY_TEAM = (ALLY_TEAM == Team.A) ? Team.B : Team.A;
 		ALLY_HQ = rc.senseHQLocation();
 		ENEMY_HQ = rc.senseEnemyHQLocation();
-		
-		random = new Random(RC.getRobot().getID() + Clock.getRoundNum());
 	}
 	
 	/**
@@ -52,7 +43,11 @@ public class Utils {
 	public static void updateUtils() {
 		currentLocation = RC.getLocation();
 		alliedEncampments = null;
-		forward = Math.log((double)naiveDistance(currentLocation, ALLY_HQ) / naiveDistance(currentLocation, ALLY_HQ));
+	}
+	
+	public static MapLocation mapLocation(int x, int y) {
+		MapLocation loc = map[x][y];
+		return loc != null ? loc : (map[x][y] = new MapLocation(x, y));
 	}
 	
 	public static boolean isEnemyMine(Team team) {
@@ -63,24 +58,14 @@ public class Utils {
 		return isEnemyMine(RC.senseMine(loc));
 	}
 	
-	private static int dx, dy;
-	
-	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { // call takes 33 bytecodes
-		dx = loc0.x > loc1.x ? loc0.x - loc1.x : loc1.x - loc0.x;
-		dy = loc0.y > loc1.y ? loc0.y - loc1.y : loc1.y - loc0.y;
-		return dx > dy ? dx : dy;
+	public static int naiveDistance(MapLocation loc0, MapLocation loc1) {
+		return Math.max(Math.abs(loc0.x-loc1.x), Math.abs(loc0.y-loc1.y));
 	}
-	
-//	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { // call takes 36 bytecodes
-//		return Math.max(Math.abs(loc0.x-loc1.x), Math.abs(loc0.y-loc1.y));
-//	}
-	
+
 	public static int naiveDistance(int x1, int y1, int x2, int y2) {
-		dx = x1 > x2 ? x1-x2 : x2-x1;
-		dy = y1 > y2 ? y1-y2 : y2-y1;
-		return dx > dy ? dx : dy;
-		//return Math.max(Math.abs(x1-x2), Math.abs(y1-y2));
+		return Math.max(Math.abs(x1-x2), Math.abs(y1-y2));
 	}
+	
 	
 	public static int mapLocationToInt(MapLocation loc) {
 		return (loc.x << 16) ^ loc.y;
@@ -118,11 +103,5 @@ public class Utils {
 			alliedEncampments = RC.senseAlliedEncampmentSquares();
 		}
 		return alliedEncampments;
-	}
-	
-	public static int clamp(int i, int min, int max) {
-		if(i < min) return min;
-		if(i > max) return max;
-		return i;
 	}
 }

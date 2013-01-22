@@ -98,7 +98,6 @@ public class SoldierBehavior extends RobotBehavior {
 	public void run() {
 		if(!RC.isActive()) return;
 		
-		messagingSystem.handleMessages(messageHandlers);
 		enemyInVicinity = false;
 		curLoc = RC.getLocation();
 		try {
@@ -206,38 +205,6 @@ public class SoldierBehavior extends RobotBehavior {
 		RC.setIndicatorString(0, mode.name() + " " + Clock.getRoundNum());
 		
 	}
-
-	/**
-	 * Searches for empty encampments to build on.
-	 * @return The best encampment found, or null otherwise.
-	 * @throws GameActionException 
-	 */
-	private MapLocation findEmptyEncampment() throws GameActionException {
-		
-		MapLocation best = null;
-		int distance = Integer.MAX_VALUE;
-		
-		for(int i = 3; i <= 6; i++) {
-			MapLocation[] encampments = RC.senseEncampmentSquares(RC.getLocation(), 1 << (2*i), Team.NEUTRAL);
-			for(int j = 0; j < encampments.length; j++) {
-				MapLocation loc = encampments[j];
-				
-				if(i > 3 && RC.getLocation().distanceSquaredTo(loc) < 1 << (2*(i-1)))
-					continue;
-				
-				if(RC.canSenseSquare(loc) && RC.senseObjectAtLocation(loc) != null)
-					continue;
-				
-				int d = naiveDistance(RC.getLocation(), loc);
-				if(d < distance) {
-					best = loc;
-					distance = d;
-				}
-			}
-		}
-		
-		return best;
-	}
 	
 	private void idleBehavior() throws GameActionException {
 		charging = false;
@@ -251,7 +218,9 @@ public class SoldierBehavior extends RobotBehavior {
 				int maxdist = 20;
 				for(MapLocation encampment : encampments) {
 					int dist = encampment.distanceSquaredTo(RC.getLocation());
+					int mindist = -1;
 					if(dist < maxdist) {
+						maxdist = mindist;
 						maxdist = dist;
 						target = encampment;
 					}
