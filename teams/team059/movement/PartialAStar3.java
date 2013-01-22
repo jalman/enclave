@@ -2,6 +2,7 @@ package team059.movement;
 
 //import java.util.Arrays;
 
+import team059.utils.OnePassQueue;
 import battlecode.common.*;
 import static team059.utils.Utils.*;
 
@@ -164,7 +165,7 @@ public class PartialAStar3 extends NavAlg {
 		//try{
 			//return Utils.isEnemyMine(loc) ? 13 : NORMAL_MOVE_COST; // does 1 bytecode worse sometimes????
 			
-			if(Utils.isEnemyMine(loc)) {
+			if(isEnemyMine(loc)) {
 				return 13;
 			} else {
 				return NORMAL_MOVE_COST;
