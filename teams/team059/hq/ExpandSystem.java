@@ -65,11 +65,16 @@ public class ExpandSystem {
 		while(finished[far]) {
 			far++;
 		}
-		System.out.println("consider expanding " + far);
 		for(MapLocation loc : encampments[far]) {
 			if(!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null) {
-				messagingSystem.writeTakeEncampmentMessage(loc, 1000000, generators > suppliers ? RobotType.SUPPLIER : RobotType.GENERATOR);
-				return;
+				if(generators > suppliers) {
+					messagingSystem.writeTakeEncampmentMessage(loc, 1000000, RobotType.SUPPLIER);
+					suppliers++;
+				} else {
+					messagingSystem.writeTakeEncampmentMessage(loc, 1000000, RobotType.GENERATOR);
+					generators++;
+				}
+								return;
 			}
 		}
 		finished[far] = true;
