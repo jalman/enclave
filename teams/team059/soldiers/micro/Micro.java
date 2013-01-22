@@ -8,6 +8,7 @@ import static team059.utils.Utils.*;
 import battlecode.common.*;
 import team059.soldiers.SoldierUtils;
 
+
 public class Micro {
 
 //	GameObject[] foe = new GameObject[0], friends = new GameObject[0];
@@ -17,27 +18,25 @@ public class Micro {
 	MapLocation encampTarget = null, c = null;
 	Direction d = null;
 	public boolean shouldIretreat;
-		
-	SoldierBehavior sb;
+	int enemySoldierNumber, allyNumber;
+	public static int ALLY_RADIUS2 = 16;
 	
 	public MapLocation enemySoldierTarget, curLoc;
 	
 	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
 	
-	public Micro(SoldierBehavior sb) throws GameActionException {
-		goodSoldiers = new RobotInfo[0]; 
-		badSoldiers = new RobotInfo[0];
-		this.sb = sb;
+	public Micro() {		
 		enemySoldierTarget = null;
 	}
 	
 	public void run() throws GameActionException{
-		sb.mover.setNavType(NavType.BUG);
-//		enemySoldierTarget = SoldierUtils.findClosebySoldier();
-		fightOrRetreat();
+		setVariables();
+		microCode();
 	}
-	
 	public void setVariables() throws GameActionException{
+		enemySoldierNumber = Utils.enemyRobots.length - RC.senseEncampmentSquares(RC.getLocation(), Utils.ENEMY_RADIUS2, Utils.ENEMY_TEAM).length;
+		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, ENEMY_TEAM).length;
+		Utils.mover.setNavType(NavType.BUG);
 		enemySoldierTarget = SoldierUtils.findClosebySoldier();
 	}
 	/**
@@ -45,12 +44,11 @@ public class Micro {
 	 * @throws GameActionException
 	 */
 	
-	public void fightOrRetreat() throws GameActionException{
-		curLoc = RC.getLocation();
+	public void microCode() throws GameActionException{
 
-		if (enemySoldierTarget.distanceSquaredTo(curLoc)<= 2)
+		if (enemySoldierTarget.distanceSquaredTo(RC.getLocation())<= 2)
 		{
-			sb.mover.setTarget(curLoc);
+			sb.mover.setTarget(rc.getLocation());
 		}
 		else if (shouldIretreat)
 		{
@@ -73,7 +71,7 @@ public class Micro {
 	public void signalEnemyNearby() throws GameActionException{
 		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 10 == 0)
 		{
-			sb.messagingSystem.writeAttackMessage(SoldierUtils.closestSoldierTarget(SoldierUtils.findEnemySoldiers(Micro.sensorRadius)), 0);
+			messagingSystem.writeAttackMessage(SoldierUtils.closestSoldierTarget(SoldierUtils.findEnemySoldiers(Micro.sensorRadius)), 0);
 		}
 	}
 	

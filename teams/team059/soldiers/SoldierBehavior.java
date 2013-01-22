@@ -7,7 +7,7 @@ import team059.messaging.MessageHandler;
 import team059.movement.Mover;
 import team059.movement.NavType;
 import team059.soldiers.micro.Micro;
-import team059.soldiers.SquadleaderSystem;
+import team059.soldiers.SquadleaderHelper;
 import team059.soldiers.mineLay.MineLayer;
 import team059.utils.Utils;
 import static team059.utils.Utils.*;
@@ -23,7 +23,7 @@ public class SoldierBehavior extends RobotBehavior {
 	private MapLocation[] gather;
 	private MapLocation myGather;
 	private Micro microSystem;
-	private SquadleaderSystem squadleaderSystem;
+	private SquadleaderHelper squadleaderSystem;
 	public MapLocation curLoc = null, previousLocation = null;
 	
 	public MapLocation microTarget = null; 	private MapLocation temporaryMicroTarget = null;
@@ -52,7 +52,7 @@ public class SoldierBehavior extends RobotBehavior {
 		microSystem = new Micro(this);
 		rand = new Random(Clock.getRoundNum() * RC.getRobot().getID() + Clock.getBytecodeNum());
 		
-		squadleaderSystem = new SquadleaderSystem(this);
+		squadleaderSystem = new SquadleaderHelper(this);
 		
 		//set gather points and assignment
 		gather = new MapLocation[3]; 

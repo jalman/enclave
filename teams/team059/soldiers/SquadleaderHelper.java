@@ -18,7 +18,7 @@ import static team059.utils.Utils.RC;
  * 
  */
 
-public class SquadleaderSystem{
+public class SquadleaderHelper{
 	
 	public RobotInfo[] badSoldiers;
 	RobotInfo[] goodSoldiers;
@@ -35,7 +35,7 @@ public class SquadleaderSystem{
 	public boolean retreat = true;
 	public int detectionRadius = 35;
 	
-	public SquadleaderSystem(SoldierBehavior sb) throws GameActionException{	
+	public SquadleaderHelper(SoldierBehavior sb) throws GameActionException{	
 		goodSoldiers = new RobotInfo[0]; 
 		badSoldiers = new RobotInfo[0];
 		enemySoldierTarget = null; //SoldierUtils.closestenemySoldierTarget(badSoldiers);

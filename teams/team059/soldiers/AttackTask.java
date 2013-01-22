@@ -10,6 +10,7 @@ public class AttackTask extends TravelTask {
 	
 	private static final Mover mover = new Mover();
 	
+	
 	public AttackTask(MapLocation target, int priority) {
 		super(mover, target, priority, 1);
 	}
@@ -25,7 +26,7 @@ public class AttackTask extends TravelTask {
 	@Override
 	public void execute() throws GameActionException {
 		if(enemyRobots.length > 0) {
-			
+			SoldierBehavior2.microSystem.run();
 		} else {
 			super.execute();
 		}

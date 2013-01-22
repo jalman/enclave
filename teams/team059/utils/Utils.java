@@ -9,6 +9,8 @@ import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
+import team059.soldiers.micro.Micro;
+import team059.movement.*;
 
 public class Utils {
 	//actual constants
@@ -23,12 +25,14 @@ public class Utils {
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
 	public static Random random;
 	
+	public static final Mover mover = new Mover();
+	
 	//these might be set at the beginning of the round
 	public static Strategy strategy = Strategy.NORMAL;
 	
 	public static MapLocation currentLocation;
 	private static MapLocation[] alliedEncampments;
-	public static final int ENEMY_RADIUS = 5;
+	public static final int ENEMY_RADIUS = 4;
 	public static final int ENEMY_RADIUS2 = ENEMY_RADIUS * ENEMY_RADIUS;
 	public static Robot[] enemyRobots;
 	public static double forward;
@@ -54,7 +58,7 @@ public class Utils {
 		currentLocation = RC.getLocation();
 		alliedEncampments = null;
 		forward = Math.log((double)naiveDistance(currentLocation, ALLY_HQ) / naiveDistance(currentLocation, ENEMY_HQ));
-		RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
+		enemyRobots = RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
 	}
 	
 	public static boolean isEnemyMine(Team team) {

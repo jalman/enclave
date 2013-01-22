@@ -15,7 +15,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 
 	public static int ENEMY_RADIUS = 5;
 	public static int ENEMY_RADIUS2 = 25;
-
+	
 	public Robot[] nearbyEnemies;
 
 	public Mover mover;
@@ -23,13 +23,14 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
 	private TaskManager taskManager;
+	public static Micro microSystem;
 
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
 
 	public SoldierBehavior2() {
 		mover = new Mover();
-
+		microSystem = new Micro();
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
