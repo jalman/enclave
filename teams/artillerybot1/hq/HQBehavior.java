@@ -24,7 +24,12 @@ public class HQBehavior extends RobotBehavior {
 		if(rc.getTeamPower() - 40.0 > 15.0 || Clock.getRoundNum() < 40) {
 			try {
 				rc.setIndicatorString(0, Double.toString(rc.getTeamPower()));
-				buildSoldier(rc.getLocation().directionTo(rc.senseEnemyHQLocation()));
+				Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
+				Direction tryDir = dir;
+				do {
+					buildSoldier(tryDir);
+					tryDir = tryDir.rotateLeft();
+				} while(rc.isActive() && !tryDir.equals(dir));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}			
