@@ -19,7 +19,7 @@ public class HQBehavior extends RobotBehavior {
 	public HQBehavior() {
 		strategy = Strategy.decide();
 		buildOrder = strategy.buildOrder;	
-		expandSystem = new ExpandSystem(strategy);
+		expandSystem = new ExpandSystem();
 	}
 	
 	@Override

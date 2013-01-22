@@ -14,7 +14,6 @@ import static team059.utils.Utils.*;
  */
 public class ExpandSystem {
 	public MapLocation[][] encampments = new MapLocation[3][];
-	public boolean[][] taken; = new int[3][];
 	int[] delimit = new int[2];
 	
 	int suppliers = 0;
@@ -58,8 +57,9 @@ public class ExpandSystem {
 	* far = 0: only nearby
 	* far = 1: medium
 	* far = 2: any
+	 * @throws GameActionException 
 	**/
-	public void considerExpanding(int far) {
+	public void considerExpanding(int far) throws GameActionException {
 		for(MapLocation loc : encampments[far]) {
 			if(RC.senseObjectAtLocation(loc) == null) {
 				messagingSystem.writeTakeEncampmentMessage(loc, 30 - 5*far, generators > suppliers ? RobotType.SUPPLIER : RobotType.GENERATOR);
