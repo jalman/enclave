@@ -28,16 +28,16 @@ public class RobotPlayer {
 			break;
 		}
 
-		try {
-			while(true) {
+		while(true) {
+			try {
 				Utils.updateUtils();
 				robot.beginRound();
 				robot.run();
 				robot.endRound();
 				rc.yield();
+			} catch(GameActionException e) {
+				e.printStackTrace();
 			}
-		} catch(GameActionException e) {
-			e.printStackTrace();
 		}
 	}
 }
