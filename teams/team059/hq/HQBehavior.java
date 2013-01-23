@@ -16,8 +16,8 @@ public class HQBehavior extends RobotBehavior {
 	boolean enemyNukeHalfDone = false;
 	int enemyNukeHalfRound;
 	
-	ArraySet<Robot> generators = new ArraySet<Robot>();
-	ArraySet<Robot> suppliers =  new ArraySet<Robot>();
+	ArraySet<Robot> generators = new ArraySet<Robot>(500);
+	ArraySet<Robot> suppliers =  new ArraySet<Robot>(500);
 	int genIndex = 0, supIndex = 0;
 	
 	double lastFlux = 0, thisFlux = 0, fluxDiff = 0;
