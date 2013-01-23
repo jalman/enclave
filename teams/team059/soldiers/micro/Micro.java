@@ -33,21 +33,25 @@ public class Micro {
 	
 	public void run() throws GameActionException{
 		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
-		setVariables();
-		if(count % 5 == 0)
+		if (count % 3 == 0)
 		{
-			Utils.messagingSystem.writeAttackMessage(enemySoldierTarget, 10000);
+			setVariables();
 		}
-		microCode();
+		if(count % 5 == 1 && enemySoldierTarget != null)
+		{
+			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, 0);
+		}
+		if(enemySoldierTarget != null)
+			microCode();
 		if(RC.isActive())
 			mover.execute();
 		count++;
 	}
 	public void setVariables() throws GameActionException{
 		enemyNumber = Utils.enemyRobots.length;
-		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, ENEMY_TEAM).length;
+		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, Utils.ALLY_TEAM).length;
 		mover.setNavType(NavType.BUG);
-		enemySoldierTarget = SoldierUtils.findClosebySoldier();
+		enemySoldierTarget = SoldierUtils.findClosebyEnemy();
 	}
 	/**
 	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
@@ -112,7 +116,7 @@ public class Micro {
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(enemyNumber < allyNumber)
+		if(allyNumber > enemyNumber)
 		{
 			return true;
 		}

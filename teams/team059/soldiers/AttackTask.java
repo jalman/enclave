@@ -1,5 +1,6 @@
 package team059.soldiers;
 
+import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import team059.movement.Mover;
@@ -26,8 +27,10 @@ public class AttackTask extends TravelTask {
 	
 	@Override
 	public void execute() throws GameActionException {
-		if(SoldierUtils.findClosebySoldier() != null) {
+		if(SoldierUtils.findClosebyEnemy() != null) {
+			int k = Clock.getBytecodeNum();
 			SoldierBehavior2.microSystem.run();
+			RC.setIndicatorString(2, Clock.getBytecodeNum()-k + "bytecode on turn" + Clock.getRoundNum());
 		} else {
 			super.execute();
 		}

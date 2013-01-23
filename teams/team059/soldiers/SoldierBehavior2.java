@@ -1,5 +1,6 @@
 package team059.soldiers;
 
+import team059.utils.Utils;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -27,6 +28,8 @@ public class SoldierBehavior2 extends RobotBehavior {
 
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
+	
+	private MapLocation target;
 
 	public SoldierBehavior2() {
 		mover = new Mover();
@@ -96,7 +99,28 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
+				if (target == null || Utils.naiveDistance(target, Utils.currentLocation) > 7)
+				{
+					target= new MapLocation(message[1], message[2]);
+				}
+				int distance = Utils.naiveDistance(target, Utils.currentLocation);
+				
+				if(distance < 7 && distance > 3)
+				{
+					mover.setTarget(target);
+				}
+				else if (distance <= 3)
+				{
+					try {
+						int k = Clock.getBytecodeNum();
+						microSystem.run();
+						RC.setIndicatorString(2, Clock.getBytecodeNum()-k + "bytecode on turn" + Clock.getRoundNum());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				//taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
 			}
 		};
 	}

@@ -8,15 +8,16 @@ import team059.soldiers.micro.Micro;
 import battlecode.common.*;
 
 public class SoldierUtils {
+	public static Robot[] enemies;
 	
-	public static MapLocation findClosebySoldier() throws GameActionException{
-		MapLocation m = findSomeEnemySoldier(2);
+	public static MapLocation findClosebyEnemy() throws GameActionException{
+		MapLocation m = findSomeEnemyGuy(2);
 		if (m != null)
 			return m;
-		m = findSomeEnemySoldier(8);
+		m = findSomeEnemyGuy(8);
 		if (m != null)
 			return m;
-		m = findSomeEnemySoldier(16);
+		m = findSomeEnemyGuy(16);
 		return m;
 	}
 	
@@ -38,20 +39,29 @@ public class SoldierUtils {
 	 * @throws GameActionException
 	 */
 	
-	
+	public static MapLocation findSomeEnemyGuy(int radiusSquared) throws GameActionException
+	{
+		enemies = RC.senseNearbyGameObjects(Robot.class, radiusSquared, ENEMY_TEAM);
+		if (enemies.length > 0)
+		{
+			return RC.senseRobotInfo(enemies[0]).location;
+		}
+		return null;
+		
+	}
 	public static MapLocation findSomeEnemySoldier(int radiusSquared) throws GameActionException
 	{
-		GameObject[] enemies = RC.senseNearbyGameObjects(Robot.class, radiusSquared, ENEMY_TEAM);
+		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, radiusSquared, ENEMY_TEAM);
 		RobotInfo someEnemy = null;
 		int l = enemies.length;
 		if (l >  0)
 		{
 			int i = 0;
-			someEnemy = RC.senseRobotInfo((Robot)(enemies[i]));
+			someEnemy = RC.senseRobotInfo(enemies[i]);
 			while (someEnemy.type != RobotType.SOLDIER && i < l-1)
 			{
 				i++;
-				someEnemy = RC.senseRobotInfo((Robot)(enemies[i]));
+				someEnemy = RC.senseRobotInfo(enemies[i]);
 			}
 			if (someEnemy.type != RobotType.SOLDIER)
 				return null;

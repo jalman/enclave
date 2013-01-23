@@ -26,7 +26,7 @@ public class MicroTask extends TravelTask {
 	
 	@Override
 	public void execute() throws GameActionException {
-		if(SoldierUtils.findClosebySoldier() != null) {
+		if(SoldierUtils.findClosebyEnemy() != null) {
 			SoldierBehavior2.microSystem.run();
 		} else {
 			super.execute();
