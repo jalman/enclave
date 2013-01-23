@@ -3,7 +3,6 @@ package team059;
 import team059.encampment.ArtilleryBehavior;
 import team059.encampment.EncampmentBehavior;
 import team059.hq.HQBehavior;
-import team059.soldiers.SoldierBehavior;
 import team059.soldiers.SoldierBehavior2;
 import team059.utils.Utils;
 import battlecode.common.GameActionException;

@@ -117,9 +117,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				else if (distance <= 3)
 				{
 					try {
-						int k = Clock.getBytecodeNum();
 						microSystem.run();
-						RC.setIndicatorString(2, Clock.getBytecodeNum()-k + "bytecode on turn" + Clock.getRoundNum());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

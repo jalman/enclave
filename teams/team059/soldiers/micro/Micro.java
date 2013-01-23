@@ -3,7 +3,6 @@ package team059.soldiers.micro;
 import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
-import team059.soldiers.SoldierBehavior;
 import team059.soldiers.SoldierBehavior2;
 import team059.utils.Utils;
 import static team059.utils.Utils.*;
@@ -12,14 +11,12 @@ import team059.soldiers.SoldierUtils;
 
 
 public class Micro {
-
-//	GameObject[] foe = new GameObject[0], friends = new GameObject[0];
 	
 	MapLocation retreatTarget = null;
 	MapLocation encampTarget = null, c = null;
-	Direction d = null;
 	int enemyNumber, allyNumber;
-	public static int ALLY_RADIUS2 = 16;
+	public static int ALLY_RADIUS = 4;
+	public static int ALLY_RADIUS2 = ALLY_RADIUS * ALLY_RADIUS;
 	public static final Mover mover = new Mover();
 	public MapLocation enemySoldierTarget, curLoc;
 	
@@ -32,7 +29,7 @@ public class Micro {
 	}
 	
 	public void run() throws GameActionException{
-		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
+	//	RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
 		if (count % 3 == 0)
 		{
 			setVariables();
@@ -41,23 +38,17 @@ public class Micro {
 		{
 			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, 0);
 		}
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at microCheckpoint 1");
 		if(enemySoldierTarget != null)
 			microCode();
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at microCheckpoint 2");
 		if(RC.isActive())
 			mover.execute();
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at microCheckpoint 3");
 		count++;
 	}
 	public void setVariables() throws GameActionException{
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at setVariables1");
 		enemyNumber = Utils.enemyRobots.length;
 		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, Utils.ALLY_TEAM).length;
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at setVariables2");
 		mover.setNavType(NavType.BUG);
 		enemySoldierTarget = SoldierUtils.findClosebyEnemy();
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at setVariables3");
 	}
 	/**
 	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
