@@ -57,7 +57,8 @@ public class HQBehavior extends RobotBehavior {
 	 * Handle upgrades and robots.
 	 */
 	private void macro() {
-		RC.setIndicatorString(1,""+RC.getTeamPower());
+		boolean built = false;
+		//RC.setIndicatorString(1,""+RC.getTeamPower());
 		if(buildOrderProgress < buildOrder.length) {
 			try {
 				if(buildOrder[buildOrderProgress].execute(this)) {
@@ -70,11 +71,11 @@ public class HQBehavior extends RobotBehavior {
 			if(Clock.getRoundNum() < 100 || ( fluxDiff > -1.0 && (RC.getTeamPower() - (40 + 10*generators.size) > 10.0))) {
 				try {
 					RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(RC.getTeamPower()) + "  asdf");
-					buildSoldier();
+					built = buildSoldier();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else {
+			} else if(!built){
 				try {
 					researchUpgrade(Upgrade.NUKE);
 				} catch (GameActionException e) {
@@ -184,7 +185,10 @@ public class HQBehavior extends RobotBehavior {
 				try {
 					System.out.println("seen guy born!");
 					Robot newBot = (Robot) RC.senseObjectAtLocation(new MapLocation(message[1], message[2]));	
-					if(newBot == null) return;
+					if(newBot == null) {
+						System.out.println("wat");
+						return;
+					}
 					if(message[4] == MessagingSystem.SUPPLIER) {
 						suppliers.insert(newBot);
 					} else if(message[4] == MessagingSystem.GENERATOR) {
