@@ -75,8 +75,11 @@ public class SoldierBehavior2 extends RobotBehavior {
 				max_appeal = appeal;
 			}
 		}
-
-		if(currentTask != null && RC.isActive()) {
+		if(Utils.enemyRobots.length > 0)
+		{
+			microSystem.run();
+		}
+		else if(currentTask != null && RC.isActive()) {
 			RC.setIndicatorString(1, currentTask.toString());
 			currentTask.execute();
 		}
@@ -106,17 +109,18 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if (target == null || Utils.naiveDistance(target, Utils.currentLocation) > 7)
+				if (target == null || Utils.naiveDistance(target, Utils.currentLocation) >= 7)
 				{
 					target= new MapLocation(message[1], message[2]);
 				}
 				int distance = Utils.naiveDistance(target, Utils.currentLocation);
 				
-				if(distance < 7 && distance > 3)
+				if(distance < 7 && distance > 4)
 				{
+					RC.setIndicatorString(2, "CHARGING TO " + target + " on turn " + Clock.getRoundNum());
 					mover.setTarget(target);
 				}
-				else if (distance <= 3)
+				else if (distance <= 4)
 				{
 					try {
 						microSystem.run();

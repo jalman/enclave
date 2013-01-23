@@ -29,11 +29,11 @@ public class Micro {
 	}
 	
 	public void run() throws GameActionException{
-	//	RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
 		if (count % 3 == 0)
 		{
 			setVariables();
 		}
+		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
 		if(count % 5 == 1 && enemySoldierTarget != null)
 		{
 			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, 0);
@@ -46,7 +46,7 @@ public class Micro {
 	}
 	public void setVariables() throws GameActionException{
 		enemyNumber = Utils.enemyRobots.length;
-		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, Utils.ALLY_TEAM).length;
+		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, Utils.ALLY_TEAM).length - RC.senseEncampmentSquares(Utils.currentLocation, ALLY_RADIUS2, Utils.ALLY_TEAM).length;
 		mover.setNavType(NavType.BUG);
 		enemySoldierTarget = SoldierUtils.findClosebyEnemy();
 	}
@@ -64,7 +64,6 @@ public class Micro {
 		else if (!shouldIAttack())
 		{
 			setRetreatBack();
-			RC.setIndicatorString(2, "Retreating " + Clock.getRoundNum());
 			mover.setTarget(retreatTarget);
 		}
 		else
