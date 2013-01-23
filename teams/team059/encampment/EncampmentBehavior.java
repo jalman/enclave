@@ -17,7 +17,7 @@ public class EncampmentBehavior extends RobotBehavior {
 		try {
 			if(firstTurn) {
 				firstTurn = false;
-				System.out.println("born!");
+				//System.out.println("born!");
 				messagingSystem.writeBirthMessage(currentLocation, RC.getRobot().getID(), RC.getType().ordinal());
 			}
 		} catch (GameActionException e) {

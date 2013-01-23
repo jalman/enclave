@@ -20,6 +20,8 @@ public class HQBehavior extends RobotBehavior {
 	ArraySet<Robot> suppliers =  new ArraySet<Robot>();
 	int genIndex = 0, supIndex = 0;
 	
+	double lastFlux = 0, thisFlux = 0, fluxDiff = 0;
+	
 	
 	ExpandSystem expandSystem;
 	
@@ -30,8 +32,11 @@ public class HQBehavior extends RobotBehavior {
 	}
 	
 	@Override
-	public void beginRound() throws GameActionException {		
-		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
+	public void beginRound() throws GameActionException {
+		thisFlux = RC.getTeamPower();
+		fluxDiff = thisFlux - lastFlux;
+		lastFlux = thisFlux;
+		messaging = thisFlux > MessagingSystem.MESSAGING_COST;
 		//messaging = false;
 		if(messaging) {
 			try {
@@ -62,7 +67,7 @@ public class HQBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		} else if(RC.isActive()) {
-			if(Clock.getRoundNum() < 100 || (RC.getTeamPower() - (40 + 10*generators.size) > 10.0)) {
+			if(Clock.getRoundNum() < 100 || ( fluxDiff > -1.0 && (RC.getTeamPower() - (40 + 10*generators.size) > 10.0))) {
 				try {
 					RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(RC.getTeamPower()) + "  asdf");
 					buildSoldier();

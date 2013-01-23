@@ -26,7 +26,7 @@ public class MessagingSystem {
 	private static final int DISPLACEMENT = MAX_CHANNEL / COPIES;
 
 	public static final double MESSAGING_COST = 2;
-	
+
 	public static final int HQ = RobotType.HQ.ordinal(), 
 			SOLDIER = RobotType.SOLDIER.ordinal(), 
 			ARTILLERY = RobotType.ARTILLERY.ordinal(),
@@ -278,15 +278,15 @@ public class MessagingSystem {
 	public void writeMicroMessage(MapLocation loc, int goIn) throws GameActionException {
 		writeMessage(MessageType.MICRO_INFO.ordinal(), loc.x, loc.y, goIn);
 	}
-	
+
 	public void writeBirthMessage(MapLocation loc, int id, int type) throws GameActionException {
 		writeMessage(MessageType.BIRTH_INFO.ordinal(), loc.x, loc.y, id, type);
 	}
-	
+
 	public void writeHQMessage(Strategy strategy) throws GameActionException {
 		writeMessage(MessageType.HQ_INFO.ordinal(), strategy.ordinal());
 	}
-	
+
 	public void writeCheckpointMessage(int pointNumber) throws GameActionException {
 		writeMessage(MessageType.CHECKPOINT_NUMBER.ordinal(), pointNumber);
 	}
@@ -294,7 +294,7 @@ public class MessagingSystem {
 	public void writeTakeEncampmentMessage(MapLocation loc, int priority, RobotType buildType) throws GameActionException {
 		writeMessage(MessageType.TAKE_ENCAMPMENT.ordinal(), loc.x, loc.y, priority, buildType.ordinal());
 	}
-	
+
 	public void debug() throws GameActionException {
 		for(int i = 0; i < total_messages; i++) {
 			int off = i * BLOCK_SIZE;
