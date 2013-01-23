@@ -20,7 +20,13 @@ public class MineTask extends TravelTask {
 	//should depend on the strategy and round number, and an evaluation of how many mines there are around the target
 	@Override
 	public int appeal() {
-		return RC.senseMine(currentLocation) == null ? (int) ((1.0 - density) * 1000) : Integer.MIN_VALUE;
+		if( RC.senseMine(currentLocation) != null) {
+			return -10000;
+		} else if(Clock.getRoundNum() < 100 && RC.getLocation().distanceSquaredTo(ALLY_HQ) < 16) {
+			return 1000;
+		}
+		else return (int) ((1.0 - density) * 20.0);
+		
 	}
 
 	@Override
