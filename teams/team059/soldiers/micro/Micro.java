@@ -30,13 +30,17 @@ public class Micro {
 	
 	public void run() throws GameActionException{
 		int k = Clock.getBytecodeNum();
+//		if((count) % 10 == Math.random()*10)
+//		{
+//			System.out.println(k + " Pre-micro bytecode");
+//		}
 		if (count % 2 == 0)
 		{
 			setVariables();
 		}
 		
-		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
-		if(count % 5 == 1 && enemySoldierTarget != null)
+//		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
+		if(count % 15 == 1 && enemySoldierTarget != null)
 		{
 			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, Clock.getRoundNum());
 		}
@@ -45,7 +49,7 @@ public class Micro {
 //		if(count % 10 == 0 || (count+Clock.getRoundNum()) % 10 == Math.random()*10)
 //		{
 //			System.out.println(Clock.getBytecodeNum() - k + " ");
-//			if(Clock.getBytecodeNum() = 10000)
+//			if(Clock.getBytecodeNum() == 10000)
 //				System.out.println("Hit 10000 bytecode");
 //		}
 		
