@@ -1,8 +1,6 @@
 package team059.soldiers;
 
-import static team059.utils.Utils.ENEMY_TEAM;
-import static team059.utils.Utils.RC;
-import static team059.utils.Utils.naiveDistance;
+import static team059.utils.Utils.*;
 import team059.*;
 import team059.soldiers.micro.Micro;
 import battlecode.common.*;
@@ -42,30 +40,17 @@ public class SoldierUtils {
 	public static MapLocation findSomeEnemyGuy(int radiusSquared) throws GameActionException
 	{
 		enemies = RC.senseNearbyGameObjects(Robot.class, radiusSquared, ENEMY_TEAM);
-		if (enemies.length > 0)
-		{
-			return RC.senseRobotInfo(enemies[0]).location;
-		}
-		return null;
+		return enemies.length > 0 ? RC.senseRobotInfo(enemies[0]).location : null;
 		
 	}
 	public static MapLocation findSomeEnemySoldier(int radiusSquared) throws GameActionException
 	{
 		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, radiusSquared, ENEMY_TEAM);
-		RobotInfo someEnemy = null;
-		int l = enemies.length;
-		if (l >  0)
-		{
-			int i = 0;
-			someEnemy = RC.senseRobotInfo(enemies[i]);
-			while (someEnemy.type != RobotType.SOLDIER && i < l-1)
-			{
-				i++;
-				someEnemy = RC.senseRobotInfo(enemies[i]);
+		for(Robot enemy : enemies) {
+			RobotInfo someEnemy = RC.senseRobotInfo(enemy);
+			if(someEnemy.type == RobotType.SOLDIER) {
+				return someEnemy.location;
 			}
-			if (someEnemy.type != RobotType.SOLDIER)
-				return null;
-			return someEnemy.location;
 		}
 		return null;
 	}
@@ -79,37 +64,23 @@ public class SoldierUtils {
 	public static int enemyWeight(int radius) throws GameActionException
 	{
 		int l = 0;
-		GameObject[] enemies = RC.senseNearbyGameObjects(Robot.class, radius, ENEMY_TEAM);
-		if (enemies != null && enemies.length !=0)
-		{
-			RobotInfo r = null;
-			for (int i = 0; i < enemies.length; i++)
-			{
-				r = RC.senseRobotInfo((Robot)enemies[i]);
-				if (r.type == RobotType.SOLDIER) 
-				{
-					l++;
-				}
-			}
+		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, radius, ENEMY_TEAM);
+		for(Robot enemy : enemies) {
+			if(RC.senseRobotInfo(enemy).type == RobotType.SOLDIER)
+				l++;
 		}
+
 		return l;
 	}
 	public static int allyWeight(int radius) throws GameActionException 
 	{
 		int l = 0;
-		GameObject[] enemies = RC.senseNearbyGameObjects(Robot.class, radius, ENEMY_TEAM);
-		if (enemies != null && enemies.length !=0)
-		{
-			RobotInfo r = null;
-			for (int i = 0; i < enemies.length; i++)
-			{
-				r = RC.senseRobotInfo((Robot)enemies[i]);
-				if (r.type == RobotType.SOLDIER) 
-				{
-					l++;
-				}
-			}
+		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, radius, ALLY_TEAM);
+		for(Robot enemy : enemies) {
+			if(RC.senseRobotInfo(enemy).type == RobotType.SOLDIER)
+				l++;
 		}
+
 		return l;
 	}
 	public static RobotInfo[] findEnemySoldiers(int radius) throws GameActionException
@@ -142,11 +113,7 @@ public class SoldierUtils {
 	}
 	
 	public static boolean amISquadLeader(){
-		if (RC.getRobot().getID() % 3 == 0)
-		{
-			return true;
-		}
-		return false;
+		return RC.getRobot().getID() % 3 == 0;
 	}
 	
 	public static RobotInfo[] findAlliedSoldiers(int radius) throws GameActionException // might be useless
