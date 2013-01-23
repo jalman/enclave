@@ -11,7 +11,7 @@ import static team059.utils.Utils.*;
  */
 public class PatrolManager extends TaskGiver {
 	
-	private static final int PATROL_PRIORITY = 10;
+	private static final int PATROL_PRIORITY = 0;
 	private static final int STEP_SIZE = 4;
 	
 	private AttackTask attackTask;
