@@ -25,6 +25,7 @@ public class RobotBehavior {
 		messageHandlers[MessageType.CHECKPOINT_NUMBER.ordinal()] = getCheckpointHandler();
 		messageHandlers[MessageType.MICRO_INFO.ordinal()] = getMicroHandler();
 		messageHandlers[MessageType.TAKE_ENCAMPMENT.ordinal()] = getTakeEncampmentHandler();
+		messageHandlers[MessageType.BIRTH_INFO.ordinal()] = getBirthInfoHandler();
 	}
 
 	protected int danger(MapLocation loc) {return 0;}
@@ -98,4 +99,6 @@ public class RobotBehavior {
 	protected MessageHandler getMicroHandler() {return new DefaultMessageHandler();}
 
 	protected MessageHandler getTakeEncampmentHandler() {return new DefaultMessageHandler();}	
+	
+	protected MessageHandler getBirthInfoHandler() {return new DefaultMessageHandler();}
 }

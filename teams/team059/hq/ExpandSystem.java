@@ -59,10 +59,10 @@ public class ExpandSystem {
 		for(MapLocation loc : encampments[far]) {
 			if(!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null) {
 				if(generators > suppliers) {
-					messagingSystem.writeTakeEncampmentMessage(loc, 100, RobotType.SUPPLIER);
+					messagingSystem.writeTakeEncampmentMessage(loc, 1000, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
-					messagingSystem.writeTakeEncampmentMessage(loc, 100, RobotType.GENERATOR);
+					messagingSystem.writeTakeEncampmentMessage(loc, 1000, RobotType.GENERATOR);
 					generators++;
 				}
 				return;
