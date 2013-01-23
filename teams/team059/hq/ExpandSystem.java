@@ -68,13 +68,13 @@ public class ExpandSystem {
 		for(MapLocation loc : encampments[far]) {
 			if(!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null) {
 				if(generators > suppliers) {
-					messagingSystem.writeTakeEncampmentMessage(loc, 1000000, RobotType.SUPPLIER);
+					messagingSystem.writeTakeEncampmentMessage(loc, 50 - 5*far, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
-					messagingSystem.writeTakeEncampmentMessage(loc, 1000000, RobotType.GENERATOR);
+					messagingSystem.writeTakeEncampmentMessage(loc, 50 - 5*far, RobotType.GENERATOR);
 					generators++;
 				}
-								return;
+				return;
 			}
 		}
 		finished[far] = true;
