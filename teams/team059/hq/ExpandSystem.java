@@ -39,7 +39,7 @@ public class ExpandSystem {
 	
 	public void findEncampments() throws GameActionException {
 		for(int i = 0; i < NC; i++) {
-			encampments[i] = RC.senseEncampmentSquares(ALLY_HQ, delimit * (i+1), Team.NEUTRAL);
+			encampments[i] = RC.senseEncampmentSquares(ALLY_HQ, delimit * (i+1) * delimit * (i+1), null);
 		}
 	}
 	
@@ -58,12 +58,11 @@ public class ExpandSystem {
 		}
 		for(MapLocation loc : encampments[far]) {
 			if(!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null) {
-				System.out.println("MSS!");
 				if(generators > suppliers) {
-					messagingSystem.writeTakeEncampmentMessage(loc, 50, RobotType.SUPPLIER);
+					messagingSystem.writeTakeEncampmentMessage(loc, 100, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
-					messagingSystem.writeTakeEncampmentMessage(loc, 50, RobotType.GENERATOR);
+					messagingSystem.writeTakeEncampmentMessage(loc, 100, RobotType.GENERATOR);
 					generators++;
 				}
 				return;

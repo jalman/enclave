@@ -24,6 +24,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
 	private TaskManager taskManager;
+	private MineManager mineManager;
 
 	public static Micro microSystem;
 	private SingleTaskManager attackManager;
@@ -42,11 +43,12 @@ public class SoldierBehavior2 extends RobotBehavior {
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
+		mineManager = new MineManager(this);
 		attackManager = new SingleTaskManager();
 		takeEncampmentManager = new SingleTaskManager();
 		scoutManager = new ScoutManager();
 		
-		taskGivers = new TaskGiver[] {patrolManager, taskManager, expandManager, attackManager, takeEncampmentManager, scoutManager};
+		taskGivers = new TaskGiver[] {patrolManager, taskManager, mineManager, expandManager, attackManager, takeEncampmentManager, scoutManager};
 	}
 
 	@Override

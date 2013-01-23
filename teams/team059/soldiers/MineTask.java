@@ -4,6 +4,7 @@ import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Upgrade;
+import bytecodetest.Utils;
 import static team059.utils.Utils.*;
 
 public class MineTask extends TravelTask {
@@ -12,14 +13,14 @@ public class MineTask extends TravelTask {
 	
 	private double density;
 	
-	public MineTask(SoldierBehavior2 sb, MapLocation target, int radius2) {
-		super(sb.mover, target, 0, radius2);
+	public MineTask(SoldierBehavior2 sb) {
+		super(sb.mover, currentLocation, 0, 0);
 	}
 	
 	//should depend on the strategy and round number, and an evaluation of how many mines there are around the target
 	@Override
 	public int appeal() {
-		return (int) ((1.0 - density) * 10);
+		return RC.senseMine(currentLocation) == null ? (int) ((1.0 - density) * 1000) : Integer.MIN_VALUE;
 	}
 
 	@Override
