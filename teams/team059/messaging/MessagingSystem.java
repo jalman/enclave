@@ -26,6 +26,14 @@ public class MessagingSystem {
 	private static final int DISPLACEMENT = MAX_CHANNEL / COPIES;
 
 	public static final double MESSAGING_COST = 2;
+	
+	public static final int HQ = RobotType.HQ.ordinal(), 
+			SOLDIER = RobotType.SOLDIER.ordinal(), 
+			ARTILLERY = RobotType.ARTILLERY.ordinal(),
+			GENERATOR = RobotType.GENERATOR.ordinal(), 
+			SUPPLIER = RobotType.SUPPLIER.ordinal(), 
+			MEDBAY = RobotType.MEDBAY.ordinal(), 
+			SHIELDS = RobotType.SHIELDS.ordinal();
 
 	/**
 	 * The channels of communication. These are set each round.
@@ -269,6 +277,10 @@ public class MessagingSystem {
 	}
 	public void writeMicroMessage(MapLocation loc, int goIn) throws GameActionException {
 		writeMessage(MessageType.MICRO_INFO.ordinal(), loc.x, loc.y, goIn);
+	}
+	
+	public void writeBirthMessage(MapLocation loc, int id, int type) throws GameActionException {
+		writeMessage(MessageType.BIRTH_INFO.ordinal(), loc.x, loc.y, id, type);
 	}
 	
 	public void writeHQMessage(Strategy strategy) throws GameActionException {

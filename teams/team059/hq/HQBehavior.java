@@ -3,6 +3,8 @@ package team059.hq;
 import static team059.utils.Utils.*;
 import team059.RobotBehavior;
 import team059.Strategy;
+import team059.utils.ArraySet;
+import team059.messaging.MessageHandler;
 import team059.messaging.MessagingSystem;
 import team059.utils.Utils;
 import battlecode.common.*;
@@ -13,6 +15,11 @@ public class HQBehavior extends RobotBehavior {
 	int buildOrderProgress = 0;
 	boolean enemyNukeHalfDone = false;
 	int enemyNukeHalfRound;
+	
+	ArraySet<Robot> generators = new ArraySet<Robot>();
+	ArraySet<Robot> suppliers =  new ArraySet<Robot>();
+	int genIndex = 0, supIndex = 0;
+	
 	
 	ExpandSystem expandSystem;
 	
@@ -45,6 +52,7 @@ public class HQBehavior extends RobotBehavior {
 	 * Handle upgrades and robots.
 	 */
 	private void macro() {
+		RC.setIndicatorString(1,""+RC.getTeamPower());
 		if(buildOrderProgress < buildOrder.length) {
 			try {
 				if(buildOrder[buildOrderProgress].execute(this)) {
@@ -54,9 +62,9 @@ public class HQBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		} else if(RC.isActive()) {
-			if(Clock.getRoundNum() < 100 || (RC.getTeamPower() - 40.0 > 15.0)) {
+			if(Clock.getRoundNum() < 100 || (RC.getTeamPower() - (40 + 10*generators.size) > 10.0)) {
 				try {
-					//RC.setIndicatorString(0, Double.toString(RC.getTeamPower()) + "  asdf");
+					RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(RC.getTeamPower()) + "  asdf");
 					buildSoldier();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -78,6 +86,28 @@ public class HQBehavior extends RobotBehavior {
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			} 
+		}
+	}
+	
+	private void updateEncampmentCounts() throws GameActionException {
+		for(int i=0; i<6; i++) {
+			if(genIndex == generators.size){
+				genIndex = 0;
+				break;
+			}
+			if(!RC.canSenseObject(generators.get(genIndex++))) {
+				generators.delete(genIndex);
+			}
+		}
+
+		for(int i=0; i<6; i++) {
+			if(supIndex == suppliers.size){
+				supIndex = 0;
+				break;
+			}
+			if(!RC.canSenseObject(suppliers.get(supIndex++))) {
+				suppliers.delete(supIndex);
+			}
 		}
 	}
 	
@@ -141,4 +171,24 @@ public class HQBehavior extends RobotBehavior {
 		}
 	}
 
+	@Override
+	protected MessageHandler getBirthInfoHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				try {
+					System.out.println("seen guy born!");
+					Robot newBot = (Robot) RC.senseObjectAtLocation(new MapLocation(message[1], message[2]));	
+					if(newBot == null) return;
+					if(message[4] == MessagingSystem.SUPPLIER) {
+						suppliers.insert(newBot);
+					} else if(message[4] == MessagingSystem.GENERATOR) {
+						generators.insert(newBot);
+					}
+				} catch (GameActionException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+	}
 }
