@@ -59,12 +59,13 @@ public class ExpandTask extends TravelTask {
 	}
 	
 	private RobotType getCaptureType() {
-		if(buildType != null) return buildType;
-		
+		//overrides build type
 		if(forward >= strategy.border - strategy.margin) {
 			//TODO: make medbays?
 			return RobotType.ARTILLERY;	
 		}
+		
+		if(buildType != null) return buildType;
 		
 		//TODO: do something better
 		return Clock.getRoundNum() % 2 == 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;

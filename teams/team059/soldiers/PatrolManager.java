@@ -19,6 +19,7 @@ public class PatrolManager extends TaskGiver {
 	@Override
 	public void compute() throws GameActionException {
 		double position = forward - strategy.border;
+		//System.out.println("Forward = " + forward + ", border = " + strategy.border + ", position = " + position);
 		
 		RC.setIndicatorString(0, String.valueOf(position));
 		
