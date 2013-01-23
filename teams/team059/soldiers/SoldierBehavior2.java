@@ -28,6 +28,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	public static Micro microSystem;
 	private SingleTaskManager attackManager;
 	private SingleTaskManager takeEncampmentManager;
+	private ScoutManager scoutManager;
 
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
@@ -42,8 +43,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 		taskManager = new TaskManager();
 		attackManager = new SingleTaskManager();
 		takeEncampmentManager = new SingleTaskManager();
+		scoutManager = new ScoutManager();
 		
-		taskGivers = new TaskGiver[] {patrolManager, taskManager, expandManager, attackManager, takeEncampmentManager};
+		taskGivers = new TaskGiver[] {patrolManager, taskManager, expandManager, attackManager, takeEncampmentManager, scoutManager};
 	}
 
 	@Override
@@ -117,9 +119,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				else if (distance <= 3)
 				{
 					try {
-						int k = Clock.getBytecodeNum();
 						microSystem.run();
-						RC.setIndicatorString(2, Clock.getBytecodeNum()-k + "bytecode on turn" + Clock.getRoundNum());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
