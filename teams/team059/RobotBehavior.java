@@ -23,6 +23,7 @@ public class RobotBehavior {
 		messageHandlers[MessageType.HQ_INFO.ordinal()] = getHQHandler();		
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();
 		messageHandlers[MessageType.CHECKPOINT_NUMBER.ordinal()] = getCheckpointHandler();
+		messageHandlers[MessageType.MICRO_INFO.ordinal()] = getMicroHandler();
 		messageHandlers[MessageType.TAKE_ENCAMPMENT.ordinal()] = getTakeEncampmentHandler();
 	}
 
@@ -92,7 +93,9 @@ public class RobotBehavior {
 	 * Override in order to respond to this type of message.
 	 * @return The default message handler (does nothing).
 	 */
-	protected MessageHandler getCheckpointHandler() {return new DefaultMessageHandler();}
+	protected MessageHandler getCheckpointHandler() {return new DefaultMessageHandler();}	
+	
+	protected MessageHandler getMicroHandler() {return new DefaultMessageHandler();}
 
 	protected MessageHandler getTakeEncampmentHandler() {return new DefaultMessageHandler();}	
 }

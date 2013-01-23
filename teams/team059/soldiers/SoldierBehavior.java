@@ -7,23 +7,26 @@ import team059.messaging.MessageHandler;
 import team059.movement.Mover;
 import team059.movement.NavType;
 import team059.soldiers.micro.Micro;
+import team059.soldiers.SquadleaderHelper;
 import team059.soldiers.mineLay.MineLayer;
+import team059.utils.Utils;
 import static team059.utils.Utils.*;
-
 import battlecode.common.*;
 import static team059.soldiers.SoldierMode.*;
 
 public class SoldierBehavior extends RobotBehavior {
 
 	private SoldierMode mode;
-	private MapLocation target = null, waypoint1 = null, waypoint2 = null, messageTarget;
+	public MapLocation target = null, waypoint1 = null, waypoint2 = null, messageTarget;
+	private boolean charging = false;
 //	private int priority;
 	private MapLocation[] gather;
 	private MapLocation myGather;
-	private boolean charging = false, messageWritten = false;
 	private Micro microSystem;
-	private MapLocation curLoc = null, previousLocation = null;
-	private boolean enemyInVicinity = false; //messaging system tells if there's an enemy within battleDistance away.
+	private SquadleaderHelper squadleaderSystem;
+	public MapLocation curLoc = null, previousLocation = null;
+	
+	public MapLocation microTarget = null; 	private MapLocation temporaryMicroTarget = null;
 	
 	
 	int myAssignment; //mid, left, right
@@ -49,6 +52,7 @@ public class SoldierBehavior extends RobotBehavior {
 		microSystem = new Micro(this);
 		rand = new Random(Clock.getRoundNum() * RC.getRobot().getID() + Clock.getBytecodeNum());
 		
+		squadleaderSystem = new SquadleaderHelper(this);
 		
 		//set gather points and assignment
 		gather = new MapLocation[3]; 
@@ -96,11 +100,18 @@ public class SoldierBehavior extends RobotBehavior {
 
 	@Override
 	public void run() {
+		
 		if(!RC.isActive()) return;
 		
-		enemyInVicinity = false;
+		messagingSystem.handleMessages(messageHandlers);
 		curLoc = RC.getLocation();
 		try {
+
+			if(SoldierUtils.amISquadLeader())
+			{
+				squadleaderSystem.run();
+			}
+			microSystem.setVariables();
 			considerSwitchingModes();
 			RC.setIndicatorString(0, mode.name());
 			
@@ -120,7 +131,9 @@ public class SoldierBehavior extends RobotBehavior {
 				battleBehavior();
 				break;
 			case MICRO:
+				int k = Clock.getBytecodeNum();
 				microBehavior();
+				//RC.setIndicatorString(1, (Clock.getBytecodeNum()-k) + " MICRO BYTE CODE");
 				break;
 			case EXPLORE:
 				exploreBehavior();
@@ -132,16 +145,14 @@ public class SoldierBehavior extends RobotBehavior {
 				break;
 			}
 			
-			resetEnemyInVicinityStatus(); // rests choice constants each turn.
-			
 			stepOffMine();
+			flushVariables();
 			if(RC.isActive())
 				mover.execute();
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
 		
-		//Possible issue; microSystem uses its own targets. Could this be bad?
 		if (mover.getTarget() !=null)
 		{
 			try {
@@ -153,9 +164,9 @@ public class SoldierBehavior extends RobotBehavior {
 		}
 		else 
 		{
-			RC.setIndicatorString(1, "No Target " + Clock.getRoundNum());
+		//	RC.setIndicatorString(1, "No Target " + Clock.getRoundNum());
 		}
-		previousLocation = curLoc; //updates the past location.
+		previousLocation = curLoc;
 	}
 
 	@Override
@@ -165,6 +176,30 @@ public class SoldierBehavior extends RobotBehavior {
 			public void handleMessage(int[] message) {
 				messageTarget = new MapLocation(message[1], message[2]);
 				int new_priority = message[3];
+			}
+		};
+	}
+	
+	protected MessageHandler getMicroHandler() {
+		return new MessageHandler() {
+			public void handleMessage(int[] message) {
+				temporaryMicroTarget = new MapLocation(message[1], message[2]);
+				if (microTarget == null)
+				{
+					microTarget = temporaryMicroTarget;
+					if (message[3] == 1)
+						microSystem.shouldIretreat = false;
+					else if (message[3] == 0)
+						microSystem.shouldIretreat = true;
+				}
+				else if (Utils.naiveDistance(curLoc, temporaryMicroTarget) < Utils.naiveDistance(curLoc, microTarget))
+				{
+					microTarget = temporaryMicroTarget;
+					if (message[3] == 1)
+						microSystem.shouldIretreat = false;
+					else if (message[3] == 0)
+						microSystem.shouldIretreat = true;
+				}
 			}
 		};
 	}
@@ -189,10 +224,17 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	private void considerSwitchingModes() throws GameActionException {
 		
-		if(microSystem.enemySoldierNearby(Micro.sensorRadius)){
-			mode = MICRO;
+		/*if(SoldierUtils.amISquadLeader())
+		{
+			if (squadleaderSystem.enemySoldierTarget != null && naiveDistance(squadleaderSystem.enemySoldierTarget, curLoc) <= 3)
+			{
+				mode = MICRO;
+			}
+		}*/
+		/*else*/ if(microSystem.enemySoldierTarget != null && Utils.naiveDistance(curLoc, microSystem.enemySoldierTarget) <= 3){
+				mode = MICRO;
 		}
-		else if (messageTarget != null && PrioritySystem.rate(naiveDistance(curLoc, messageTarget)) == 1)
+		else if (microTarget != null && Utils.naiveDistance(curLoc, microTarget) <= 6)
 		{
 			setChargeMode(); // sets the robot into charge mode, and breaks out of charge mode if charging for too long	
 		}
@@ -315,7 +357,7 @@ public class SoldierBehavior extends RobotBehavior {
 
 	private void battleBehavior() throws GameActionException {
 		mover.setNavType(NavType.BUG);
-		target = messageTarget;
+		target = microTarget;
 		attackTarget(target);
 	}
 	
@@ -355,7 +397,7 @@ public class SoldierBehavior extends RobotBehavior {
 	
 	public void attackTarget(MapLocation m) throws GameActionException
 	{
-		if (curLoc.distanceSquaredTo(m) > 2)
+		if (RC.getLocation().distanceSquaredTo(m) > 2)
 		{
 			target = m;
 			mover.setTarget(target);
@@ -392,12 +434,24 @@ public class SoldierBehavior extends RobotBehavior {
 			goingToBattle = 0;
 		}
 	}
-
-	//resets the enemyInVicinity constant to determine whether to enter charging mode
-	public void resetEnemyInVicinityStatus(){
-		if (mode != CHARGING_TO_BATTLE)
+	
+	/**
+	 * Only call this method from battlemode. Decides whether a robot should switch into micro mode.
+	 * @return
+	 * @throws GameActionException 
+	 */
+	public boolean shouldISwitchToMicro() throws GameActionException
+	{
+		if (SoldierUtils.findClosebySoldier() != null){
+			return true;
+		}
+		return false;
+	}
+	public void flushVariables()
+	{
+		if (mode != MICRO)
 		{
-			enemyInVicinity = false;
+			microTarget = null;
 		}
 	}
 }

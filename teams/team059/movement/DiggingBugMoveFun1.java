@@ -105,7 +105,7 @@ public class DiggingBugMoveFun1 extends NavAlg {
                 //}
             }
             
-            RC.setIndicatorString(2, "Turn " + Clock.getRoundNum() + "： " + Arrays.toString(movable));
+            //RC.setIndicatorString(2, "Turn " + Clock.getRoundNum() + "： " + Arrays.toString(movable));
             int[] toMove = computeMove(curLoc.x, curLoc.y, movable, PASSABLE);
             if(toMove==null) return Direction.NONE;
             Direction ret = directions[getDirTowards(toMove[0], toMove[1])];

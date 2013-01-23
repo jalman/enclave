@@ -10,6 +10,8 @@ import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
+import team059.soldiers.micro.Micro;
+import team059.movement.*;
 
 public class Utils {
 	//actual constants
@@ -32,7 +34,7 @@ public class Utils {
 	
 	public static MapLocation currentLocation;
 	private static MapLocation[] alliedEncampments;
-	public static final int ENEMY_RADIUS = 5;
+	public static final int ENEMY_RADIUS = 4;
 	public static final int ENEMY_RADIUS2 = ENEMY_RADIUS * ENEMY_RADIUS;
 	public static Robot[] enemyRobots = new Robot[0];
 	public static double forward;
@@ -60,7 +62,7 @@ public class Utils {
 		currentLocation = RC.getLocation();
 		alliedEncampments = null;
 		forward = Math.log((double)naiveDistance(currentLocation, ALLY_HQ) / naiveDistance(currentLocation, ENEMY_HQ));
-		RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
+		enemyRobots = RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
 	}
 	
 	public static boolean isEnemyMine(Team team) {

@@ -1,5 +1,6 @@
 package team059.soldiers;
 
+import team059.utils.Utils;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -15,7 +16,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 
 	public static int ENEMY_RADIUS = 5;
 	public static int ENEMY_RADIUS2 = 25;
-
+	
 	public Robot[] nearbyEnemies;
 
 	public Mover mover;
@@ -23,16 +24,20 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
 	private TaskManager taskManager;
+
+	public static Micro microSystem;
 	private SingleTaskManager attackManager;
 	private SingleTaskManager takeEncampmentManager;
 	private ScoutManager scoutManager;
 
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
+	
+	private MapLocation target;
 
 	public SoldierBehavior2() {
 		mover = new Mover();
-
+		microSystem = new Micro();
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
@@ -96,5 +101,34 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};
 	}
-
+	
+	protected MessageHandler getMicroHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				if (target == null || Utils.naiveDistance(target, Utils.currentLocation) > 7)
+				{
+					target= new MapLocation(message[1], message[2]);
+				}
+				int distance = Utils.naiveDistance(target, Utils.currentLocation);
+				
+				if(distance < 7 && distance > 3)
+				{
+					mover.setTarget(target);
+				}
+				else if (distance <= 3)
+				{
+					try {
+						int k = Clock.getBytecodeNum();
+						microSystem.run();
+						RC.setIndicatorString(2, Clock.getBytecodeNum()-k + "bytecode on turn" + Clock.getRoundNum());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				//taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
+			}
+		};
+	}
 }
