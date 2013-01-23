@@ -82,9 +82,13 @@ public class HQBehavior extends RobotBehavior {
 	}
 	
 	@Override
-	public void run() {
+	public void run() throws GameActionException {
 		macro();
 		expand();
+		
+		if(panic()) {
+			messagingSystem.writeAttackMessage(ENEMY_HQ, 5000);
+		}
 	}
 	
 	public boolean panic() {

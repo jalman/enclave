@@ -24,7 +24,10 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
 	private TaskManager taskManager;
+
 	public static Micro microSystem;
+	private SingleTaskManager attackManager;
+	private SingleTaskManager takeEncampmentManager;
 
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
@@ -37,8 +40,10 @@ public class SoldierBehavior2 extends RobotBehavior {
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
-
-		taskGivers = new TaskGiver[] {patrolManager, taskManager, expandManager};
+		attackManager = new SingleTaskManager();
+		takeEncampmentManager = new SingleTaskManager();
+		
+		taskGivers = new TaskGiver[] {patrolManager, taskManager, expandManager, attackManager, takeEncampmentManager};
 	}
 
 	@Override
@@ -80,7 +85,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				taskManager.insertTask(new AttackTask(new MapLocation(message[1], message[2]), message[3]));
+				attackManager.considerTask(new AttackTask(new MapLocation(message[1], message[2]), message[3]));
 			}
 		};
 	}
@@ -90,7 +95,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				taskManager.insertTask(new ExpandTask(new MapLocation(message[1], message[2]), message[3], RobotType.values()[message[4]]));
+				takeEncampmentManager.considerTask(new ExpandTask(new MapLocation(message[1], message[2]), message[3], RobotType.values()[message[4]]));
 			}
 		};
 	}

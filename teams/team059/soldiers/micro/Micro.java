@@ -41,17 +41,23 @@ public class Micro {
 		{
 			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, 0);
 		}
+		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at microCheckpoint 1");
 		if(enemySoldierTarget != null)
 			microCode();
+		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at microCheckpoint 2");
 		if(RC.isActive())
 			mover.execute();
+		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at microCheckpoint 3");
 		count++;
 	}
 	public void setVariables() throws GameActionException{
+		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at setVariables1");
 		enemyNumber = Utils.enemyRobots.length;
 		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, Utils.ALLY_TEAM).length;
+		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at setVariables2");
 		mover.setNavType(NavType.BUG);
 		enemySoldierTarget = SoldierUtils.findClosebyEnemy();
+		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at setVariables3");
 	}
 	/**
 	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
