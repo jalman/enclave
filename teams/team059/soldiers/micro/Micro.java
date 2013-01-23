@@ -40,7 +40,7 @@ public class Micro {
 		}
 		
 //		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
-		if(count % 15 == 1 && enemySoldierTarget != null)
+		if(count % 16 == 1 || Clock.getRoundNum() % 16 == (int)(Math.random()*14) && enemySoldierTarget != null)
 		{
 			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, Clock.getRoundNum());
 		}
