@@ -50,7 +50,7 @@ public class Utils {
 		ALLY_HQ = rc.senseHQLocation();
 		ENEMY_HQ = rc.senseEnemyHQLocation();
 		
-		random = new Random(RC.getRobot().getID() + Clock.getRoundNum());
+		random = new Random(((long)RC.getRobot().getID()<< 32) ^ Clock.getRoundNum());
 
 		messagingSystem = new MessagingSystem();
 	}
