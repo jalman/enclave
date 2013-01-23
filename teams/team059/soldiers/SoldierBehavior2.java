@@ -35,6 +35,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private Task currentTask;
 	
 	private MapLocation target;
+	int targetAge;
 
 	public SoldierBehavior2() {
 		mover = new Mover();
@@ -111,9 +112,10 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if (target == null || Utils.naiveDistance(target, Utils.currentLocation) >= 7)
+				if (target == null || Utils.naiveDistance(target, Utils.currentLocation) >= 7 || Clock.getRoundNum() - targetAge >= 5)
 				{
 					target= new MapLocation(message[1], message[2]);
+					targetAge = Clock.getRoundNum();
 				}
 				int distance = Utils.naiveDistance(target, Utils.currentLocation);
 				
