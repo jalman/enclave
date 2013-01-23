@@ -13,17 +13,19 @@ import static team059.utils.Utils.*;
  * @author vlad
  */
 public class ExpandSystem {
-	public MapLocation[][] encampments = new MapLocation[3][];
-	int[] delimit = new int[2];
+	private final int NC = 8;
 	
-	boolean[] finished = new boolean[3];
+	public MapLocation[][] encampments = new MapLocation[NC][];
+	int delimit;
+	
+	boolean[] finished = new boolean[NC];
 	
 	int suppliers = 0;
 	int generators = 0;
 	
 	public ExpandSystem() {
-		initializeDelimiters();
 		try {
+			initializeDelimiters();
 			findEncampments();
 		} catch (GameActionException e) {
 			e.printStackTrace();
@@ -31,28 +33,14 @@ public class ExpandSystem {
 		
 	}
 	
-	public void initializeDelimiters() {
-		switch (strategy) {
-		case RUSH:
-			delimit[0] = 17;
-			delimit[1] = 49;
-			break;
-		case NUCLEAR:
-			delimit[0] = 0;
-			delimit[1] = 0;
-			break;
-		default: //case NORMAL:
-			delimit[0] = 49;
-			delimit[1] = 199;
-			break;
-		}
-		
+	public void initializeDelimiters() throws GameActionException {
+		delimit = Math.max(MAP_HEIGHT, MAP_WIDTH) / (2 * NC);
 	}
 	
 	public void findEncampments() throws GameActionException {
-		encampments[0] = RC.senseEncampmentSquares(ALLY_HQ, delimit[0], Team.NEUTRAL);
-		encampments[1] = RC.senseEncampmentSquares(ALLY_HQ, delimit[1], Team.NEUTRAL);
-		encampments[2] = RC.senseAllEncampmentSquares();
+		for(int i = 0; i < NC; i++) {
+			encampments[i] = RC.senseEncampmentSquares(ALLY_HQ, delimit * (i+1), Team.NEUTRAL);
+		}
 	}
 	
 	/**
@@ -62,16 +50,20 @@ public class ExpandSystem {
 	 * @throws GameActionException 
 	**/
 	public void considerExpanding(int far) throws GameActionException {
-		while(finished[far]) {
+		if(far >= NC) return;
+		
+		while(finished[far] || encampments[far] == null) {
 			far++;
+			if(far >= NC) return;
 		}
 		for(MapLocation loc : encampments[far]) {
 			if(!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null) {
+				System.out.println("MSS!");
 				if(generators > suppliers) {
-					messagingSystem.writeTakeEncampmentMessage(loc, 50 - 5*far, RobotType.SUPPLIER);
+					messagingSystem.writeTakeEncampmentMessage(loc, 50, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
-					messagingSystem.writeTakeEncampmentMessage(loc, 50 - 5*far, RobotType.GENERATOR);
+					messagingSystem.writeTakeEncampmentMessage(loc, 50, RobotType.GENERATOR);
 					generators++;
 				}
 				return;
