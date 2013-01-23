@@ -18,7 +18,6 @@ public class RobotPlayer {
 			robot = new HQBehavior();
 			break;
 		case SOLDIER:
-			
 			robot = new SoldierBehavior2();
 			break;
 		case ARTILLERY:
