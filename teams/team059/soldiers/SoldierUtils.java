@@ -23,10 +23,10 @@ public class SoldierUtils {
 		MapLocation m = findSomeEnemySoldier(2);
 		if (m != null)
 			return m;
-		m = findSomeEnemySoldier(8);
+		m = findSomeEnemySoldier(9);
 		if (m != null)
 			return m;
-		m = findSomeEnemySoldier(16);
+		m = findSomeEnemySoldier(18);
 		if (m != null)
 			return m;
 		m = findSomeEnemySoldier(36);

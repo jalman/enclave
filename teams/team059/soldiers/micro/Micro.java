@@ -3,7 +3,6 @@ package team059.soldiers.micro;
 import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
-import team059.soldiers.SoldierBehavior;
 import team059.soldiers.SoldierBehavior2;
 import team059.utils.Utils;
 import static team059.utils.Utils.*;
@@ -12,14 +11,12 @@ import team059.soldiers.SoldierUtils;
 
 
 public class Micro {
-
-//	GameObject[] foe = new GameObject[0], friends = new GameObject[0];
 	
 	MapLocation retreatTarget = null;
 	MapLocation encampTarget = null, c = null;
-	Direction d = null;
 	int enemyNumber, allyNumber;
-	public static int ALLY_RADIUS2 = 16;
+//	public static int ALLY_RADIUS = 3;
+	public static int ALLY_RADIUS2 = 10;
 	public static final Mover mover = new Mover();
 	public MapLocation enemySoldierTarget, curLoc;
 	
@@ -32,32 +29,40 @@ public class Micro {
 	}
 	
 	public void run() throws GameActionException{
-		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
-		if (count % 3 == 0)
+		int k = Clock.getBytecodeNum();
+//		if((count) % 10 == Math.random()*10)
+//		{
+//			System.out.println(k + " Pre-micro bytecode");
+//		}
+		if (count % 2 == 0)
 		{
 			setVariables();
 		}
-		if(count % 5 == 1 && enemySoldierTarget != null)
+		
+//		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
+		if(count % 15 == 1 && enemySoldierTarget != null)
 		{
-			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, 0);
+			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, Clock.getRoundNum());
 		}
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at microCheckpoint 1");
 		if(enemySoldierTarget != null)
 			microCode();
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at microCheckpoint 2");
+//		if(count % 10 == 0 || (count+Clock.getRoundNum()) % 10 == Math.random()*10)
+//		{
+//			System.out.println(Clock.getBytecodeNum() - k + " ");
+//			if(Clock.getBytecodeNum() == 10000)
+//				System.out.println("Hit 10000 bytecode");
+//		}
+		
 		if(RC.isActive())
 			mover.execute();
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at microCheckpoint 3");
 		count++;
+		
 	}
 	public void setVariables() throws GameActionException{
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at setVariables1");
 		enemyNumber = Utils.enemyRobots.length;
-		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, Utils.ALLY_TEAM).length;
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at setVariables2");
+		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, Utils.ALLY_TEAM).length - RC.senseEncampmentSquares(Utils.currentLocation, ALLY_RADIUS2, Utils.ALLY_TEAM).length;
 		mover.setNavType(NavType.BUG);
 		enemySoldierTarget = SoldierUtils.findClosebyEnemy();
-		System.out.println("Using " + Clock.getBytecodeNum() + " bytecodes at setVariables3");
 	}
 	/**
 	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
@@ -73,7 +78,6 @@ public class Micro {
 		else if (!shouldIAttack())
 		{
 			setRetreatBack();
-			RC.setIndicatorString(2, "Retreating " + Clock.getRoundNum());
 			mover.setTarget(retreatTarget);
 		}
 		else

@@ -24,6 +24,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
 	private TaskManager taskManager;
+	private MineManager mineManager;
 
 	public static Micro microSystem;
 	private SingleTaskManager attackManager;
@@ -34,6 +35,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private Task currentTask;
 	
 	private MapLocation target;
+	int targetAge;
 
 	public SoldierBehavior2() {
 		mover = new Mover();
@@ -41,11 +43,12 @@ public class SoldierBehavior2 extends RobotBehavior {
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
+		mineManager = new MineManager(this);
 		attackManager = new SingleTaskManager();
 		takeEncampmentManager = new SingleTaskManager();
 		scoutManager = new ScoutManager();
 		
-		taskGivers = new TaskGiver[] {patrolManager, taskManager, expandManager, attackManager, takeEncampmentManager, scoutManager};
+		taskGivers = new TaskGiver[] {patrolManager, taskManager, mineManager, expandManager, attackManager, takeEncampmentManager, scoutManager};
 	}
 
 	@Override
@@ -75,8 +78,11 @@ public class SoldierBehavior2 extends RobotBehavior {
 				max_appeal = appeal;
 			}
 		}
-
-		if(currentTask != null && RC.isActive()) {
+		if(Utils.enemyRobots.length > 0)
+		{
+			microSystem.run();
+		}
+		else if(currentTask != null && RC.isActive()) {
 			RC.setIndicatorString(1, currentTask.toString());
 			currentTask.execute();
 		}
@@ -106,22 +112,22 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if (target == null || Utils.naiveDistance(target, Utils.currentLocation) > 7)
+				if (target == null || Utils.naiveDistance(target, Utils.currentLocation) >= 7 || Clock.getRoundNum() - targetAge >= 5)
 				{
 					target= new MapLocation(message[1], message[2]);
+					targetAge = Clock.getRoundNum();
 				}
 				int distance = Utils.naiveDistance(target, Utils.currentLocation);
 				
-				if(distance < 7 && distance > 3)
+				if(distance < 7 && distance > 4)
 				{
+					RC.setIndicatorString(2, "CHARGING TO " + target + " on turn " + Clock.getRoundNum());
 					mover.setTarget(target);
 				}
-				else if (distance <= 3)
+				else if (distance <= 4)
 				{
 					try {
-						int k = Clock.getBytecodeNum();
 						microSystem.run();
-						RC.setIndicatorString(2, Clock.getBytecodeNum()-k + "bytecode on turn" + Clock.getRoundNum());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
