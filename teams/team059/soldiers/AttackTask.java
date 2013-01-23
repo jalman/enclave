@@ -12,25 +12,40 @@ import static team059.utils.Utils.*;
 public class AttackTask extends TravelTask {
 	
 	private static final Mover mover = new Mover();
+	private int turnsSinceSeenEnemy = 0;
+	private boolean engaged;
 	
 	MapLocation m;
 	
 	public AttackTask(MapLocation target, int priority) {
-		super(mover, target, priority, 1);
+		super(mover, target, priority, 0);
 	}
 	
 	@Override
 	public boolean done() {
-		return RC.senseNearbyGameObjects(Robot.class, destination, ENEMY_RADIUS2, ENEMY_TEAM).length == 0;
+		if(engaged) {
+			if((turnsSinceSeenEnemy > 5) && RC.senseNearbyGameObjects(Robot.class, destination, ENEMY_RADIUS2, ENEMY_TEAM).length == 0) {
+				engaged = false;
+				turnsSinceSeenEnemy = 0;				
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
 	public void execute() throws GameActionException {
 		m = SoldierUtils.findClosebyEnemy();
 		if(m != null) {
-			SoldierBehavior2.microSystem.enemySoldierTarget = m;
-			SoldierBehavior2.microSystem.run();
+			if(!engaged) {
+				turnsSinceSeenEnemy = 0;
+				engaged = true;
+			}
+//			SoldierBehavior2.microSystem.enemySoldierTarget = m;
+//			SoldierBehavior2.microSystem.run();
 		} else {
+			turnsSinceSeenEnemy++;
 			super.execute();
 		}
 	}

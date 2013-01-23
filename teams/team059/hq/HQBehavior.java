@@ -1,6 +1,9 @@
 package team059.hq;
 
 import static team059.utils.Utils.*;
+
+import java.util.Arrays;
+
 import team059.RobotBehavior;
 import team059.Strategy;
 import team059.utils.ArraySet;
@@ -22,6 +25,7 @@ public class HQBehavior extends RobotBehavior {
 	
 	double lastFlux = 0, thisFlux = 0, fluxDiff = 0;
 	
+	boolean panicking = false;
 	
 	ExpandSystem expandSystem;
 	
@@ -70,7 +74,7 @@ public class HQBehavior extends RobotBehavior {
 		} else if(RC.isActive()) {
 			if(Clock.getRoundNum() < 100 || ( fluxDiff > -1.0 && (RC.getTeamPower() - (40 + 10*generators.size) > 10.0))) {
 				try {
-					RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(RC.getTeamPower()) + "  asdf");
+					RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(RC.getTeamPower()) + " is pow");
 					built = buildSoldier();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -123,13 +127,20 @@ public class HQBehavior extends RobotBehavior {
 		expand();
 		
 		if(panic()) {
-			messagingSystem.writeAttackMessage(ENEMY_HQ, 5000);
+			messagingSystem.writeAttackMessage(ENEMY_HQ, 500000);
 		}
 	}
 	
 	public boolean panic() {
 		try {
-			return enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE);
+			if(!panicking) {
+				if( enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE) ) {
+					panicking = true;
+				}
+			}
+			if(panicking) {
+				return true;
+			}
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
@@ -183,8 +194,8 @@ public class HQBehavior extends RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				try {
-					System.out.println("seen guy born!");
 					Robot newBot = (Robot) RC.senseObjectAtLocation(new MapLocation(message[1], message[2]));	
+					System.out.println("seen " + Arrays.toString(message) + " born!");
 					if(newBot == null) {
 						System.out.println("wat");
 						return;

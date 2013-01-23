@@ -73,7 +73,8 @@
      classname="battlecode.client.Main">
       <jvmarg value="-Dapple.awt.graphics.UseQuartz=true"/>
       <jvmarg value="-Dbc.server.map-path=${path.maps}"/>
-      <jvmarg value="-Xmx1024m"/> 
+      <jvmarg value="-Xmx2048m"/> 
+      <jvmarg value="-XX:MaxPermSize=512m"/>
 	  <jvmarg value="-Djava.library.path=${path.lib}" />
       <arg line="-c bc.conf"/>
     </java>
@@ -87,7 +88,8 @@
       <jvmarg value="-Dapple.awt.graphics.UseQuartz=true"/>
       <jvmarg value="-Dbc.server.map-path=${path.maps}"/>
       <jvmarg value="-Dbc.client.match=${match}"/>
-      <jvmarg value="-Xmx1024m"/> 
+      <jvmarg value="-Xmx2048m"/> 
+      <jvmarg value="-XX:MaxPermSize=512m"/>
 	  <jvmarg value="-Djava.library.path=${path.lib}" />
       <arg line="-c bc.conf"/>
     </java>

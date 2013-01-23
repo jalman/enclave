@@ -121,7 +121,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				
 				if(distance < 7 && distance > 4)
 				{
-					RC.setIndicatorString(2, "CHARGING TO " + target + " on turn " + Clock.getRoundNum());
+					//RC.setIndicatorString(2, "CHARGING TO " + target + " on turn " + Clock.getRoundNum());
 					mover.setTarget(target);
 				}
 				else if (distance <= 4)
