@@ -25,6 +25,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private TaskManager taskManager;
 	private SingleTaskManager attackManager;
 	private SingleTaskManager takeEncampmentManager;
+	private ScoutManager scoutManager;
 
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
@@ -37,8 +38,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 		taskManager = new TaskManager();
 		attackManager = new SingleTaskManager();
 		takeEncampmentManager = new SingleTaskManager();
+		scoutManager = new ScoutManager();
 		
-		taskGivers = new TaskGiver[] {patrolManager, taskManager, expandManager, attackManager, takeEncampmentManager};
+		taskGivers = new TaskGiver[] {patrolManager, taskManager, expandManager, attackManager, takeEncampmentManager, scoutManager};
 	}
 
 	@Override
