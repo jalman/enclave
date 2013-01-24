@@ -25,7 +25,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private ExpandManager expandManager;
 	private TaskManager taskManager;
 	private MineManager mineManager;
-
+		
 	public static Micro microSystem;
 	private SingleTaskManager attackManager;
 	private SingleTaskManager takeEncampmentManager;
@@ -34,12 +34,12 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
 	
-	private MapLocation target;
-	int targetAge;
+	public MapLocation battleSpot;
+	public int battleSpotAge;
 
 	public SoldierBehavior2() {
 		mover = new Mover();
-		microSystem = new Micro();
+		microSystem = new Micro(this);
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
@@ -86,8 +86,13 @@ public class SoldierBehavior2 extends RobotBehavior {
 			RC.setIndicatorString(1, currentTask.toString());
 			currentTask.execute();
 		}
+		updateVariables();
 	}
 
+	public void updateVariables()
+	{
+		battleSpotAge++;
+	}
 	@Override
 	protected MessageHandler getAttackHandler() {
 		return new MessageHandler() {
@@ -112,27 +117,28 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if (target == null || Utils.naiveDistance(target, Utils.currentLocation) >= 7 || Clock.getRoundNum() - targetAge >= 5)
+				if (battleSpot == null || Utils.naiveDistance(battleSpot, Utils.currentLocation) >= 7 || battleSpotAge >= 4)
 				{
-					target= new MapLocation(message[1], message[2]);
-					targetAge = Clock.getRoundNum();
+					battleSpot= new MapLocation(message[1], message[2]);
+					battleSpotAge = 0;
 				}
-				int distance = Utils.naiveDistance(target, Utils.currentLocation);
+				
+				int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
 				
 				if(distance < 7 && distance > 4)
 				{
-					RC.setIndicatorString(2, "CHARGING TO " + target + " on turn " + Clock.getRoundNum());
-					mover.setTarget(target);
+					RC.setIndicatorString(2, "CHARGING TO " + battleSpot + " on turn " + Clock.getRoundNum());
+					mover.setTarget(battleSpot);
 				}
-				else if (distance <= 4)
-				{
-					try {
-						microSystem.run();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+//				else if (distance <= 4)
+//				{
+//					try {
+//						microSystem.run();
+//					} catch (Exception e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
 				//taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
 			}
 		};

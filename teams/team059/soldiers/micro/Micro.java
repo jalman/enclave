@@ -19,13 +19,14 @@ public class Micro {
 	public static int ALLY_RADIUS2 = 10;
 	public static final Mover mover = new Mover();
 	public MapLocation enemySoldierTarget, curLoc;
-	
+	public SoldierBehavior2 sb;
 	int count = 0;
 	
 	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
 	
-	public Micro() {		
+	public Micro(SoldierBehavior2 sb) {		
 		enemySoldierTarget = null;
+		this.sb = sb;
 	}
 	
 	public void run() throws GameActionException{
@@ -40,23 +41,15 @@ public class Micro {
 		}
 		
 //		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
-		if(count % 16 == 1 || Clock.getRoundNum() % 16 == (int)(Math.random()*14) && enemySoldierTarget != null)
+		if(enemySoldierTarget != null && sb.battleSpotAge >= 4)
 		{
 			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, Clock.getRoundNum());
 		}
 		if(enemySoldierTarget != null)
-			microCode();
-//		if(count % 10 == 0 || (count+Clock.getRoundNum()) % 10 == Math.random()*10)
-//		{
-//			System.out.println(Clock.getBytecodeNum() - k + " ");
-//			if(Clock.getBytecodeNum() == 10000)
-//				System.out.println("Hit 10000 bytecode");
-//		}
-		
+			microCode();		
 		if(RC.isActive())
 			mover.execute();
 		count++;
-		
 	}
 	public void setVariables() throws GameActionException{
 		enemyNumber = Utils.enemyRobots.length;
@@ -64,6 +57,7 @@ public class Micro {
 		mover.setNavType(NavType.BUG);
 		enemySoldierTarget = SoldierUtils.findClosebyEnemy();
 	}
+	
 	/**
 	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
 	 * @throws GameActionException
