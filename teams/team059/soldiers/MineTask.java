@@ -4,7 +4,6 @@ import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Upgrade;
-import bytecodetest.Utils;
 import static team059.utils.Utils.*;
 
 public class MineTask extends TravelTask {

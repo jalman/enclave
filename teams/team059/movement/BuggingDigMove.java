@@ -34,7 +34,7 @@ public class BuggingDigMove extends NavAlg {
 		
 		tryDir = curLoc.directionTo(finish);
 		
-		if(tryDir == Direction.NONE) return Direction.NONE;
+		if(tryDir == Direction.NONE || tryDir == Direction.OMNI) return Direction.NONE;
 		
 		if(!bugging) {
 			if(RC.canMove(tryDir)) {

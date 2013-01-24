@@ -16,7 +16,7 @@ public class Micro {
 	MapLocation encampTarget = null, c = null;
 	int enemyNumber, allyNumber;
 //	public static int ALLY_RADIUS = 3;
-	public static int ALLY_RADIUS2 = 10;
+	public static int ALLY_RADIUS2 = 14;
 	public static final Mover mover = new Mover();
 	public MapLocation enemySoldierTarget, curLoc;
 	public SoldierBehavior2 sb;
@@ -45,8 +45,16 @@ public class Micro {
 		{
 			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, Clock.getRoundNum());
 		}
-		if(enemySoldierTarget != null)
-			microCode();		
+		if(enemySoldierTarget != null) {		
+			microCode();
+		}
+//		if(count % 10 == 0 || (count+Clock.getRoundNum()) % 10 == Math.random()*10)
+//		{
+//			System.out.println(Clock.getBytecodeNum() - k + " ");
+//			if(Clock.getBytecodeNum() == 10000)
+//				System.out.println("Hit 10000 bytecode");
+//		}
+		
 		if(RC.isActive())
 			mover.execute();
 		count++;
@@ -54,7 +62,6 @@ public class Micro {
 	public void setVariables() throws GameActionException{
 		enemyNumber = Utils.enemyRobots.length;
 		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, Utils.ALLY_TEAM).length - RC.senseEncampmentSquares(Utils.currentLocation, ALLY_RADIUS2, Utils.ALLY_TEAM).length;
-		mover.setNavType(NavType.BUG);
 		enemySoldierTarget = SoldierUtils.findClosebyEnemy();
 	}
 	
@@ -122,8 +129,16 @@ public class Micro {
 	{
 		if(allyNumber > enemyNumber)
 		{
+			RC.setIndicatorString(2, "I should attack! " + allyNumber + " > " + enemyNumber);
+			if(enemyNumber > allyNumber/4) {
+				mover.setNavType(NavType.BUG);
+			} else {
+				mover.setNavType(NavType.BUG_HIGH_DIG);
+			}
 			return true;
-		}
+		}		
+		mover.setNavType(NavType.BUG);
+		RC.setIndicatorString(2, "I shouldn't attack! " + allyNumber + " <= " + enemyNumber);
 		return false;
 	}
 	
