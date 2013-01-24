@@ -160,7 +160,19 @@ public class MessagingSystem {
 	public void handleMessages(MessageHandler[] handlers) {
 		for(int i = 0; i < valid_messages; i++) {
 			int[] message = buffer[i];
+//			if(handlers[message[0]] == null) {
+//				System.out.println("WAT? " + Clock.getRoundNum());
+//				try{
+//				debug();
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			try {
 			handlers[message[0]].handleMessage(message);
+//			} catch (Exception e) {
+//				System.out.println("handlers[message[0]] = " + handlers[message[0]] + ", message[0] = " + message[0]);
+//			}
 		}
 	}
 

@@ -53,13 +53,14 @@ public class ScoutTask extends TravelTask {
 
 	@Override
 	public int appeal() {
-		return Clock.getRoundNum() < MAX_SCOUT_TURNS ? SCOUT_PRIORITY : 0;
+		//return Clock.getRoundNum() < MAX_SCOUT_TURNS ? SCOUT_PRIORITY : 0;
+		return SCOUT_PRIORITY;
 	}
 
 	@Override
 	public void execute() throws GameActionException {
 		if(!runningAway) {
-			if(waypointIndex < 2 && naiveDistance(currentLocation, waypoint[waypointIndex]) <= distance) {
+			if(waypointIndex < 2 && currentLocation.isAdjacentTo(waypoint[waypointIndex])) {
 				waypointIndex++;
 			}
 			mover.setTarget(waypoint[waypointIndex]);

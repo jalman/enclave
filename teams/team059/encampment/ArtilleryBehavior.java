@@ -29,6 +29,8 @@ public class ArtilleryBehavior extends RobotBehavior {
 			{false, false, false, false, false, true, true, true, true, true, true, true, false, false, false, false, false},
 			{false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false}
 	};
+	
+	private final int PRECISE_CONSIDERATION_LIMIT = 20;
 
 	@Override
 	public void run() {
@@ -47,82 +49,91 @@ public class ArtilleryBehavior extends RobotBehavior {
 
 			RobotInfo info;
 
-			for(Robot robot : robots) {
-				try {
 
-					info = RC.senseRobotInfo(robot);
-
-					int x = info.location.x;
-					int y = info.location.y;
-
-					x -= me.x;
-					y -= me.y;
+			int attackX = 0;
+			int attackY = 0;
+			int attackWeight = -1000;
+			
+			if(robots.length < PRECISE_CONSIDERATION_LIMIT) {
+				for(Robot robot : robots) {
+					try {
+					//if(!RC.canSenseObject(robot)) 
+					//	continue;
 					
-					x += 8;
-					y += 8;
-
-					if(0 <= x && x <= 16 && 0 <= y && y <= 16) {
-						if (info.team == ALLY_TEAM) {
-							weight[x][y] = -weight(info.type);
-
-						} else {
-							weight[x][y] = weight(info.type);
-							enemiesX[numEnemies] = x;
-							enemiesY[numEnemies] = y;
-							numEnemies++;
+						info = RC.senseRobotInfo(robot);
+	
+						int x = info.location.x;
+						int y = info.location.y;
+	
+						x -= me.x;
+						y -= me.y;
+						
+						x += 8;
+						y += 8;
+	
+						if(0 <= x && x <= 16 && 0 <= y && y <= 16) {
+							if (info.team == ALLY_TEAM) {
+								weight[x][y] = -weight(info.type);
+	
+							} else {
+								weight[x][y] = weight(info.type);
+								enemiesX[numEnemies] = x;
+								enemiesY[numEnemies] = y;
+								numEnemies++;
+							}
 						}
-					}
-
 				} catch (GameActionException e) {
 					e.printStackTrace();
 				}
 
-			}
-			
-			int attackX = 0;
-			int attackY = 0;
-			int attackWeight = -1000;
+				}
 
-			for(int n = 0; n < numEnemies; n++) {
-				for(int i = enemiesX[n] - 1; i <= enemiesX[n] + 1; i++){
-					for(int j = enemiesY[n] - 1; j <= enemiesY[n] + 1; j++){
-						if(i <= 0 || i >= 16 || j <= 0 || j >= 16) {
-							continue;
-						}
-						
+				for(int n = 0; n < numEnemies; n++) {
+					for(int i = enemiesX[n] - 1; i <= enemiesX[n] + 1; i++){
+						for(int j = enemiesY[n] - 1; j <= enemiesY[n] + 1; j++){
+							if(i <= 0 || i >= 16 || j <= 0 || j >= 16) {
+								continue;
+							}
+							
 
-						if(!IN_RANGE[i][j])
-							continue;
-						
+							if(!IN_RANGE[i][j])
+								continue;
+							
 
-						int val = 0;
-						val += weight[i-1][j-1];
-						val += weight[i-1][j+1];
-						val += weight[i+1][j-1];
-						val += weight[i+1][j+1];
-						val += weight[i][j-1];
-						val += weight[i][j+1];
-						val += weight[i-1][j];
-						val += weight[i+1][j];
-						val += weight[i][j]*2;
-						
+							int val = 0;
+							val += weight[i-1][j-1];
+							val += weight[i-1][j+1];
+							val += weight[i+1][j-1];
+							val += weight[i+1][j+1];
+							val += weight[i][j-1];
+							val += weight[i][j+1];
+							val += weight[i-1][j];
+							val += weight[i+1][j];
+							val += weight[i][j]*2;
+							
 
-						if(val > attackWeight) {
-							attackWeight = val;
-							attackX = i;
-							attackY = j;
+							if(val > attackWeight) {
+								attackWeight = val;
+								attackX = i;
+								attackY = j;
+							}
 						}
 					}
 				}
+			} else {
+				
+				
 			}
+			
+
 
 
 			if(attackX != 0 || attackY != 0) {
 				try {
 					RC.attackSquare(new MapLocation(me.x + attackX - 8, me.y + attackY - 8));
-					RC.setIndicatorString(0, weight[attackX - 1][attackY - 1] + " " + weight[attackX][attackY - 1] + " " + weight[attackX + 1][attackY - 1]);
-					RC.setIndicatorString(1, weight[attackX - 1][attackY] + " " + weight[attackX][attackY] + " " + weight[attackX + 1][attackY]);
-					RC.setIndicatorString(2, weight[attackX - 1][attackY + 1] + " " + weight[attackX][attackY + 1] + " " + weight[attackX + 1][attackY + 1]);
+//					RC.setIndicatorString(0, weight[attackX - 1][attackY - 1] + " " + weight[attackX][attackY - 1] + " " + weight[attackX + 1][attackY - 1]);
+//					RC.setIndicatorString(1, weight[attackX - 1][attackY] + " " + weight[attackX][attackY] + " " + weight[attackX + 1][attackY]);
+//					RC.setIndicatorString(2, weight[attackX - 1][attackY + 1] + " " + weight[attackX][attackY + 1] + " " + weight[attackX + 1][attackY + 1]);
 				} catch (GameActionException e) {
 					e.printStackTrace();
 				}
@@ -146,6 +157,13 @@ public class ArtilleryBehavior extends RobotBehavior {
 		default:
 			return 1;
 		}
+	}
+	
+	private MapLocation getAttackSquare(int min_damage) {
+		
+		
+		
+		return null;
 	}
 	
 	@Override
