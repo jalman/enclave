@@ -129,7 +129,7 @@ public class Micro {
 	{
 		if(allyNumber > enemyNumber)
 		{
-			RC.setIndicatorString(2, "I should attack! " + allyNumber + " > " + enemyNumber);
+			//RC.setIndicatorString(2, "I should attack! " + allyNumber + " > " + enemyNumber);
 			if(enemyNumber > allyNumber/4) {
 				mover.setNavType(NavType.BUG);
 			} else {
@@ -138,7 +138,7 @@ public class Micro {
 			return true;
 		}		
 		mover.setNavType(NavType.BUG);
-		RC.setIndicatorString(2, "I shouldn't attack! " + allyNumber + " <= " + enemyNumber);
+		//RC.setIndicatorString(2, "I shouldn't attack! " + allyNumber + " <= " + enemyNumber);
 		return false;
 	}
 	

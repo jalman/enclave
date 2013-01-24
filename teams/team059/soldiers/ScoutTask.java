@@ -69,4 +69,9 @@ public class ScoutTask extends TravelTask {
 		}
 		mover.execute();
 	}
+	
+	@Override
+	public String toString() {
+		return "SCOUTING TO " + mover.getTarget();
+	}
 }

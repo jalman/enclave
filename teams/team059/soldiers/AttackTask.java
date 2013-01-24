@@ -27,9 +27,8 @@ public class AttackTask extends TravelTask {
 			if((turnsSinceSeenEnemy > 5) && RC.senseNearbyGameObjects(Robot.class, destination, ENEMY_RADIUS2, ENEMY_TEAM).length == 0) {
 				engaged = false;
 				turnsSinceSeenEnemy = 0;				
-				return false;
+				return mover.getTarget().distanceSquaredTo(currentLocation) <= this.distance;
 			}
-			return true;
 		}
 		return false;
 	}
@@ -48,5 +47,10 @@ public class AttackTask extends TravelTask {
 			turnsSinceSeenEnemy++;
 			super.execute();
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "ATTACKING TOWARD " + mover.getTarget();
 	}
 }

@@ -73,7 +73,7 @@ public class ExpandTask extends TravelTask {
 	
 	@Override
 	public String toString() {
-		return "Expand";
+		return "EXPAND TO " + mover.getTarget();
 	}
 
 }
