@@ -3,167 +3,176 @@ package team059.soldiers;
 import static team059.utils.Utils.*;
 import team059.*;
 import team059.soldiers.micro.Micro;
+import team059.utils.Utils;
 import battlecode.common.*;
 
 public class SoldierUtils {
-	public static Robot[] enemies;
 	
-	public static MapLocation findClosebyEnemy() throws GameActionException{
-		MapLocation m = findSomeEnemyGuy(2);
-		if (m != null)
-			return m;
-		m = findSomeEnemyGuy(8);
-		if (m != null)
-			return m;
-		m = findSomeEnemyGuy(16);
-		return m;
-	}
+	public final static int MAX_SOLDIER_ENERGON = 40;
+	public final static int MAX_ENCAMPMENT_ENERGON = 100;
+	public final static int MAX_HQ_ENERGON = 500;
 	
-	public static MapLocation SLfindClosebySoldier() throws GameActionException{
-		MapLocation m = findSomeEnemySoldier(2);
-		if (m != null)
-			return m;
-		m = findSomeEnemySoldier(9);
-		if (m != null)
-			return m;
-		m = findSomeEnemySoldier(18);
-		if (m != null)
-			return m;
-		m = findSomeEnemySoldier(36);
-		return m;
+	static RobotInfo tempRobotInfo;	
+	
+	public static MapLocation enemyTarget; 
+	public static int enemyWeight;
+	public static int allyWeight;
+	
+	
+	public static void updateSoldierUtils(){
+		
 	}
 	
 	/**
-	 * Writes a message when enemies are nearby
+	 * Obtains target and enemyWeight with one traversal of the enemyRobots array. This is cheaper bytecode-wise.
+	 * NOTE: If setEnemyTargetAndWeight, also update enemyWeight
 	 * @throws GameActionException
 	 */
-	
-	public static MapLocation findSomeEnemyGuy(int radiusSquared) throws GameActionException
-	{
-		enemies = RC.senseNearbyGameObjects(Robot.class, radiusSquared, ENEMY_TEAM);
-		return enemies.length > 0 ? RC.senseRobotInfo(enemies[0]).location : null;
-		
-	}
-	public static MapLocation findSomeEnemySoldier(int radiusSquared) throws GameActionException
-	{
-		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, radiusSquared, ENEMY_TEAM);
-		for(Robot enemy : enemies) {
-			RobotInfo someEnemy = RC.senseRobotInfo(enemy);
-			if(someEnemy.type == RobotType.SOLDIER) {
-				return someEnemy.location;
+	public static void setEnemyTargetAndWeight() throws GameActionException{
+		int priority = 0;
+		enemyWeight = 0;
+		enemyTarget = null;
+		for (Robot enemy : enemyRobots)
+		{
+			tempRobotInfo = RC.senseRobotInfo(enemy);
+			//update weight
+			if (tempRobotInfo.type == RobotType.SOLDIER)
+			{
+				enemyWeight++;
+			}
+			else if (tempRobotInfo.type == RobotType.ARTILLERY)
+			{
+				enemyWeight += 4;
+			}
+			//update enemyTarget
+			if(overallPriority(tempRobotInfo) > priority)
+			{
+				enemyTarget = tempRobotInfo.location;
+				priority = overallPriority(tempRobotInfo);
 			}
 		}
-		return null;
+	}
+
+	/**
+	 * Finds enemy target with highest priority. 
+	 * @throws GameActionException
+	 */
+	public static MapLocation findEnemyTarget() throws GameActionException{
+		int priority = 0;
+		enemyTarget = null;
+		for (int i = 0; i < enemyRobots.length; i++)
+		{
+			tempRobotInfo = RC.senseRobotInfo(enemyRobots[i]);
+			if(overallPriority(tempRobotInfo) > priority)
+			{
+				enemyTarget = tempRobotInfo.location;
+			}
+		}	
+		return enemyTarget;
 	}
 	
 	/**
-	 * Finds whether there are too many enemies to engage in an area
-	 * @param radius
-	 * @return a weight; higher = many enemies
+	 * Checks a maximum of numberOfTargetsToCheck when searching for an enemy target; saves Bytecode.
+	 * @param numberOfTargetsToCheck
+	 * @return
 	 * @throws GameActionException
 	 */
-	public static int enemyWeight(int radius) throws GameActionException
-	{
-		int l = 0;
-		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, radius, ENEMY_TEAM);
-		for(Robot enemy : enemies) {
-			if(RC.senseRobotInfo(enemy).type == RobotType.SOLDIER)
-				l++;
-		}
-
-		return l;
-	}
-	public static int allyWeight(int radius) throws GameActionException 
-	{
-		int l = 0;
-		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, radius, ALLY_TEAM);
-		for(Robot enemy : enemies) {
-			if(RC.senseRobotInfo(enemy).type == RobotType.SOLDIER)
-				l++;
-		}
-
-		return l;
-	}
-	public static RobotInfo[] findEnemySoldiers(int radius) throws GameActionException
-	{
-		GameObject[] enemies = RC.senseNearbyGameObjects(Robot.class, radius, ENEMY_TEAM);
-		RobotInfo[] enemySoldiers = new RobotInfo[0];
-		RobotInfo[] helperArray = new RobotInfo[25];
-		int l = 0;
-		
-		if (enemies != null && enemies.length !=0)
+	public static void findEnemyTarget(int numberOfTargetsToCheck) throws GameActionException{
+		int priority = 0;
+		enemyTarget = null;
+		for (int i = 0; i < enemyRobots.length && i < numberOfTargetsToCheck; i++)
 		{
-			RobotInfo r = null;
-			for (int i = 0; i < enemies.length; i++)
+			tempRobotInfo = RC.senseRobotInfo(enemyRobots[i]);
+			if(overallPriority(tempRobotInfo) > priority)
 			{
-				r = RC.senseRobotInfo((Robot)enemies[i]);
-				if (r.type == RobotType.SOLDIER) 
-				{
-					helperArray[l] = r;
-					l++;
-				}
+				enemyTarget = tempRobotInfo.location;
 			}
-			enemySoldiers = new RobotInfo[l];
-			
-			for (int i = 0; i < l; i++)
-			{
-				enemySoldiers[i] = helperArray[i];
-			}
-		}
-		return enemySoldiers;
+		}	
 	}
 	
-	public static boolean amISquadLeader(){
-		return RC.getRobot().getID() % 3 == 0;
+	/**
+	 * Returns the priority that an enemy robot has, based on distance, health of enemy, and type of enemy.
+	 * 
+	 * TODO: The priorities right now is random.
+	 * @param RobotInfo r
+	 * @return
+	 * @throws GameActionException
+	 */
+	public static int overallPriority(RobotInfo r) throws GameActionException
+	{
+		int distanceSquared = currentLocation.distanceSquaredTo(r.location);
+		double healthPercent = robotHealthPercent(r);
+		int priority = robotTypePriority(r);
+		return ((int)(20*healthPercent)+distanceSquared*2+priority*2);
 	}
 	
-	public static RobotInfo[] findAlliedSoldiers(int radius) throws GameActionException // might be useless
-	{
-		GameObject[] allies = RC.senseNearbyGameObjects(Robot.class, radius, ENEMY_TEAM);
-		RobotInfo[] alliedSoldiers = new RobotInfo[0];
-		RobotInfo[] helperArray = new RobotInfo[25];
-		int l = 0;
-		
-		if (allies != null && allies.length !=0)
+	//Helper methods for overallPriority
+	private static int robotTypePriority(RobotInfo r) throws GameActionException{
+		if (r.type == RobotType.SOLDIER)
 		{
-			RobotInfo r = null;
-			for (int i = 0; i < allies.length; i++)
-			{
-				r = RC.senseRobotInfo((Robot)allies[i]);
-				if (r.type == RobotType.SOLDIER) 
-				{
-					helperArray[l] = r;
-					l++;
-				}
-			}
-			alliedSoldiers = new RobotInfo[l];
-			
-			for (int i = 0; i < l; i++)
-			{
-				alliedSoldiers[i] = helperArray[i];
-			}
+			return 15;
 		}
-		return alliedSoldiers;
+		else if (r.type == RobotType.ARTILLERY)
+		{
+			return 15;
+		}
+		else
+		{
+			return 0;
+		}
 	}
-
-	public static MapLocation closestSoldierTarget(RobotInfo[] enemySoldiers) throws GameActionException // finds closest enemy target nearby; use in battle
-	{
-		MapLocation c=RC.getLocation();
-		MapLocation m = null;
-		int d = 10000;
-		MapLocation loc;
-		if (enemySoldiers != null && enemySoldiers.length!=0)
+	
+	private static double robotHealthPercent(RobotInfo r) throws GameActionException{
+		if (r.type == RobotType.SOLDIER)
 		{
-			for(int i =0; i < enemySoldiers.length; i++)
-			{
-				loc = enemySoldiers[i].location;//RC.senseRobotInfo((Robot)enemies[i]).location;
-				if (naiveDistance(loc, c) < d)
-				{
-					m = loc;
-					d = naiveDistance(loc, c);
-				}
-			}
+			return (r.energon/MAX_SOLDIER_ENERGON); 
 		}
-		return m;
+		else if (r.type == RobotType.HQ)
+		{
+			return (r.energon/MAX_HQ_ENERGON);
+		}
+		else {
+			return (r.energon/MAX_ENCAMPMENT_ENERGON);
+		}
+	}
+	
+	/**
+	 * Determines whether there are enough allies to engage enemies to engage in an area. 
+	 * Both weights are taken around the enemySoldierTarget. Calculated by multiple message senders who determine goIn or not.
+	 * NOTE: If setEnemyTargetAndWeight, also update enemyWeight
+	 * @param radiusSquared
+	 * @return weight; higher weight = more enemies
+	 * @throws GameActionException
+	 */
+	
+	public static int setEnemyWeight(MapLocation m, int radiusSquared) throws GameActionException
+	{
+		enemyWeight = 0;
+		
+		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, m, radiusSquared, ALLY_TEAM);
+		for(Robot enemy : enemies) {
+			tempRobotInfo = RC.senseRobotInfo(enemy);
+			if(tempRobotInfo.type == RobotType.SOLDIER)
+				enemyWeight++;
+			else if (tempRobotInfo.type == RobotType.ARTILLERY)
+				enemyWeight+=4;
+		}
+		return enemyWeight;
+	}
+	public static int setAllyWeight(MapLocation m, int radiusSquared) throws GameActionException 
+	{
+		allyWeight = 0;
+		RobotInfo r;
+		Robot[] allies = RC.senseNearbyGameObjects(Robot.class, m, radiusSquared, ALLY_TEAM);
+		for(Robot ally : allies) {
+			tempRobotInfo = RC.senseRobotInfo(ally);
+			if(tempRobotInfo.type == RobotType.SOLDIER)
+				allyWeight++;
+			else if (tempRobotInfo.type == RobotType.ARTILLERY)
+				allyWeight+=4;
+			else if (tempRobotInfo.type == RobotType.HQ)
+				allyWeight+=5;
+		}
+		return allyWeight;
 	}
 }
