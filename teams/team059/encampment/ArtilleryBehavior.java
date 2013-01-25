@@ -2,6 +2,7 @@ package team059.encampment;
 
 import team059.RobotBehavior;
 import static team059.utils.Utils.*;
+import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
@@ -39,6 +40,7 @@ public class ArtilleryBehavior extends RobotBehavior {
 			MapLocation me = RC.getLocation();
 
 			Robot[] robots = RC.senseNearbyGameObjects(Robot.class, 98);
+			
 			int[][] weight = new int[17][17];
 			
 			int[] enemiesX = new int[robots.length];
@@ -49,7 +51,6 @@ public class ArtilleryBehavior extends RobotBehavior {
 
 			for(Robot robot : robots) {
 				try {
-
 					info = RC.senseRobotInfo(robot);
 
 					int x = info.location.x;
@@ -83,38 +84,84 @@ public class ArtilleryBehavior extends RobotBehavior {
 			int attackY = 0;
 			int attackWeight = -1000;
 
-			for(int n = 0; n < numEnemies; n++) {
-				for(int i = enemiesX[n] - 1; i <= enemiesX[n] + 1; i++){
-					for(int j = enemiesY[n] - 1; j <= enemiesY[n] + 1; j++){
-						if(i <= 0 || i >= 16 || j <= 0 || j >= 16) {
-							continue;
-						}
-						
+			
+			
+			if(Clock.getBytecodesLeft() > numEnemies*400) {
+				
+				
+				for(int n = 0; n < numEnemies; n++) {
 
-						if(!IN_RANGE[i][j])
-							continue;
-						
+					int[] iplaces = {enemiesX[n] - 1, enemiesX[n], enemiesX[n] + 1 };
+					int[] jplaces = {enemiesY[n] - 1, enemiesY[n], enemiesY[n] + 1 };
+					for(int i : iplaces){
+						for(int j : jplaces){
+							if(i <= 0 || i >= 16 || j <= 0 || j >= 16) {
+								continue;
+							}
+							
 
-						int val = 0;
-						val += weight[i-1][j-1];
-						val += weight[i-1][j+1];
-						val += weight[i+1][j-1];
-						val += weight[i+1][j+1];
-						val += weight[i][j-1];
-						val += weight[i][j+1];
-						val += weight[i-1][j];
-						val += weight[i+1][j];
-						val += weight[i][j]*2;
-						
+							if(!IN_RANGE[i][j])
+								continue;
+							
 
-						if(val > attackWeight) {
-							attackWeight = val;
-							attackX = i;
-							attackY = j;
+							int val = 0;
+							val += weight[i-1][j-1];
+							val += weight[i-1][j+1];
+							val += weight[i+1][j-1];
+							val += weight[i+1][j+1];
+							val += weight[i][j-1];
+							val += weight[i][j+1];
+							val += weight[i-1][j];
+							val += weight[i+1][j];
+							val += weight[i][j]*2;
+							
+
+							if(val > attackWeight) {
+								attackWeight = val;
+								attackX = i;
+								attackY = j;
+							}
 						}
 					}
+
 				}
+				
+				
+			} else {
+				
+				
+				for(int n = 0; n < numEnemies; n++) {
+
+					int[] iplaces = {enemiesX[n] - 1, enemiesX[n], enemiesX[n] + 1 };
+					int[] jplaces = {enemiesY[n] - 1, enemiesY[n], enemiesY[n] + 1 };
+					for(int i : iplaces){
+						for(int j : jplaces){
+							if(i <= 0 || i >= 16 || j <= 0 || j >= 16) {
+								continue;
+							}
+							
+
+							if(!IN_RANGE[i][j])
+								continue;
+							
+							MapLocation ml = new MapLocation(me.x + i - 8, me.y + j - 8);
+							int val = RC.senseNearbyGameObjects(Robot.class, ml, 2, ENEMY_TEAM).length + 1;
+							val -= RC.senseNearbyGameObjects(Robot.class, ml, 2, ALLY_TEAM).length;
+
+							if(val > attackWeight) {
+								attackWeight = val;
+								attackX = i;
+								attackY = j;
+							}
+						}
+					}
+
+				}
+				
+				
 			}
+			
+
 
 
 			if(attackX != 0 || attackY != 0) {
@@ -127,8 +174,22 @@ public class ArtilleryBehavior extends RobotBehavior {
 					e.printStackTrace();
 				}
 			}
+
 			
 		}
+	}
+	
+	
+	
+	private void runWhenManyPeopleNearby(MapLocation me, Robot[] robots) {
+		
+	}
+	
+	
+	
+	
+	
+	private void runWhenFewPeopleNearby(MapLocation me, Robot[] robots) {
 	}
 
 	private int weight(RobotType type) {

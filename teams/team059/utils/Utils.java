@@ -19,6 +19,10 @@ public class Utils {
 	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
 	public static Direction[] DIRECTIONS = Direction.values();
 	
+	// Mining constants
+	public static final int CHECK_MINE_RADIUS_SQUARED = 13; // make sure this matches CHECK_MINE_RADIUS!!!
+	public static final int CHECK_MINE_RADIUS = 4;
+	
 	//these are set from the beginning of the game
 	public static RobotController RC;
 	public static int MAP_WIDTH, MAP_HEIGHT;
@@ -33,6 +37,7 @@ public class Utils {
 	public static Strategy strategy = Strategy.NORMAL;
 	
 	public static MapLocation currentLocation;
+	public static int curX, curY;
 	private static MapLocation[] alliedEncampments;
 	public static final int ENEMY_RADIUS = 4;
 	public static final int ENEMY_RADIUS2 = ENEMY_RADIUS * ENEMY_RADIUS;
@@ -60,6 +65,8 @@ public class Utils {
 	 */
 	public static void updateUtils() {
 		currentLocation = RC.getLocation();
+		curX = currentLocation.x;
+		curY = currentLocation.y;
 		alliedEncampments = null;
 		forward = Math.log((double)naiveDistance(currentLocation, ALLY_HQ) / naiveDistance(currentLocation, ENEMY_HQ));
 		enemyRobots = RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);

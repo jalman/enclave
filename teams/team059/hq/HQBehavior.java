@@ -61,7 +61,11 @@ public class HQBehavior extends RobotBehavior {
 	 * Handle upgrades and robots.
 	 */
 	private void macro() {
+		RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(RC.getTeamPower()) + " is pow");
 		boolean built = false;
+		if(Clock.getRoundNum() % 3 == 0) {
+			updateEncampmentCounts();
+		}
 		//RC.setIndicatorString(1,""+RC.getTeamPower());
 		if(buildOrderProgress < buildOrder.length) {
 			try {
@@ -74,7 +78,6 @@ public class HQBehavior extends RobotBehavior {
 		} else if(RC.isActive()) {
 			if(Clock.getRoundNum() < 100 || ( fluxDiff > -1.0 && (RC.getTeamPower() - (40 + 10*generators.size) > 10.0))) {
 				try {
-					RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(RC.getTeamPower()) + " is pow");
 					built = buildSoldier();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -99,24 +102,34 @@ public class HQBehavior extends RobotBehavior {
 		}
 	}
 	
-	private void updateEncampmentCounts() throws GameActionException {
-		for(int i=0; i<6; i++) {
-			if(genIndex == generators.size){
+	private int ENCAMPMENTS_TO_CHECK = 6;
+	private void updateEncampmentCounts() { // throws GameActionException {
+//		int[] toDelete = new int[500];
+//		int numToDelete = 0;
+		
+		for(int i=0; i<ENCAMPMENTS_TO_CHECK; i++) {
+			if(genIndex >= generators.size){
 				genIndex = 0;
 				break;
 			}
-			if(!RC.canSenseObject(generators.get(genIndex++))) {
+			if(!RC.canSenseObject(generators.get(genIndex))) {
 				generators.delete(genIndex);
+				System.out.println("generator lost!");
+			} else {
+				genIndex++;
 			}
 		}
 
-		for(int i=0; i<6; i++) {
-			if(supIndex == suppliers.size){
+		for(int i=0; i<ENCAMPMENTS_TO_CHECK; i++) {
+			if(supIndex >= suppliers.size){
 				supIndex = 0;
 				break;
 			}
-			if(!RC.canSenseObject(suppliers.get(supIndex++))) {
+			if(!RC.canSenseObject(suppliers.get(supIndex))) {
 				suppliers.delete(supIndex);
+				System.out.println("supplier lost!");
+			} else {
+				supIndex++;
 			}
 		}
 	}
@@ -134,17 +147,12 @@ public class HQBehavior extends RobotBehavior {
 	public boolean panic() {
 		try {
 			if(!panicking) {
-				if( enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE) ) {
-					panicking = true;
-				}
-			}
-			if(panicking) {
-				return true;
+				panicking = enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE);
 			}
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return panicking;
 	}
 	
 	/**
@@ -195,15 +203,17 @@ public class HQBehavior extends RobotBehavior {
 			public void handleMessage(int[] message) {
 				try {
 					Robot newBot = (Robot) RC.senseObjectAtLocation(new MapLocation(message[1], message[2]));	
-					System.out.println("seen " + Arrays.toString(message) + " born!");
+					//System.out.print("seen " + Arrays.toString(message) + " born!");
 					if(newBot == null) {
-						System.out.println("wat");
+						//System.out.println("wat");
 						return;
 					}
 					if(message[4] == MessagingSystem.SUPPLIER) {
 						suppliers.insert(newBot);
+						//System.out.println(" supplier born. suppliers.size = " + suppliers.size);
 					} else if(message[4] == MessagingSystem.GENERATOR) {
 						generators.insert(newBot);
+						//System.out.println(" generator born. generators.size = " + generators.size);
 					}
 				} catch (GameActionException e) {
 					e.printStackTrace();
