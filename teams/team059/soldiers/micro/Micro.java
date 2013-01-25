@@ -44,6 +44,7 @@ public class Micro {
 	
 	public void setVariables() throws GameActionException{
 		setEnemyTargetAndWeight();
+		setAllyWeight(enemyTarget, sensorRadius);
 	}
 	
 	/**

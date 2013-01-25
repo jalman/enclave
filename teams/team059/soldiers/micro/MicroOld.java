@@ -8,7 +8,7 @@ import static team059.utils.Utils.*;
 import battlecode.common.*;
 import static team059.soldiers.SoldierUtils.*;
 
-public class Micro2 {
+public class MicroOld {
 	
 	MapLocation retreatTarget = null;
 	MapLocation encampTarget = null;
@@ -20,7 +20,7 @@ public class Micro2 {
 	
 	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
 	
-	public Micro2(SoldierBehavior2 sb) {		
+	public MicroOld(SoldierBehavior2 sb) {		
 		enemyTarget = null;
 		this.sb = sb;
 	}

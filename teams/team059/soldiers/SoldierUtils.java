@@ -35,7 +35,7 @@ public class SoldierUtils {
 		for (Robot enemy : enemyRobots)
 		{
 			tempRobotInfo = RC.senseRobotInfo(enemy);
-			//update the priority
+			//update weight
 			if (tempRobotInfo.type == RobotType.SOLDIER)
 			{
 				enemyWeight++;
@@ -44,10 +44,11 @@ public class SoldierUtils {
 			{
 				enemyWeight += 4;
 			}
-			//updates enemyTarget
+			//update enemyTarget
 			if(overallPriority(tempRobotInfo) > priority)
 			{
 				enemyTarget = tempRobotInfo.location;
+				priority = overallPriority(tempRobotInfo);
 			}
 		}
 	}
@@ -147,25 +148,29 @@ public class SoldierUtils {
 	public static int setEnemyWeight(MapLocation m, int radiusSquared) throws GameActionException
 	{
 		enemyWeight = 0;
+		
 		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, m, radiusSquared, ALLY_TEAM);
 		for(Robot enemy : enemies) {
-			if(RC.senseRobotInfo(enemy).type == RobotType.SOLDIER)
+			tempRobotInfo = RC.senseRobotInfo(enemy);
+			if(tempRobotInfo.type == RobotType.SOLDIER)
 				enemyWeight++;
-			else if (RC.senseRobotInfo(enemy).type == RobotType.ARTILLERY)
+			else if (tempRobotInfo.type == RobotType.ARTILLERY)
 				enemyWeight+=4;
 		}
 		return enemyWeight;
 	}
-	public static int setallyWeight(MapLocation m, int radiusSquared) throws GameActionException 
+	public static int setAllyWeight(MapLocation m, int radiusSquared) throws GameActionException 
 	{
 		allyWeight = 0;
+		RobotInfo r;
 		Robot[] allies = RC.senseNearbyGameObjects(Robot.class, m, radiusSquared, ALLY_TEAM);
 		for(Robot ally : allies) {
-			if(RC.senseRobotInfo(ally).type == RobotType.SOLDIER)
+			tempRobotInfo = RC.senseRobotInfo(ally);
+			if(tempRobotInfo.type == RobotType.SOLDIER)
 				allyWeight++;
-			else if (RC.senseRobotInfo(ally).type == RobotType.ARTILLERY)
+			else if (tempRobotInfo.type == RobotType.ARTILLERY)
 				allyWeight+=4;
-			else if (RC.senseRobotInfo(ally).type == RobotType.HQ)
+			else if (tempRobotInfo.type == RobotType.HQ)
 				allyWeight+=5;
 		}
 		return allyWeight;

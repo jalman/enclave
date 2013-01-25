@@ -131,24 +131,6 @@ public class SoldierBehavior2 extends RobotBehavior {
 					RC.setIndicatorString(2, "CHARGING TO " + battleSpot + " on turn " + Clock.getRoundNum());
 					mover.setTarget(battleSpot);
 				}
-				else if (distance <= 4)
-				{
-					try {
-						microSystem.run();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-//				else if (distance <= 4)
-//				{
-//					try {
-//						microSystem.run();
-//					} catch (Exception e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
 				//taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
 			}
 		};
