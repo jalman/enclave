@@ -16,6 +16,7 @@ public class ExpandSystem {
 	private final int NC = 8;
 	
 	public MapLocation[][] encampments = new MapLocation[NC][];
+	public boolean[][] taken = new boolean[NC][];
 	int delimit;
 	
 	boolean[] finished = new boolean[NC];
@@ -40,6 +41,7 @@ public class ExpandSystem {
 	public void findEncampments() throws GameActionException {
 		for(int i = 0; i < NC; i++) {
 			encampments[i] = RC.senseEncampmentSquares(ALLY_HQ, delimit * (i+1) * delimit * (i+1), null);
+			taken[i] = new boolean[encampments[i].length];
 		}
 	}
 	
@@ -56,8 +58,9 @@ public class ExpandSystem {
 			far++;
 			if(far >= NC) return;
 		}
-		for(MapLocation loc : encampments[far]) {
-			if(!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null) {
+		for(int i = 0; i < encampments[far].length; i++) {
+			MapLocation loc = encampments[far][i];
+			if(!taken[far][i] && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
 				if(generators > suppliers) {
 					messagingSystem.writeTakeEncampmentMessage(loc, 1000, RobotType.SUPPLIER);
 					suppliers++;
@@ -65,6 +68,7 @@ public class ExpandSystem {
 					messagingSystem.writeTakeEncampmentMessage(loc, 1000, RobotType.GENERATOR);
 					generators++;
 				}
+				taken[far][i] = true;
 				return;
 			}
 		}
