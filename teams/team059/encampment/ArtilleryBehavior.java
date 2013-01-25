@@ -116,7 +116,7 @@ public class ArtilleryBehavior extends RobotBehavior {
 							val += weight[i][j+1];
 							val += weight[i-1][j];
 							val += weight[i+1][j];
-							val += weight[i][j]*2;
+							val += weight[i][j]*4;
 
 
 							if(val > attackWeight) {
@@ -185,15 +185,15 @@ public class ArtilleryBehavior extends RobotBehavior {
 		case SOLDIER:
 			return 2;
 		case HQ:
-			return 6;
+			return 10;
 		case SHIELDS:
-			return 4;
+			return 5;
 		case MEDBAY:
-			return 4;
+			return 5;
 		case ARTILLERY:
-			return 4;
+			return 5;
 		default:
-			return 1;
+			return 2;
 		}
 	}
 
