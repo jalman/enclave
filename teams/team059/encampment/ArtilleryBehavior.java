@@ -30,11 +30,26 @@ public class ArtilleryBehavior extends RobotBehavior {
 			{false, false, false, false, false, true, true, true, true, true, true, true, false, false, false, false, false},
 			{false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false}
 	};
+	
+	private final boolean canAttackEnemyHQ;
+	
+	public ArtilleryBehavior() {
+		canAttackEnemyHQ = (currentLocation.distanceSquaredTo(ENEMY_HQ) < 64);
+	}
 
 	@Override
 	public void run() {
 
 		if(RC.isActive()){
+			
+			if(canAttackEnemyHQ) {
+				try {
+					RC.attackSquare(ENEMY_HQ);
+					return;
+				} catch (GameActionException e) {
+					e.printStackTrace();
+				}
+			}
 
 
 			MapLocation me = RC.getLocation();
