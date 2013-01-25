@@ -6,7 +6,6 @@ import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import team059.movement.Mover;
 import team059.movement.NavType;
-import team059.utils.Utils;
 import static team059.utils.Utils.*;
 
 public class AttackTask extends TravelTask {
@@ -36,7 +35,7 @@ public class AttackTask extends TravelTask {
 	
 	@Override
 	public void execute() throws GameActionException {
-		m = SoldierUtils.findClosebyEnemy();
+		m = SoldierUtils.findEnemyTarget();
 		if(m != null) {
 			if(!engaged) {
 				turnsSinceSeenEnemy = 0;
