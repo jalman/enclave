@@ -33,8 +33,16 @@ public class ArraySet<T> {
 	}
 	
 	public void debug() {
+		System.out.println(this.toString());
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
 		for(int i = 0; i < size; i++) {
-			System.out.println(array[i]);
+			sb.append(", ");
+			sb.append(array[i]);
 		}
+		return sb.toString();
 	}
 }

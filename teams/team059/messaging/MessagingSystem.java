@@ -141,13 +141,19 @@ public class MessagingSystem {
 	 */
 	private void readMessages() throws GameActionException {
 		int[] header = new int[MESSAGE_SIZE];
-		if(!readMessage(0, header)) return;
+		if(!readMessage(0, header)) {
+			System.out.println("Cannot read header message!");
+			return;
+		}
 
 		int new_messages = header[0];
 
 		for(int i = total_messages; i < new_messages; i++) {
-			if(readMessage(i, buffer[valid_messages]))
+			if(readMessage(i, buffer[valid_messages])) {
 				valid_messages++;
+			} else {
+				System.out.println("Cannot read message at index " + i);
+			}
 		}
 
 		total_messages = new_messages;
@@ -160,7 +166,22 @@ public class MessagingSystem {
 	public void handleMessages(MessageHandler[] handlers) {
 		for(int i = 0; i < valid_messages; i++) {
 			int[] message = buffer[i];
-			handlers[message[0]].handleMessage(message);
+			//			if(handlers[message[0]] == null) {
+			//				System.out.println("WAT? " + Clock.getRoundNum());
+			//				try{
+			//				debug();
+			//				} catch (Exception e) {
+			//					e.printStackTrace();
+			//				}
+			//			}
+			try {
+				handlers[message[0]].handleMessage(message);
+			} catch (Exception e) {
+				//System.out.println("handlers[message[0]] = " + handlers[message[0]] + ", message[0] = " + message[0]);
+				//printMessageBoard();
+				//System.out.println("Valid messages:");
+				//printValidMessages();
+			}
 		}
 	}
 
@@ -201,7 +222,6 @@ public class MessagingSystem {
 		for(int i = 0; i < COPIES; i++) {
 			writeBlock(channels[i]+off, message);
 		}
-		total_messages++;
 		message_written = true;
 	}
 
@@ -250,6 +270,14 @@ public class MessagingSystem {
 		//read previous round's messages
 		if(!first_round) {
 			readMessages();
+			/*
+			if(Clock.getRoundNum() < 200) {
+				printValidMessages();
+				printMessageBoard();
+			} else {
+				RC.resign();
+			}
+			*/
 		}
 
 		//set channels for new round
@@ -295,11 +323,24 @@ public class MessagingSystem {
 		writeMessage(MessageType.TAKE_ENCAMPMENT.ordinal(), loc.x, loc.y, priority, buildType.ordinal());
 	}
 
-	public void debug() throws GameActionException {
+	public void printMessageBoard() {
 		for(int i = 0; i < total_messages; i++) {
 			int off = i * BLOCK_SIZE;
 			for(int j = 0; j < BLOCK_SIZE; j++) {
-				System.out.print(RC.readBroadcast(channels[0] + off + j) + " ");
+				try {
+					System.out.print(RC.readBroadcast(channels[0] + off + j) + " ");
+				} catch (GameActionException e) {
+					e.printStackTrace();
+				}
+			}
+			System.out.println();
+		}
+	}
+
+	public void printValidMessages() {
+		for(int i = 0; i < valid_messages; i++) {
+			for(int j = 0; j < MESSAGE_SIZE; j++) {
+				System.out.print(buffer[i][j] + " ");
 			}
 			System.out.println();
 		}

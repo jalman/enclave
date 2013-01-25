@@ -7,29 +7,20 @@ import team059.movement.NavType;
 import team059.utils.Utils;
 import static team059.utils.Utils.*;
 
-public class MicroTask extends TravelTask {
-	
-	private static final Mover mover = new Mover();
-	
-	
-	public MicroTask(MapLocation target, int priority) {
-		super(mover, target, priority, 1);
-	}
+public class MicroTask extends Task {
 	
 	@Override
 	public boolean done() {
-		if(super.done()) {
-			return enemyRobots.length == 0;
-		}
-		return false;
+		return enemyRobots.length == 0;
 	}
 	
 	@Override
 	public void execute() throws GameActionException {
-		if(SoldierUtils.findClosebyEnemy() != null) {
-			SoldierBehavior2.microSystem.run();
-		} else {
-			super.execute();
-		}
+		SoldierBehavior2.microSystem.run();
+	}
+
+	@Override
+	public int appeal() {
+		return 0;
 	}
 }

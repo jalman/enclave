@@ -4,7 +4,6 @@ import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Upgrade;
-import bytecodetest.Utils;
 import static team059.utils.Utils.*;
 
 public class MineTask extends TravelTask {
@@ -12,6 +11,8 @@ public class MineTask extends TravelTask {
 	private MapLocation[] mines;
 	
 	private double density;
+	
+	public final double HIGH_DENSITY = 0.9;
 	
 	public MineTask(SoldierBehavior2 sb) {
 		super(sb.mover, currentLocation, 0, 0);
@@ -51,7 +52,11 @@ public class MineTask extends TravelTask {
 	public boolean done() {
 		mines = RC.senseMineLocations(destination, distance, null);
 		density = (double) mines.length / distance;
-		return density > 0.9;
+		return density > HIGH_DENSITY;
 	}
 
+	@Override
+	public String toString() {
+		return "MINING AT " + currentLocation + ", CURRENT DENSITY = " + density;
+	}
 }

@@ -5,6 +5,7 @@ import team059.encampment.EncampmentBehavior;
 import team059.hq.HQBehavior;
 import team059.soldiers.SoldierBehavior2;
 import team059.utils.Utils;
+import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotController;
 
@@ -36,6 +37,7 @@ public class RobotPlayer {
 				robot.endRound();
 				rc.yield();
 			} catch(GameActionException e) {
+				System.out.println("Round number = " + Clock.getRoundNum());
 				e.printStackTrace();
 			}
 		}

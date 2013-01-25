@@ -16,16 +16,17 @@ public class Micro {
 	MapLocation encampTarget = null, c = null;
 	int enemyNumber, allyNumber;
 //	public static int ALLY_RADIUS = 3;
-	public static int ALLY_RADIUS2 = 10;
+	public static int ALLY_RADIUS2 = 14;
 	public static final Mover mover = new Mover();
 	public MapLocation enemySoldierTarget, curLoc;
-	
+	public SoldierBehavior2 sb;
 	int count = 0;
 	
 	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
 	
-	public Micro() {		
+	public Micro(SoldierBehavior2 sb) {		
 		enemySoldierTarget = null;
+		this.sb = sb;
 	}
 	
 	public void run() throws GameActionException{
@@ -40,12 +41,13 @@ public class Micro {
 		}
 		
 //		RC.setIndicatorString(2, "MICRO MODE " + SoldierBehavior2.microSystem.mover.getTarget() + " " + Clock.getRoundNum());
-		if(count % 15 == 1 && enemySoldierTarget != null)
+		if(enemySoldierTarget != null && sb.battleSpotAge >= 4)
 		{
 			Utils.messagingSystem.writeMicroMessage(enemySoldierTarget, Clock.getRoundNum());
 		}
-		if(enemySoldierTarget != null)
+		if(enemySoldierTarget != null) {		
 			microCode();
+		}
 //		if(count % 10 == 0 || (count+Clock.getRoundNum()) % 10 == Math.random()*10)
 //		{
 //			System.out.println(Clock.getBytecodeNum() - k + " ");
@@ -56,14 +58,13 @@ public class Micro {
 		if(RC.isActive())
 			mover.execute();
 		count++;
-		
 	}
 	public void setVariables() throws GameActionException{
 		enemyNumber = Utils.enemyRobots.length;
 		allyNumber = RC.senseNearbyGameObjects(Robot.class, ALLY_RADIUS2, Utils.ALLY_TEAM).length - RC.senseEncampmentSquares(Utils.currentLocation, ALLY_RADIUS2, Utils.ALLY_TEAM).length;
-		mover.setNavType(NavType.BUG);
 		enemySoldierTarget = SoldierUtils.findClosebyEnemy();
 	}
+	
 	/**
 	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
 	 * @throws GameActionException
@@ -128,8 +129,16 @@ public class Micro {
 	{
 		if(allyNumber > enemyNumber)
 		{
+			//RC.setIndicatorString(2, "I should attack! " + allyNumber + " > " + enemyNumber);
+			if(enemyNumber > allyNumber/4) {
+				mover.setNavType(NavType.BUG);
+			} else {
+				mover.setNavType(NavType.BUG_HIGH_DIG);
+			}
 			return true;
-		}
+		}		
+		mover.setNavType(NavType.BUG);
+		//RC.setIndicatorString(2, "I shouldn't attack! " + allyNumber + " <= " + enemyNumber);
 		return false;
 	}
 	

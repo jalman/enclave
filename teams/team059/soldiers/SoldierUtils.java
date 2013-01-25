@@ -32,6 +32,7 @@ public class SoldierUtils {
 		m = findSomeEnemySoldier(36);
 		return m;
 	}
+	
 	/**
 	 * Writes a message when enemies are nearby
 	 * @throws GameActionException
