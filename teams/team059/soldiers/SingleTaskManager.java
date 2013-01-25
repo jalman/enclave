@@ -1,8 +1,8 @@
 package team059.soldiers;
 
-public class SingleTaskManager extends TaskGiver {
+public class SingleTaskManager<T extends Task> extends TaskGiver {
 
-	private Task currentTask;
+	private T currentTask;
 	
 	@Override
 	public void compute() {
@@ -12,12 +12,15 @@ public class SingleTaskManager extends TaskGiver {
 	}
 
 	@Override
-	public Task getTask() {
+	public T getTask() {
 		return currentTask;
 	}
 	
+	public void clearTask() {
+		currentTask = null;
+	}
 	
-	public void considerTask(Task task) {
+	public void considerTask(T task) {
 		if(currentTask == null || task.appeal() > currentTask.appeal()) {
 			currentTask = task;
 		}

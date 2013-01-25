@@ -13,23 +13,17 @@ import team059.soldiers.micro.Micro;
 import static team059.utils.Utils.*;
 
 public class SoldierBehavior2 extends RobotBehavior {
-
-	public static int ENEMY_RADIUS = 5;
-	public static int ENEMY_RADIUS2 = 25;
-	
-	public Robot[] nearbyEnemies;
-
 	public Mover mover;
 
 	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
 	private TaskManager taskManager;
 	private MineManager mineManager;
+	private ScoutManager scoutManager;
 		
 	public static Micro microSystem;
-	private SingleTaskManager attackManager;
-	private SingleTaskManager takeEncampmentManager;
-	private ScoutManager scoutManager;
+	private SingleTaskManager<AttackTask> attackManager;
+	private SingleTaskManager<ExpandTask> takeEncampmentManager;
 
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
@@ -44,17 +38,13 @@ public class SoldierBehavior2 extends RobotBehavior {
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
 		mineManager = new MineManager(this);
-		attackManager = new SingleTaskManager();
-		takeEncampmentManager = new SingleTaskManager();
+		attackManager = new SingleTaskManager<AttackTask>();
+		takeEncampmentManager = new SingleTaskManager<ExpandTask>();
 		scoutManager = new ScoutManager();
 		
-		taskGivers = new TaskGiver[] {patrolManager, taskManager, mineManager, expandManager, attackManager, takeEncampmentManager, scoutManager};
-	}
-
-	@Override
-	public void beginRound() throws GameActionException {
-		super.beginRound();
-		nearbyEnemies = RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
+		taskGivers = new TaskGiver[]
+				{patrolManager, taskManager, attackManager, scoutManager,
+				mineManager, expandManager, takeEncampmentManager};
 	}
 
 	private static final int THINK_PERIOD = 20;
@@ -79,21 +69,12 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		}
 		
-		if(Utils.enemyRobots.length > 0)
-		{
-			microSystem.run();
-		}
-		else if(currentTask != null && RC.isActive()) {
+		if(currentTask != null && RC.isActive()) {
 			RC.setIndicatorString(1, currentTask.toString());
 			currentTask.execute();
 		}
-		updateVariables();
 	}
 
-	public void updateVariables()
-	{
-		battleSpotAge++;
-	}
 	@Override
 	protected MessageHandler getAttackHandler() {
 		return new MessageHandler() {
@@ -114,11 +95,27 @@ public class SoldierBehavior2 extends RobotBehavior {
 		};
 	}
 	
+	@Override
+	protected MessageHandler getTakingEncampmentHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				MapLocation loc = new MapLocation(message[1], message[2]);
+				int appeal = message[3];
+				
+				ExpandTask task = takeEncampmentManager.getTask();
+				if(task != null && loc.equals(task.destination) && appeal > task.appeal()) {
+					takeEncampmentManager.clearTask();
+				}
+			}
+		};
+	}
+	
 	protected MessageHandler getMicroHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if (battleSpot == null || Utils.naiveDistance(battleSpot, Utils.currentLocation) >= 7 || battleSpotAge >= 4)
+				if (battleSpot == null || battleSpotAge >= 4 || Utils.naiveDistance(battleSpot, Utils.currentLocation) >= 7)
 				{
 					battleSpot= new MapLocation(message[1], message[2]);
 					battleSpotAge = 0;
@@ -131,7 +128,6 @@ public class SoldierBehavior2 extends RobotBehavior {
 					RC.setIndicatorString(2, "CHARGING TO " + battleSpot + " on turn " + Clock.getRoundNum());
 					mover.setTarget(battleSpot);
 				}
-				//taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
 			}
 		};
 	}
