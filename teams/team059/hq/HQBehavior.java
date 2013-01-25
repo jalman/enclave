@@ -104,25 +104,32 @@ public class HQBehavior extends RobotBehavior {
 	
 	private int ENCAMPMENTS_TO_CHECK = 6;
 	private void updateEncampmentCounts() { // throws GameActionException {
+//		int[] toDelete = new int[500];
+//		int numToDelete = 0;
+		
 		for(int i=0; i<ENCAMPMENTS_TO_CHECK; i++) {
-			if(genIndex == generators.size){
+			if(genIndex >= generators.size){
 				genIndex = 0;
 				break;
 			}
-			if(!RC.canSenseObject(generators.get(genIndex++))) {
+			if(!RC.canSenseObject(generators.get(genIndex))) {
 				generators.delete(genIndex);
 				System.out.println("generator lost!");
+			} else {
+				genIndex++;
 			}
 		}
 
 		for(int i=0; i<ENCAMPMENTS_TO_CHECK; i++) {
-			if(supIndex == suppliers.size){
+			if(supIndex >= suppliers.size){
 				supIndex = 0;
 				break;
 			}
-			if(!RC.canSenseObject(suppliers.get(supIndex++))) {
+			if(!RC.canSenseObject(suppliers.get(supIndex))) {
 				suppliers.delete(supIndex);
 				System.out.println("supplier lost!");
+			} else {
+				supIndex++;
 			}
 		}
 	}

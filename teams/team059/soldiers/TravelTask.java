@@ -7,6 +7,8 @@ import static team059.utils.Utils.*;
 
 public class TravelTask extends Task {
 
+	public static final Mover defaultMover = new Mover();
+	
 	public final Mover mover;
 	public final MapLocation destination;
 	public final int priority;
@@ -23,6 +25,13 @@ public class TravelTask extends Task {
 	
 	public TravelTask(Mover mover, MapLocation destination, int priority, int distance) {
 		this.mover = mover;
+		this.destination = destination;
+		this.priority = priority;
+		this.distance = distance;
+	}
+
+	public TravelTask(MapLocation destination, int priority, int distance) {
+		this.mover = defaultMover;
 		this.destination = destination;
 		this.priority = priority;
 		this.distance = distance;
