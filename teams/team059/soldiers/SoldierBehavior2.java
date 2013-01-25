@@ -77,6 +77,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 				currentTask = t;
 				max_appeal = appeal;
 			}
+			if(t instanceof MineTask) {
+				System.out.println("Mine task " + (MineTask) t + " has appeal " + appeal);
+			}
 		}
 		
 		if(Utils.enemyRobots.length > 0)
