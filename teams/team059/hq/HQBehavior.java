@@ -140,17 +140,12 @@ public class HQBehavior extends RobotBehavior {
 	public boolean panic() {
 		try {
 			if(!panicking) {
-				if( enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE) ) {
-					panicking = true;
-				}
-			}
-			if(panicking) {
-				return true;
+				panicking = enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE);
 			}
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return panicking;
 	}
 	
 	/**
