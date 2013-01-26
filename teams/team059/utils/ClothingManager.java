@@ -7,9 +7,13 @@ public class ClothingManager extends Utils {
 	public ClothingManager() {
 		super();
 	}
-	
-	void getDressed() throws GameActionException {
-		RC.wearHat();
+	void getDressed() {
+		try {
+			RC.wearHat();
+		} catch (GameActionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
