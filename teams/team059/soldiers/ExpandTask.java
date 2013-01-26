@@ -3,6 +3,7 @@ package team059.soldiers;
 import team059.movement.Mover;
 import team059.movement.NavType;
 import battlecode.common.Clock;
+import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.GameObject;
 import battlecode.common.MapLocation;
@@ -14,6 +15,8 @@ public class ExpandTask extends TravelTask {
 	private static final Mover mover = new Mover();
 	
 	private final RobotType buildType;
+	private final MapLocation badA, badB;
+	private boolean init = true;
 	
 	public ExpandTask(MapLocation encampment) {
 		this(encampment, strategy.greed, null);
@@ -22,12 +25,17 @@ public class ExpandTask extends TravelTask {
 	public ExpandTask(MapLocation encampment, int priority, RobotType buildType) {
 		super(mover, encampment, priority, 0);
 		this.buildType = buildType;
+		
+		Direction dirToEnemy = ALLY_HQ.directionTo(ENEMY_HQ);
+		badA = ALLY_HQ.add(dirToEnemy);
+		badB = badA.add(dirToEnemy);
+		
 	}
 	
 	@Override
 	public boolean done() {
 		try {
-			if(!super.done() && RC.canSenseSquare(destination)) {
+			if(!currentLocation.equals(destination) && RC.canSenseSquare(destination)) {
 				GameObject object = RC.senseObjectAtLocation(destination);
 				if(object != null) {
 					return true;
@@ -36,17 +44,22 @@ public class ExpandTask extends TravelTask {
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
 
 	@Override
 	public int appeal() {
-		return (int) (super.appeal() - RC.senseCaptureCost() / 5);
+		return destination.equals(badA) || destination.equals(badB) ? -10000 : (int) (super.appeal() - RC.senseCaptureCost() / 5);
 	}
 
 	@Override
 	public void execute() throws GameActionException {
+		if(init) {
+			messagingSystem.writeTakingEncampmentMessage(destination, appeal());
+			init = false;
+		}
+		
 		if(currentLocation.equals(destination)) {
 			if(RC.getTeamPower() >= RC.senseCaptureCost()) {
 				RC.captureEncampment(getCaptureType());
@@ -73,7 +86,7 @@ public class ExpandTask extends TravelTask {
 	
 	@Override
 	public String toString() {
-		return "EXPAND TO " + mover.getTarget();
+		return "EXPAND " + buildType + " AT " + destination;
 	}
 
 }

@@ -1,5 +1,6 @@
 package team059.utils;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import battlecode.common.Clock;
@@ -80,6 +81,7 @@ public class Utils {
 		for(Upgrade upgrade : Upgrade.values()) {
 			UPGRADES_RESEARCHED[upgrade.ordinal()] = RC.hasUpgrade(upgrade);
 		}
+		updateUtils();
 	}
 	
 	/**
@@ -178,5 +180,9 @@ public class Utils {
 		if(i < min) return min;
 		if(i > max) return max;
 		return i;
+	}
+	
+	public static <T> T[] newArray(int length, T... array) {
+		return Arrays.copyOf(array, length);
 	}
 }

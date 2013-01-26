@@ -4,11 +4,8 @@ import team059.messaging.MessageHandler;
 import team059.messaging.MessageType;
 import team059.messaging.MessagingSystem;
 import static team059.utils.Utils.*;
-import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
-import battlecode.common.Team;
 
 public class RobotBehavior {
 
@@ -30,6 +27,7 @@ public class RobotBehavior {
 		messageHandlers[MessageType.LAYING_MINE.ordinal()] = getLayingMineHandler();
 		messageHandlers[MessageType.DEFUSING_MINE.ordinal()] = getDefusingMineHandler();
 		messageHandlers[MessageType.ANNOUNCE_UPGRADE.ordinal()] = getAnnounceUpgradeHandler();
+		messageHandlers[MessageType.TAKING_ENCAMPMENT.ordinal()] = getTakingEncampmentHandler();
 	}
 
 	protected int danger(MapLocation loc) {return 0;}
@@ -81,8 +79,8 @@ public class RobotBehavior {
 	protected MessageHandler getAttackHandler() {return new DefaultMessageHandler();}
 	
 	/**
-	 * Override in order to respond to this type of message.
-	 * @return The default message handler (does nothing).
+	 * Reads the strategy from the HQ.
+	 * @return The default HQ-message handler.
 	 */
 	protected MessageHandler getHQHandler() {
 		return new MessageHandler() {
@@ -112,4 +110,5 @@ public class RobotBehavior {
 	
 	protected MessageHandler getAnnounceUpgradeHandler() {return new DefaultMessageHandler();}
 	
+	protected MessageHandler getTakingEncampmentHandler() {return new DefaultMessageHandler();}
 }
