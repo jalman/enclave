@@ -44,11 +44,10 @@ public class HQBehavior extends RobotBehavior {
 		//messaging = false;
 		if(messaging) {
 			try {
-				messagingSystem.beginRoundHQ();
+				messagingSystem.beginRoundHQ(messageHandlers);
 			} catch (GameActionException e1) {
 				e1.printStackTrace();
 			}
-			messagingSystem.handleMessages(messageHandlers);
 		}
 		
 		if(!enemyNukeHalfDone && Clock.getRoundNum() > Upgrade.NUKE.numRounds / 2) {
@@ -202,16 +201,18 @@ public class HQBehavior extends RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				try {
-					Robot newBot = (Robot) RC.senseObjectAtLocation(new MapLocation(message[1], message[2]));	
+					MapLocation loc = new MapLocation(message[0], message[1]);
+					//System.out.println(loc);
+					Robot newBot = (Robot) RC.senseObjectAtLocation(loc);
 					//System.out.print("seen " + Arrays.toString(message) + " born!");
 					if(newBot == null) {
 						//System.out.println("wat");
 						return;
 					}
-					if(message[4] == MessagingSystem.SUPPLIER) {
+					if(message[3] == MessagingSystem.SUPPLIER) {
 						suppliers.insert(newBot);
 						//System.out.println(" supplier born. suppliers.size = " + suppliers.size);
-					} else if(message[4] == MessagingSystem.GENERATOR) {
+					} else if(message[3] == MessagingSystem.GENERATOR) {
 						generators.insert(newBot);
 						//System.out.println(" generator born. generators.size = " + generators.size);
 					}

@@ -2,7 +2,8 @@ package team059.messaging;
 
 public enum MessageType {
 
-	HQ_INFO(1), ATTACK_LOCATION(3), CHECKPOINT_NUMBER(1), TAKING_ENCAMPMENT(3), TAKE_ENCAMPMENT(3), MICRO_INFO(3), BIRTH_INFO(4);
+	HEADER(1), HQ_INFO(1), ATTACK_LOCATION(3), CHECKPOINT_NUMBER(1), TAKING_ENCAMPMENT(3), TAKE_ENCAMPMENT(4), MICRO_INFO(3), BIRTH_INFO(4);
+
 	/**
 	 * Number of integers that comprise this message.
 	 */

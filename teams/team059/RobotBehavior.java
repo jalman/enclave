@@ -32,14 +32,13 @@ public class RobotBehavior {
 	/**
 	 * Called at the beginning of each round.
 	 */
-	public void beginRound() throws GameActionException{
+	public void beginRound() throws GameActionException {
 		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
 		//messaging = false;
 		
 		if(messaging) {
 			try {
-				messagingSystem.beginRound();
-				messagingSystem.handleMessages(messageHandlers);
+				messagingSystem.beginRound(messageHandlers);
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}
@@ -83,7 +82,7 @@ public class RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				strategy = Strategy.values()[message[1]];
+				strategy = Strategy.values()[message[0]];
 				//System.out.println(strategy);
 			}
 		};
