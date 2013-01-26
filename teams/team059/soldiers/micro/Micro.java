@@ -1,12 +1,11 @@
 package team059.soldiers.micro;
 
+
+import battlecode.common.*;
 import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
-import team059.soldiers.SoldierBehavior2;
-import team059.utils.Utils;
 import static team059.utils.Utils.*;
-import battlecode.common.*;
 import static team059.soldiers.SoldierUtils.*;
 
 public class Micro {
@@ -20,42 +19,48 @@ public class Micro {
 	public Micro() {
 		enemyTarget = null;
 	}
-	
-	public void rushToBattle() throws GameActionException{
-		//farawayEnemyTarget should be set if micro mode is entered
+	public void run() throws GameActionException{
+		
 		if (enemyRobots.length == 0)
+		{
+			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum());
+			mover.setNavType(NavType.BUG_DIG_2);
+			updateFarawayEnemyTarget(2);
+			rushToBattle();
+		}
+		else{
+			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum());
+			setMicroVariables();
+			farawayEnemyTarget = enemyTarget;
+			microModeEntered = true;
+			micro();
+		}
+	}
+
+	public void rushToBattle() throws GameActionException{
+		//farawayEnemyTarget should be already set if micro mode is entered
+		if (enemyRobots.length == 0 && farawayEnemyTarget != null)
 		{
 			attackTarget(farawayEnemyTarget);
 		}
+		if(RC.isActive())
+			mover.execute();
 	}
 	public void micro() throws GameActionException{
-		setMicroVariables();
 		if(enemyTarget != null) {		
 			attackOrRetreat();
 		}	
 		if(RC.isActive())
 			mover.execute();
 	}
-	
-	public void run() throws GameActionException{
-		if (enemyRobots.length == 0)
-		{
-			rushToBattle();
-		}
-		else{
-			microModeEntered = true;
-			micro();
-		}
-	}
-	public boolean shouldIBeRunningMicroSystem(){
-		if (microModeEntered = true && enemyRobots.length == 0)
-		{
-			microModeEntered = false;
-			return false;
-		}
-		return true;
-	}
-	
+//	public boolean shouldIBeRunningMicroSystem(){
+//		if (farawayEnemyTarget == null)
+//		{
+//			microModeEntered = false;
+//			return false;
+//		}
+//		return true;
+//	}
 	public void setBattleVariables() throws GameActionException{
 		
 	}
@@ -63,11 +68,6 @@ public class Micro {
 		setEnemyTargetAndWeight();
 		setAllyWeight(enemyTarget, sensorRadius);
 	}
-	
-	/**
-	 * Rushes into battle if it can see an enemy nearby. 
-	 * @throws GameActionException 
-	 */
 	
 	/**
 	 * Determines whether a soldier should attack or retreat
@@ -136,13 +136,13 @@ public class Micro {
 //	public void goToBattle(int mapLocX, int mapLocY){
 //		MapLocation tempBattleSpot = new MapLocation(mapLocX, mapLocY);
 //		if (battleSpot == null || naiveDistance(tempBattleSpot, currentLocation) < naiveDistance(battleSpot, currentLocation) 
-//				||  battleSpotAge >= 4)
+//				||  battleSpotAge >= 2)
 //		{
 //			battleSpot = tempBattleSpot;
 //			battleSpotAge = 0;
 //		}
-//		int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
-//		if(distance < 11 && distance > 3)
+//		int distanceSquared = battleSpot.distanceSquaredTo(currentLocation);
+//		if(distanceSquared < closeEnoughToGoToBattleSquared && distance > ENEMY_RADIUS2)
 //		{
 //			mover.setTarget(battleSpot);
 //		}

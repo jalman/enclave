@@ -21,6 +21,6 @@ public class MicroTask extends Task {
 
 	@Override
 	public int appeal() {
-		return 0;
+		return 10;
 	}
 }

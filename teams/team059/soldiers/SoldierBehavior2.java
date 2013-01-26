@@ -1,6 +1,7 @@
 package team059.soldiers;
 
 import team059.utils.Utils;
+import static team059.soldiers.SoldierUtils.*;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -13,23 +14,17 @@ import team059.soldiers.micro.Micro;
 import static team059.utils.Utils.*;
 
 public class SoldierBehavior2 extends RobotBehavior {
-
-	public static int ENEMY_RADIUS = 5;
-	public static int ENEMY_RADIUS2 = 25;
-	
-	public Robot[] nearbyEnemies;
-
 	public Mover mover;
 
 	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
 	private TaskManager taskManager;
 	private MineManager mineManager;
-		
-	public static Micro microSystem;
-	private SingleTaskManager attackManager;
-	private SingleTaskManager takeEncampmentManager;
 	private ScoutManager scoutManager;
+	
+	public static Micro microSystem;
+	private SingleTaskManager<AttackTask> attackManager;
+	private SingleTaskManager<ExpandTask> takeEncampmentManager;
 
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
@@ -41,30 +36,27 @@ public class SoldierBehavior2 extends RobotBehavior {
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
 		mineManager = new MineManager(this);
-		attackManager = new SingleTaskManager();
-		takeEncampmentManager = new SingleTaskManager();
+		attackManager = new SingleTaskManager<AttackTask>();
+		takeEncampmentManager = new SingleTaskManager<ExpandTask>();
 		scoutManager = new ScoutManager();
 		
-		taskGivers = new TaskGiver[] {patrolManager, taskManager, mineManager, expandManager, attackManager, takeEncampmentManager, scoutManager};
+		taskGivers = new TaskGiver[]
+				{patrolManager, taskManager, attackManager, scoutManager,
+				/*mineManager,*/ expandManager, takeEncampmentManager};
 	}
-
-	@Override
-	public void beginRound() throws GameActionException {
-		super.beginRound();
-		nearbyEnemies = RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
-	}
-
-	private static final int THINK_PERIOD = 20;
 
 	@Override
 	public void run() throws GameActionException {
+
+		updateSoldierUtils();
+		
 		boolean compute = currentTask == null || currentTask.done();
 
 		int max_appeal = Integer.MIN_VALUE;
 
 		for(int i = 0; i < taskGivers.length; i++) {
 			TaskGiver tg = taskGivers[i];
-			if(compute || Clock.getRoundNum() % THINK_PERIOD == i) {
+			if(compute || Clock.getRoundNum() % taskGivers.length == i) {
 				tg.compute();
 			}
 			Task t = tg.getTask();
@@ -76,27 +68,11 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		}
 		
-		if(Utils.enemyRobots.length > 0)
-		{
-			microSystem.run();
-		}
-//		else if (battleSpot != null && battleSpotAge < 4)
-//		{
-//			int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
-//			if(distance < 11 && distance > 3)
-//			{
-//				mover.setTarget(battleSpot);
-//				RC.setIndicatorString(2, "CHARGING TO " + battleSpot + " on turn " + Clock.getRoundNum());
-//			}
-//			if(RC.isActive())
-//				mover.execute();
-//		}
-		else if(currentTask != null && RC.isActive()) {
+		if(currentTask != null && RC.isActive()) {
 			RC.setIndicatorString(1, currentTask.toString());
 			currentTask.execute();
 		}
 	}
-	
 	@Override
 	protected MessageHandler getAttackHandler() {
 		return new MessageHandler() {
@@ -116,12 +92,26 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};
 	}
+	@Override
+	protected MessageHandler getTakingEncampmentHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				MapLocation loc = new MapLocation(message[1], message[2]);
+				int appeal = message[3];
+				
+				ExpandTask task = takeEncampmentManager.getTask();
+				if(task != null && loc.equals(task.destination) && appeal > task.appeal()) {
+					takeEncampmentManager.clearTask();
+				}
+			}
+		};
+	}
+	
 	protected MessageHandler getMicroHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				//microSystem.goToBattle(message[1], message[2]);
-				//taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
 			}
 		};
 	}

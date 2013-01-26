@@ -73,7 +73,7 @@ public class MessagingSystem {
 	 * Sets up the channels for communication. Should be called each round.
 	 */
 	private void setChannels() {
-		int k = key(Clock.getRoundNum());
+		int k = key(Clock.getRoundNum() ^ (ALLY_TEAM.ordinal() << 16));
 		for(int i = 0; i < COPIES; i++) {
 			channels[i] = (k + i * DISPLACEMENT) % MAX_CHANNEL;
 			if(channels[i] < 0) channels[i] += MAX_CHANNEL;
@@ -323,6 +323,10 @@ public class MessagingSystem {
 		writeMessage(MessageType.TAKE_ENCAMPMENT.ordinal(), loc.x, loc.y, priority, buildType.ordinal());
 	}
 
+	public void writeTakingEncampmentMessage(MapLocation loc, int appeal) throws GameActionException {
+		writeMessage(MessageType.TAKING_ENCAMPMENT.ordinal(), loc.x, loc.y, appeal);
+	}
+	
 	public void printMessageBoard() {
 		for(int i = 0; i < total_messages; i++) {
 			int off = i * BLOCK_SIZE;

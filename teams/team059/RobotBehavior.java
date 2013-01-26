@@ -4,11 +4,8 @@ import team059.messaging.MessageHandler;
 import team059.messaging.MessageType;
 import team059.messaging.MessagingSystem;
 import static team059.utils.Utils.*;
-import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
-import battlecode.common.Team;
 
 public class RobotBehavior {
 
@@ -27,6 +24,7 @@ public class RobotBehavior {
 		messageHandlers[MessageType.MICRO_INFO.ordinal()] = getMicroHandler();
 		messageHandlers[MessageType.TAKE_ENCAMPMENT.ordinal()] = getTakeEncampmentHandler();
 		messageHandlers[MessageType.BIRTH_INFO.ordinal()] = getBirthInfoHandler();
+		messageHandlers[MessageType.TAKING_ENCAMPMENT.ordinal()] = getTakingEncampmentHandler();
 	}
 
 	protected int danger(MapLocation loc) {return 0;}
@@ -78,8 +76,8 @@ public class RobotBehavior {
 	protected MessageHandler getAttackHandler() {return new DefaultMessageHandler();}
 	
 	/**
-	 * Override in order to respond to this type of message.
-	 * @return The default message handler (does nothing).
+	 * Reads the strategy from the HQ.
+	 * @return The default HQ-message handler.
 	 */
 	protected MessageHandler getHQHandler() {
 		return new MessageHandler() {
@@ -102,4 +100,6 @@ public class RobotBehavior {
 	protected MessageHandler getTakeEncampmentHandler() {return new DefaultMessageHandler();}	
 	
 	protected MessageHandler getBirthInfoHandler() {return new DefaultMessageHandler();}
+	
+	protected MessageHandler getTakingEncampmentHandler() {return new DefaultMessageHandler();}
 }
