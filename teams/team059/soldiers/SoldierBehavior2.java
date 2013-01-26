@@ -104,6 +104,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				ExpandTask task = takeEncampmentManager.getTask();
 				if(task != null && loc.equals(task.destination) && appeal > task.appeal()) {
 					takeEncampmentManager.clearTask();
+					System.out.println("Decided against taking encampment.");
 				}
 			}
 		};
