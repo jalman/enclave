@@ -59,6 +59,8 @@ public class Utils {
 		random = new Random(((long)RC.getRobot().getID()<< 32) ^ Clock.getRoundNum());
 
 		messagingSystem = new MessagingSystem();
+		
+		updateUtils();
 	}
 	
 	/**
