@@ -7,10 +7,51 @@ import battlecode.common.RobotController;
 public class RobotPlayer {
 	public static void run(RobotController rc) {
 		//Utils.initUtils(rc);
-		testTryCatch();
+		//testTryCatch();
 		//testInstantiation();
 		//testArrayAccess();
 		//testIf();
+		testArrayInit();
+	}
+	
+	public static void testArrayInit() { // Initializing non-empty array takes 5 + 4*array.length bytecodes
+		int bc = Clock.getBytecodeNum();
+		final int[] SQUARES_IN_RANGE_98 = 
+			{1, 5, 9, 9, 13, 21, 21, 21, 
+			25, 29, 37, 37, 37, 45, 45, 
+			45, 49, 57, 61, 61, 69, 69, 
+			69, 69, 69, 81, 89, 89, 89, 
+			97, 97, 97, 101, 101, 109, 
+			109, 113, 121, 121, 121, 129, 
+			137, 137, 137, 137, 145, 145, 
+			145, 145, 149, 161, 161, 169, 
+			177, 177, 177, 177, 177, 185, 
+			185, 185, 193, 193, 193, 197, 
+			213, 213, 213, 221, 221, 221, 
+			221, 225, 233, 241, 241, 241, 
+			241, 241, 241, 249, 253, 261, 
+			261, 261, 277, 277, 277, 277, 
+			285, 293, 293, 293, 293, 293, 
+			293, 293, 301, 305};
+		int bc2  = Clock.getBytecodeNum();
+		System.out.println("used " + (bc2 - bc));
+		bc = Clock.getBytecodeNum();
+		final int[] SQUARES_IN_RANGE_49 = 
+			{1, 5, 9, 9, 13, 21, 21, 21, 25, 29, 37, 37, 37, 45, 
+				45, 45, 49, 57, 61, 61, 69, 69, 69, 69, 69, 81, 
+				89, 89, 89, 97, 97, 97, 101, 101, 109, 109, 113, 
+				121, 121, 121, 129, 137, 137, 137, 137, 145, 145, 145, 145, 149};
+		bc2 = Clock.getBytecodeNum();
+		System.out.println("used " + (bc2 - bc));
+		
+		System.out.println(SQUARES_IN_RANGE_49.length);
+		
+
+		bc = Clock.getBytecodeNum();
+		final int[] SQUARES_IN_RANGE_blah = new int[50];
+		bc2 = Clock.getBytecodeNum();
+		System.out.println("used " + (bc2 - bc));
+
 	}
 	
 	public static void testTryCatch() {
