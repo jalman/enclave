@@ -16,6 +16,7 @@ public class ExpandTask extends TravelTask {
 	
 	private final RobotType buildType;
 	private final MapLocation badA, badB;
+	private boolean init = true;
 	
 	public ExpandTask(MapLocation encampment) {
 		this(encampment, strategy.greed, null);
@@ -54,6 +55,11 @@ public class ExpandTask extends TravelTask {
 
 	@Override
 	public void execute() throws GameActionException {
+		if(init) {
+			messagingSystem.writeTakingEncampmentMessage(destination, appeal());
+			init = false;
+		}
+		
 		if(currentLocation.equals(destination)) {
 			if(RC.getTeamPower() >= RC.senseCaptureCost()) {
 				RC.captureEncampment(getCaptureType());

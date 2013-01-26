@@ -21,7 +21,7 @@ public class MicroOld {
 	public MapLocation battleSpot;
 	public int battleSpotAge;
 
-	public final static int sensorRadius = 14;
+	public final static int sensorRadius = 25;
 	public final static int closeEnoughToGoToBattle = 11;
 	public final static int microMessageAgeThreshold = 3;
 	public final static int microThreshold = ENEMY_RADIUS;

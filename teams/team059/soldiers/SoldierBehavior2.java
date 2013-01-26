@@ -66,6 +66,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 				currentTask = t;
 				max_appeal = appeal;
 			}
+//			if(t instanceof MineTask) {
+//				System.out.println("Mine task " + (MineTask) t + " has appeal " + appeal);
+//			}
 		}
 		
 		if(currentTask != null && RC.isActive()) {
@@ -103,6 +106,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				ExpandTask task = takeEncampmentManager.getTask();
 				if(task != null && loc.equals(task.destination) && appeal > task.appeal()) {
 					takeEncampmentManager.clearTask();
+					System.out.println("Decided against taking encampment.");
 				}
 			}
 		};
@@ -112,6 +116,43 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
+			}
+		};
+	}
+	
+
+	@Override
+	protected MessageHandler getLayingMineHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				if(message[3] != ID) {
+					mineManager.receiveMineMessage(new MapLocation(message[1], message[2]));
+				}
+			}
+		};
+	}
+	
+	/*
+	@Override
+
+	protected MessageHandler getDefusingMineHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				if(message[3] != ID) {
+					mineManager.receiveMineMessage(new MapLocation(message[1], message[2]));
+				}
+			}
+		};
+	}	*/
+	
+	@Override
+	protected MessageHandler getAnnounceUpgradeHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				UPGRADES_RESEARCHED[message[1]] = true;
 			}
 		};
 	}

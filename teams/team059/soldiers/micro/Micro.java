@@ -13,7 +13,7 @@ public class Micro {
 	MapLocation retreatTarget = null;
 	public int goIn = 0;
 	public static final Mover mover = new Mover();
-	int count = 0;
+	int numberOfTargetsToCheck = 5;
 	public boolean microModeEntered = false;
 	
 	public Micro() {
@@ -23,22 +23,22 @@ public class Micro {
 		
 		if (enemyRobots.length == 0)
 		{
-			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum());
-			mover.setNavType(NavType.BUG_DIG_2);
 			updateFarawayEnemyTarget(2);
 			rushToBattle();
+			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
 		}
 		else{
-			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum());
 			setMicroVariables();
 			farawayEnemyTarget = enemyTarget;
-			microModeEntered = true;
 			micro();
+			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + "Target: " + mover.getTarget());
 		}
 	}
 
 	public void rushToBattle() throws GameActionException{
 		//farawayEnemyTarget should be already set if micro mode is entered
+		mover.setNavType(NavType.BUG_DIG_2);
+
 		if (enemyRobots.length == 0 && farawayEnemyTarget != null)
 		{
 			attackTarget(farawayEnemyTarget);
@@ -65,7 +65,8 @@ public class Micro {
 		
 	}
 	public void setMicroVariables() throws GameActionException{
-		setEnemyTargetAndWeight();
+		setEnemyTarget(numberOfTargetsToCheck);
+		setEnemyWeight(enemyTarget, sensorRadius);
 		setAllyWeight(enemyTarget, sensorRadius);
 	}
 	
@@ -86,10 +87,12 @@ public class Micro {
 		else if (!shouldIAttack())
 		{
 			setRetreatBack();
+			mover.setNavType(NavType.BUG);
 			mover.setTarget(retreatTarget);
 		}
 		else
-		{	
+		{
+			mover.setNavType(NavType.BUG);
 			attackTarget(enemyTarget);
 		}
 	}
@@ -115,10 +118,8 @@ public class Micro {
 	{
 		if(allyWeight > enemyWeight && allyWeight > 1)
 		{
-			mover.setNavType(NavType.BUG_DIG_2);
 			return true;
 		}		
-		mover.setNavType(NavType.BUG);
 		return false;
 	}
 		

@@ -12,8 +12,8 @@ public class SoldierUtils {
 	public final static int MAX_ENCAMPMENT_ENERGON = 100;
 	public final static int MAX_HQ_ENERGON = 500;
 	
-	public final static int sensorRadius = 14;
-	public final static int closeEnoughToGoToBattleSquared = 81;
+	public final static int sensorRadius = 16;
+	public final static int closeEnoughToGoToBattleSquared = 100;
 	private static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
 	public static final int maxNumberOfEnemiesToCheckToFindATarget = 5;
 
@@ -36,12 +36,9 @@ public class SoldierUtils {
 		getFarAwayEnemyTarget();
 	}
 	public static void getFarAwayEnemyTarget() throws GameActionException{
-		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 3 == 0)
-		{
-			detectenemiesFarAway();
-			farawayEnemyTarget = getHighestPriority(enemiesFarAway);
-			farawayTargetSet = true;
-		}
+		detectenemiesFarAway();
+		farawayEnemyTarget = getHighestPriority(enemiesFarAway);
+		farawayTargetSet = true;
 	}
 	/**
 	 * Obtains target and enemyWeight with one traversal of the enemyRobots array. This is cheaper bytecode-wise.
@@ -55,21 +52,8 @@ public class SoldierUtils {
 		for (Robot enemy : enemyRobots)
 		{
 			tempRobotInfo = RC.senseRobotInfo(enemy);
-			//update weight
-			if (tempRobotInfo.type == RobotType.SOLDIER)
-			{
-				if (tempRobotInfo.roundsUntilAttackIdle == 0)
-					enemyWeight++;
-			}
-			else if (tempRobotInfo.type == RobotType.ARTILLERY)
-			{
-				if (tempRobotInfo.roundsUntilAttackIdle == 0)
-					enemyWeight += 2;
-			}
-			else if (tempRobotInfo.type == RobotType.HQ)
-			{
-				enemyWeight -=4;
-			}
+			enemyWeight+=findEnemyWeight(tempRobotInfo);
+			
 			//updates enemyTarget
 			if(overallPriority(tempRobotInfo) > priority)
 			{
@@ -78,12 +62,53 @@ public class SoldierUtils {
 			}
 		}
 	}
-
+	/**
+	 * @param RobotInfo of a robot
+	 * @return the weight its given (total weight decides whether to charge in or not)
+	 */
+	private static int findEnemyWeight(RobotInfo r){
+		if (r.type == RobotType.SOLDIER)
+		{
+			//Full health soldier returns 20.
+			return Math.max(0, 8 - 3*r.roundsUntilAttackIdle + (int)(12*(r.energon)/MAX_SOLDIER_ENERGON));
+		}
+		else if (r.type == RobotType.ARTILLERY)
+		{
+			//full health medium charge artillery returns 35
+			return 20 - (int)(r.roundsUntilAttackIdle/2) + (int)(20*(r.energon)/MAX_ENCAMPMENT_ENERGON);
+		}
+		else if (r.type == RobotType.HQ)
+		{
+			return -70;
+		}
+		return 0;
+	}
+	private static int findAllyWeight(RobotInfo r)
+	{	
+		if (r.type == RobotType.SOLDIER)
+		{
+			if (r.roundsUntilAttackIdle <= 2)
+				//full helath soldier returns 20
+				return 10 + (int)(10*(r.energon)/MAX_SOLDIER_ENERGON);
+		}
+		else if (r.type == RobotType.ARTILLERY)
+		{
+			//full health medium charge artillery returns 35
+			return 20 + (int)(20*(r.energon)/MAX_ENCAMPMENT_ENERGON);
+		}
+		else if (r.type == RobotType.HQ)
+		{
+			return 120;
+		}
+		else
+			return 7;
+		return 0;
+	}
 	/**
 	 * Finds enemy target within the micro radius with highest priority. 
 	 * @throws GameActionException
 	 */
-	public static MapLocation findEnemyTarget() throws GameActionException{
+	public static MapLocation setEnemyTarget() throws GameActionException{
 		int priority = 0;
 		enemyTarget = null;
 		for (int i = 0; i < enemyRobots.length; i++)
@@ -103,7 +128,7 @@ public class SoldierUtils {
 	 * @return
 	 * @throws GameActionException
 	 */
-	public static void findEnemyTarget(int numberOfTargetsToCheck) throws GameActionException{
+	public static void setEnemyTarget(int numberOfTargetsToCheck) throws GameActionException{
 		int priority = 0;
 		enemyTarget = null;
 		for (int i = 0; i < enemyRobots.length && i < numberOfTargetsToCheck; i++)
@@ -130,7 +155,7 @@ public class SoldierUtils {
 		double healthPercent = robotHealthPercent(r);
 		int priority = robotTypePriority(r);
 		int roundsUntilAttackActive = r.roundsUntilAttackIdle;
-		return ((int)(20*healthPercent)+distanceSquared*2+priority*2+roundsUntilAttackActive*2);
+		return (100-(int)(20*healthPercent)-(int)(Math.sqrt((double)distanceSquared)*10)+priority*2+roundsUntilAttackActive*3);
 	}
 	
 	//Helper methods for overallPriority
@@ -141,7 +166,11 @@ public class SoldierUtils {
 		}
 		else if (r.type == RobotType.ARTILLERY)
 		{
-			return 15;
+			return 25;
+		}
+		if (r.type == RobotType.HQ)
+		{
+			return 40;
 		}
 		else
 		{
@@ -177,34 +206,18 @@ public class SoldierUtils {
 		Robot[] enemies = RC.senseNearbyGameObjects(Robot.class, m, radiusSquared, ALLY_TEAM);
 		for(Robot enemy : enemies) {
 			tempRobotInfo = RC.senseRobotInfo(enemy);
-			if(tempRobotInfo.type == RobotType.SOLDIER)
-			{
-				if (tempRobotInfo.roundsUntilAttackIdle == 0)
-					enemyWeight++;
-			}
-			else if (tempRobotInfo.type == RobotType.ARTILLERY)
-			{
-				if (tempRobotInfo.roundsUntilAttackIdle == 0)
-					enemyWeight+=2;
-			}
-			else if (tempRobotInfo.type == RobotType.HQ)
-				enemyWeight -=4;
+			enemyWeight += findEnemyWeight(tempRobotInfo);
 		}
 		return enemyWeight;
 	}
 	public static int setAllyWeight(MapLocation m, int radiusSquared) throws GameActionException 
 	{
-		allyWeight = 0;
+		allyWeight = 10;
 		RobotInfo r;
 		Robot[] allies = RC.senseNearbyGameObjects(Robot.class, m, radiusSquared, ALLY_TEAM);
 		for(Robot ally : allies) {
 			tempRobotInfo = RC.senseRobotInfo(ally);
-			if(tempRobotInfo.type == RobotType.SOLDIER)
-				allyWeight++;
-			else if (tempRobotInfo.type == RobotType.ARTILLERY)
-				allyWeight+=2;
-			else if (tempRobotInfo.type == RobotType.HQ)
-				allyWeight+=5;
+			allyWeight += findAllyWeight(tempRobotInfo);
 		}
 		return allyWeight;
 	}
@@ -225,11 +238,13 @@ public class SoldierUtils {
 	 */
 	public static void updateFarawayEnemyTarget(int k) throws GameActionException
 	{
-		if ((Clock.getRoundNum()+RC.getRobot().getID()) % k == 1)
-		{
+		/*if ((Clock.getRoundNum()+RC.getRobot().getID()) % k == 0)
+		{*/
 			enemiesFarAway = RC.senseNearbyGameObjects(Robot.class, farawayEnemyTarget, 2*k*k, ENEMY_TEAM);
-			getHighestPriority(enemiesFarAway);
-		}
+			if (enemiesFarAway.length > 0)
+				farawayEnemyTarget = RC.senseRobotInfo(enemiesFarAway[0]).location;
+			//getHighestPriority(enemiesFarAway);
+		//}
 	}
 	/**
 	 * @param array of (enemy) robots

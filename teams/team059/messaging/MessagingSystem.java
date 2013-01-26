@@ -300,27 +300,93 @@ public class MessagingSystem {
 		}
 	}
 
+	/**
+	 * Announce somewhere to attack.
+	 * @param loc: place to attack
+	 * @param priority: priority of attack
+	 * @throws GameActionException
+	 */
 	public void writeAttackMessage(MapLocation loc, int priority) throws GameActionException {
 		writeMessage(MessageType.ATTACK_LOCATION.ordinal(), loc.x, loc.y, priority);
 	}
+	
+	/**
+	 * Announce somewhere to micro.
+	 * @param loc
+	 * @param goIn
+	 * @throws GameActionException
+	 */
 	public void writeMicroMessage(MapLocation loc, int goIn) throws GameActionException {
 		writeMessage(MessageType.MICRO_INFO.ordinal(), loc.x, loc.y, goIn);
 	}
 
+	/**
+	 * Announce a robot's birth. (Usually an encampment.)
+	 * @param loc: location of birth
+	 * @param id: id of new robot
+	 * @param type: type of new robot
+	 * @throws GameActionException
+	 */
 	public void writeBirthMessage(MapLocation loc, int id, int type) throws GameActionException {
 		writeMessage(MessageType.BIRTH_INFO.ordinal(), loc.x, loc.y, id, type);
 	}
 
+	/**
+	 * Announce the strategy.
+	 * @param strategy: strategy to execute
+	 * @throws GameActionException
+	 */
 	public void writeHQMessage(Strategy strategy) throws GameActionException {
 		writeMessage(MessageType.HQ_INFO.ordinal(), strategy.ordinal());
 	}
 
+	/**
+	 * ???
+	 * @param pointNumber
+	 * @throws GameActionException
+	 */
 	public void writeCheckpointMessage(int pointNumber) throws GameActionException {
 		writeMessage(MessageType.CHECKPOINT_NUMBER.ordinal(), pointNumber);
 	}
 
+	/**
+	 * Announce the intent to take an encampment.
+	 * @param loc: location of encampment
+	 * @param priority: priority
+	 * @param buildType: type of encampment to build
+	 * @throws GameActionException
+	 */
 	public void writeTakeEncampmentMessage(MapLocation loc, int priority, RobotType buildType) throws GameActionException {
 		writeMessage(MessageType.TAKE_ENCAMPMENT.ordinal(), loc.x, loc.y, priority, buildType.ordinal());
+	}
+
+	/**
+	 * Announce the [attempted] laying of [a] mine[s].
+	 * @param loc: location of mine (or center of 5 mines)
+	 * @param id: id of minelaying bot
+	 * @throws GameActionException
+	 */
+	public void writeLayingMineMessage(MapLocation loc, int id) throws GameActionException {
+		writeMessage(MessageType.LAYING_MINE.ordinal(), loc.x, loc.y, id);
+	}
+
+	/**
+	 * Announce the [attempted] defusing of a mine.
+	 * @param loc: location of mine
+	 * @param id: id of defusing bot
+	 * @throws GameActionException
+	 */
+	public void writeDefusingMineMessage(MapLocation loc, int id) throws GameActionException {
+		writeMessage(MessageType.LAYING_MINE.ordinal(), loc.x, loc.y, id);
+	}
+
+	/**
+	 * Announce an upgrade from the HQ. Should only be called by HQ.
+	 * @param upgradeId = Upgrade.TYPE.ordinal()
+	 * @throws GameActionException
+	 */
+	public void writeAnnounceUpgradeMessage(int upgradeId) throws GameActionException {
+		writeMessage(MessageType.ANNOUNCE_UPGRADE.ordinal(), upgradeId);
 	}
 
 	public void writeTakingEncampmentMessage(MapLocation loc, int appeal) throws GameActionException {
