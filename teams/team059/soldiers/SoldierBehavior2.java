@@ -44,10 +44,8 @@ public class SoldierBehavior2 extends RobotBehavior {
 		
 		taskGivers = new TaskGiver[]
 				{patrolManager, taskManager, attackManager, scoutManager,
-				mineManager, expandManager, takeEncampmentManager};
+				/*mineManager,*/ expandManager, takeEncampmentManager};
 	}
-
-	private static final int THINK_PERIOD = 20;
 
 	@Override
 	public void run() throws GameActionException {
@@ -57,7 +55,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 
 		for(int i = 0; i < taskGivers.length; i++) {
 			TaskGiver tg = taskGivers[i];
-			if(compute || Clock.getRoundNum() % THINK_PERIOD == i) {
+			if(compute || Clock.getRoundNum() % taskGivers.length == i) {
 				tg.compute();
 			}
 			Task t = tg.getTask();

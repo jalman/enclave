@@ -27,7 +27,7 @@ public class ExpandTask extends TravelTask {
 	@Override
 	public boolean done() {
 		try {
-			if(!super.done() && RC.canSenseSquare(destination)) {
+			if(!currentLocation.equals(destination) && RC.canSenseSquare(destination)) {
 				GameObject object = RC.senseObjectAtLocation(destination);
 				if(object != null) {
 					return true;
@@ -73,7 +73,7 @@ public class ExpandTask extends TravelTask {
 	
 	@Override
 	public String toString() {
-		return "EXPAND TO " + mover.getTarget();
+		return "EXPAND " + buildType + " AT " + destination;
 	}
 
 }
