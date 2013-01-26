@@ -1,6 +1,7 @@
 package team059.hq;
 
 import team059.Strategy;
+import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
@@ -14,6 +15,8 @@ import static team059.utils.Utils.*;
  */
 public class ExpandSystem {
 	private final int NC = 8;
+	
+	private int numSent = 0;
 	
 	public MapLocation[][] encampments = new MapLocation[NC][];
 	public boolean[][] taken = new boolean[NC][];
@@ -53,6 +56,7 @@ public class ExpandSystem {
 	**/
 	public void considerExpanding(int far) throws GameActionException {
 		if(far >= NC) return;
+		if(numSent*10 > Clock.getRoundNum()) return;
 		
 		while(finished[far] || encampments[far] == null) {
 			far++;
@@ -61,7 +65,7 @@ public class ExpandSystem {
 		for(int i = 0; i < encampments[far].length; i++) {
 			MapLocation loc = encampments[far][i];
 			if(!taken[far][i] && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
-				if(generators > suppliers) {
+				if(Clock.getRoundNum() < 200 || generators > suppliers) {
 					messagingSystem.writeTakeEncampmentMessage(loc, 1000, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
@@ -69,6 +73,7 @@ public class ExpandSystem {
 					generators++;
 				}
 				taken[far][i] = true;
+				numSent++;
 				return;
 			}
 		}
