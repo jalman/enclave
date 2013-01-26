@@ -12,17 +12,34 @@ public class SoldierUtils {
 	public final static int MAX_ENCAMPMENT_ENERGON = 100;
 	public final static int MAX_HQ_ENERGON = 500;
 	
+	public final static int sensorRadius = 14;
+	public final static int closeEnoughToGoToBattleSquared = 90;
+	private static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
+	public static final int maxNumberOfEnemiesToCheckToFindATarget = 5;
+
 	static RobotInfo tempRobotInfo;	
 	
 	public static MapLocation enemyTarget; 
 	public static int enemyWeight;
 	public static int allyWeight;
 	
+	public static MapLocation farawayEnemyTarget; // the maplocation of a relatively high priority bot in enemiesFarAway
+//	public static int farawayEnemyTargetAge = 1000;
 	
-	public static void updateSoldierUtils(){
-		
+	//Call getFarAwayEnemyTarget every 3 turns.
+	/**
+	 * If the soldier does not have a farawayEnemyTarget, he calls getFarAwayEnemyTarget to obtain one. If he receives one, he should
+	 * immediately enter micro mode from whichever task he was previously performing.
+	 * @throws GameActionException
+	 */
+	
+	public static void getFarAwayEnemyTarget() throws GameActionException{
+		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 3 == 0)
+		{
+			detectenemiesFarAway();
+			farawayEnemyTarget = getHighestPriority(enemiesFarAway);
+		}
 	}
-	
 	/**
 	 * Obtains target and enemyWeight with one traversal of the enemyRobots array. This is cheaper bytecode-wise.
 	 * NOTE: If setEnemyTargetAndWeight, also update enemyWeight
@@ -42,9 +59,13 @@ public class SoldierUtils {
 			}
 			else if (tempRobotInfo.type == RobotType.ARTILLERY)
 			{
-				enemyWeight += 4;
+				enemyWeight += 2;
 			}
-			//update enemyTarget
+			else if (tempRobotInfo.type == RobotType.HQ)
+			{
+				enemyWeight +=4;
+			}
+			//updates enemyTarget
 			if(overallPriority(tempRobotInfo) > priority)
 			{
 				enemyTarget = tempRobotInfo.location;
@@ -54,7 +75,7 @@ public class SoldierUtils {
 	}
 
 	/**
-	 * Finds enemy target with highest priority. 
+	 * Finds enemy target within the micro radius with highest priority. 
 	 * @throws GameActionException
 	 */
 	public static MapLocation findEnemyTarget() throws GameActionException{
@@ -138,13 +159,11 @@ public class SoldierUtils {
 	
 	/**
 	 * Determines whether there are enough allies to engage enemies to engage in an area. 
-	 * Both weights are taken around the enemySoldierTarget. Calculated by multiple message senders who determine goIn or not.
-	 * NOTE: If setEnemyTargetAndWeight, also update enemyWeight
+	 * NOTE: If changes are made to setEnemyTargetAndWeight, also update enemyWeight
 	 * @param radiusSquared
 	 * @return weight; higher weight = more enemies
 	 * @throws GameActionException
 	 */
-	
 	public static int setEnemyWeight(MapLocation m, int radiusSquared) throws GameActionException
 	{
 		enemyWeight = 0;
@@ -155,7 +174,9 @@ public class SoldierUtils {
 			if(tempRobotInfo.type == RobotType.SOLDIER)
 				enemyWeight++;
 			else if (tempRobotInfo.type == RobotType.ARTILLERY)
-				enemyWeight+=4;
+				enemyWeight+=2;
+			else if (tempRobotInfo.type == RobotType.HQ)
+				enemyWeight +=4;
 		}
 		return enemyWeight;
 	}
@@ -169,10 +190,53 @@ public class SoldierUtils {
 			if(tempRobotInfo.type == RobotType.SOLDIER)
 				allyWeight++;
 			else if (tempRobotInfo.type == RobotType.ARTILLERY)
-				allyWeight+=4;
+				allyWeight+=2;
 			else if (tempRobotInfo.type == RobotType.HQ)
 				allyWeight+=5;
 		}
 		return allyWeight;
+	}
+	/**
+	 * Finds an enemy to go to battle with;
+	 * If sees enemy within radius squared of 81, then go to battle;
+	 */
+	private static void detectenemiesFarAway()
+	{
+		enemiesFarAway = RC.senseNearbyGameObjects(Robot.class, currentLocation, closeEnoughToGoToBattleSquared, ENEMY_TEAM);
+	}
+	
+	/**
+	 * When the soldier sees a faraway Enemy, he updates his target as he gets closer. This method should be called 
+	 * exclusively in micro.
+	 * @param k = the number of turns in between updates to the
+	 * @throws GameActionException 
+	 */
+	public static void updateFarawayEnemyTarget(int k) throws GameActionException
+	{
+		if ((Clock.getRoundNum()+RC.getRobot().getID()) % k == 1)
+		{
+			enemiesFarAway = RC.senseNearbyGameObjects(Robot.class, farawayEnemyTarget, 2*k*k, ENEMY_TEAM);
+			getHighestPriority(enemiesFarAway);
+		}
+	}
+	/**
+	 * @param array of (enemy) robots
+	 * @return robot with highest priority
+	 * @throws GameActionException
+	 */
+	private static MapLocation getHighestPriority(Robot[] arr) throws GameActionException
+	{
+		RobotInfo targetInfo = null;
+		for (int i = 0; i < maxNumberOfEnemiesToCheckToFindATarget && i < arr.length; i++)
+		{
+			tempRobotInfo = RC.senseRobotInfo(arr[i]);
+			if (targetInfo == null || overallPriority(targetInfo) < overallPriority (tempRobotInfo))
+			{
+				targetInfo = tempRobotInfo;
+			}
+		}
+		if (targetInfo == null)
+			return null;
+		return targetInfo.location;
 	}
 }

@@ -34,12 +34,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
 	
-	public MapLocation battleSpot;
-	public int battleSpotAge;
-
 	public SoldierBehavior2() {
 		mover = new Mover();
-		microSystem = new Micro(this);
+		microSystem = new Micro();
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
@@ -83,17 +80,23 @@ public class SoldierBehavior2 extends RobotBehavior {
 		{
 			microSystem.run();
 		}
+//		else if (battleSpot != null && battleSpotAge < 4)
+//		{
+//			int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
+//			if(distance < 11 && distance > 3)
+//			{
+//				mover.setTarget(battleSpot);
+//				RC.setIndicatorString(2, "CHARGING TO " + battleSpot + " on turn " + Clock.getRoundNum());
+//			}
+//			if(RC.isActive())
+//				mover.execute();
+//		}
 		else if(currentTask != null && RC.isActive()) {
 			RC.setIndicatorString(1, currentTask.toString());
 			currentTask.execute();
 		}
-		updateVariables();
 	}
-
-	public void updateVariables()
-	{
-		battleSpotAge++;
-	}
+	
 	@Override
 	protected MessageHandler getAttackHandler() {
 		return new MessageHandler() {
@@ -113,24 +116,11 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};
 	}
-	
 	protected MessageHandler getMicroHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if (battleSpot == null || Utils.naiveDistance(battleSpot, Utils.currentLocation) >= 7 || battleSpotAge >= 4)
-				{
-					battleSpot= new MapLocation(message[1], message[2]);
-					battleSpotAge = 0;
-				}
-				
-				int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
-				
-				if(distance < 7 && distance > 4)
-				{
-					RC.setIndicatorString(2, "CHARGING TO " + battleSpot + " on turn " + Clock.getRoundNum());
-					mover.setTarget(battleSpot);
-				}
+				//microSystem.goToBattle(message[1], message[2]);
 				//taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
 			}
 		};

@@ -76,7 +76,7 @@ public class HQBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		} else if(RC.isActive()) {
-			if(Clock.getRoundNum() < 100 || ( fluxDiff > -1.0 && (RC.getTeamPower() - (40 + 10*generators.size) > 10.0))) {
+			if(Clock.getRoundNum() < 700 || ( fluxDiff > -1.0 && (RC.getTeamPower() - (40 + 10*generators.size) > 10.0))) {
 				try {
 					built = buildSoldier();
 				} catch (Exception e) {

@@ -14,6 +14,12 @@ import team059.soldiers.micro.Micro;
 import team059.movement.*;
 
 public class Utils {
+	
+	//Game constants
+	public final static int MAX_SOLDIER_ENERGON = 40;
+	public final static int MAX_ENCAMPMENT_ENERGON = 100;
+	public final static int MAX_HQ_ENERGON = 500;
+	
 	//actual constants
 	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
 	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};

@@ -4,6 +4,7 @@ import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
 import team059.soldiers.SoldierBehavior2;
+import team059.utils.Utils;
 import static team059.utils.Utils.*;
 import battlecode.common.*;
 import static team059.soldiers.SoldierUtils.*;
@@ -11,44 +12,68 @@ import static team059.soldiers.SoldierUtils.*;
 public class Micro {
 	
 	MapLocation retreatTarget = null;
-	MapLocation encampTarget = null;
 	public int goIn = 0;
-	private static final int maxNumberOfEnemiesToCheckToFindATarget = 5;
 	public static final Mover mover = new Mover();
-	public SoldierBehavior2 sb;
 	int count = 0;
+	public boolean microModeEntered = false;
 	
-	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
-	
-	public Micro(SoldierBehavior2 sb) {		
+	public Micro() {
 		enemyTarget = null;
-		this.sb = sb;
+	}
+	
+	public void rushToBattle() throws GameActionException{
+		//farawayEnemyTarget should be set if micro mode is entered
+		if (enemyRobots.length == 0)
+		{
+			attackTarget(farawayEnemyTarget);
+		}
+	}
+	public void micro() throws GameActionException{
+		setMicroVariables();
+		if(enemyTarget != null) {		
+			attackOrRetreat();
+		}	
+		if(RC.isActive())
+			mover.execute();
 	}
 	
 	public void run() throws GameActionException{
-		if (count % 2 == 0)
+		if (enemyRobots.length == 0)
 		{
-			setVariables();
+			rushToBattle();
 		}
-		if(enemyTarget != null && sb.battleSpotAge >= 4)
+		else{
+			microModeEntered = true;
+			micro();
+		}
+	}
+	public boolean shouldIBeRunningMicroSystem(){
+		if (microModeEntered = true && enemyRobots.length == 0)
 		{
-			messagingSystem.writeMicroMessage(enemyTarget, goIn);
+			microModeEntered = false;
+			return false;
 		}
-		if(enemyTarget != null) {		
-			attackOrRetreat();
-		}
-		if(RC.isActive())
-			mover.execute();
-		count++;
+		return true;
 	}
 	
-	public void setVariables() throws GameActionException{
+	public void setBattleVariables() throws GameActionException{
+		
+	}
+	public void setMicroVariables() throws GameActionException{
 		setEnemyTargetAndWeight();
 		setAllyWeight(enemyTarget, sensorRadius);
 	}
 	
 	/**
-	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
+	 * Rushes into battle if it can see an enemy nearby. 
+	 * @throws GameActionException 
+	 */
+	
+	/**
+	 * Determines whether a soldier should attack or retreat
+	 * If: adjacent enemies: stay put. 
+	 * Else if: there aren't enough allies nearby to engage: retreat
+	 * Else: attack
 	 * @throws GameActionException
 	 */
 	
@@ -68,41 +93,27 @@ public class Micro {
 			attackTarget(enemyTarget);
 		}
 	}
-	
-	/**
-	 * Writes a message when enemies are nearby
-	 * @throws GameActionException
-	 */
 
-	
 	/**
-	 * Sets the destinations to retreat to.
+	 * Sets the retreat target.
 	 * @throws GameActionException
 	 */
 	public void setRetreatBack() throws GameActionException
 	{
 		if (enemyTarget != null)
 		{
-			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite(), 2);
+			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite());
 		}
 		else
 		{
 			retreatTarget = ALLY_HQ;
 		}
 	}
-	public void setRetreatEncampment() throws GameActionException //makes the retreat target the nearest encampment
-	{
-		// fill in with messaging
-	}
-
-	/**
-	 * Methods for detecting Allies and Enemies within a certain radius
-	 */
 	
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(allyWeight > enemyWeight)
+		if(allyWeight > enemyWeight && allyWeight > 1)
 		{
 			mover.setNavType(NavType.BUG_DIG_2);
 			return true;
@@ -122,5 +133,18 @@ public class Micro {
 			mover.setTarget(RC.getLocation());
 		}
 	}
-		
+//	public void goToBattle(int mapLocX, int mapLocY){
+//		MapLocation tempBattleSpot = new MapLocation(mapLocX, mapLocY);
+//		if (battleSpot == null || naiveDistance(tempBattleSpot, currentLocation) < naiveDistance(battleSpot, currentLocation) 
+//				||  battleSpotAge >= 4)
+//		{
+//			battleSpot = tempBattleSpot;
+//			battleSpotAge = 0;
+//		}
+//		int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
+//		if(distance < 11 && distance > 3)
+//		{
+//			mover.setTarget(battleSpot);
+//		}
+//	}	
 }

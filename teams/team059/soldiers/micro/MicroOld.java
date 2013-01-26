@@ -4,6 +4,7 @@ import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
 import team059.soldiers.SoldierBehavior2;
+import team059.utils.Utils;
 import static team059.utils.Utils.*;
 import battlecode.common.*;
 import static team059.soldiers.SoldierUtils.*;
@@ -11,14 +12,19 @@ import static team059.soldiers.SoldierUtils.*;
 public class MicroOld {
 	
 	MapLocation retreatTarget = null;
-	MapLocation encampTarget = null;
 	public int goIn = 0;
 	private static final int maxNumberOfEnemiesToCheckToFindATarget = 5;
 	public static final Mover mover = new Mover();
 	public SoldierBehavior2 sb;
 	int count = 0;
 	
-	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
+	public MapLocation battleSpot;
+	public int battleSpotAge;
+
+	public final static int sensorRadius = 14;
+	public final static int closeEnoughToGoToBattle = 11;
+	public final static int microMessageAgeThreshold = 3;
+	public final static int microThreshold = ENEMY_RADIUS;
 	
 	public MicroOld(SoldierBehavior2 sb) {		
 		enemyTarget = null;
@@ -26,13 +32,11 @@ public class MicroOld {
 	}
 	
 	public void run() throws GameActionException{
-		if (count % 2 == 0)
+		setVariables();
+		if((enemyTarget != null && battleSpotAge >= 4) || (battleSpot != null && battleSpot.distanceSquaredTo(enemyTarget) > 36))
 		{
-			setVariables();
-		}
-		if(enemyTarget != null && sb.battleSpotAge >= 4)
-		{
-			messagingSystem.writeMicroMessage(enemyTarget, goIn);
+			messagingSystem.writeMicroMessage(currentLocation, goIn);
+			battleSpotAge = 0;
 		}
 		if(enemyTarget != null) {		
 			attackOrRetreat();
@@ -44,6 +48,7 @@ public class MicroOld {
 	
 	public void setVariables() throws GameActionException{
 		setEnemyTargetAndWeight();
+		setAllyWeight(enemyTarget, sensorRadius);
 	}
 	
 	/**
@@ -82,18 +87,13 @@ public class MicroOld {
 	{
 		if (enemyTarget != null)
 		{
-			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite(), 2);
+			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite());
 		}
 		else
 		{
 			retreatTarget = ALLY_HQ;
 		}
 	}
-	public void setRetreatEncampment() throws GameActionException //makes the retreat target the nearest encampment
-	{
-		// fill in with messaging
-	}
-
 	/**
 	 * Methods for detecting Allies and Enemies within a certain radius
 	 */
@@ -101,7 +101,7 @@ public class MicroOld {
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(allyWeight > enemyWeight)
+		if(allyWeight > enemyWeight && allyWeight > 1)
 		{
 			mover.setNavType(NavType.BUG_DIG_2);
 			return true;
@@ -121,5 +121,21 @@ public class MicroOld {
 			mover.setTarget(RC.getLocation());
 		}
 	}
-		
+	/**
+	 * 
+	 */
+	public void goToBattle(int mapLocX, int mapLocY){
+		MapLocation tempBattleSpot = new MapLocation(mapLocX, mapLocY);
+		if (battleSpot == null || naiveDistance(tempBattleSpot, currentLocation) < naiveDistance(battleSpot, currentLocation) 
+				||  battleSpotAge >= 4)
+		{
+			battleSpot = tempBattleSpot;
+			battleSpotAge = 0;
+		}
+		int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
+		if(distance < 11 && distance > 3)
+		{
+			mover.setTarget(battleSpot);
+		}
+	}	
 }
