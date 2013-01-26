@@ -69,14 +69,19 @@ public class HQBehavior extends RobotBehavior {
 		//RC.setIndicatorString(1,""+RC.getTeamPower());
 		if(buildOrderProgress < buildOrder.length) {
 			try {
-				if(buildOrder[buildOrderProgress].execute(this)) {
+				HQAction action = buildOrder[buildOrderProgress];
+				if(action.execute(this)) {
+					if(action instanceof UpgradeAction) {
+						messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
+					}
 					buildOrderProgress++;
 				}
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}
 		} else if(RC.isActive()) {
-			if(Clock.getRoundNum() < 100 || ( fluxDiff > -1.0 && (RC.getTeamPower() - (40 + 10*generators.size) > 10.0))) {
+			double actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
+			if(actualFlux > 10.0 && 3*fluxDiff + actualFlux > 0) {
 				try {
 					built = buildSoldier();
 				} catch (Exception e) {

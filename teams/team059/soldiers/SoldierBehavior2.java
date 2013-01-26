@@ -77,9 +77,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 				currentTask = t;
 				max_appeal = appeal;
 			}
-			if(t instanceof MineTask) {
-				System.out.println("Mine task " + (MineTask) t + " has appeal " + appeal);
-			}
+//			if(t instanceof MineTask) {
+//				System.out.println("Mine task " + (MineTask) t + " has appeal " + appeal);
+//			}
 		}
 		
 		if(Utils.enemyRobots.length > 0)
@@ -117,6 +117,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		};
 	}
 	
+	@Override
 	protected MessageHandler getMicroHandler() {
 		return new MessageHandler() {
 			@Override
@@ -135,6 +136,43 @@ public class SoldierBehavior2 extends RobotBehavior {
 					mover.setTarget(battleSpot);
 				}
 				//taskManager.insertTask(new MicroTask(new MapLocation(message[1], message[2]), message[3]));
+			}
+		};
+	}
+	
+
+	@Override
+	protected MessageHandler getLayingMineHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				if(message[3] != ID) {
+					mineManager.receiveMineMessage(new MapLocation(message[1], message[2]));
+				}
+			}
+		};
+	}
+	
+	/*
+	@Override
+
+	protected MessageHandler getDefusingMineHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				if(message[3] != ID) {
+					mineManager.receiveMineMessage(new MapLocation(message[1], message[2]));
+				}
+			}
+		};
+	}	*/
+	
+	@Override
+	protected MessageHandler getAnnounceUpgradeHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				UPGRADES_RESEARCHED[message[1]] = true;
 			}
 		};
 	}
