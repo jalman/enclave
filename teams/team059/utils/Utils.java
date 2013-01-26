@@ -11,10 +11,17 @@ import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotController;
 import battlecode.common.Team;
+import battlecode.common.Upgrade;
 import team059.soldiers.micro.Micro;
 import team059.movement.*;
 
 public class Utils {
+	
+	//Game constants
+	public final static int MAX_SOLDIER_ENERGON = 40;
+	public final static int MAX_ENCAMPMENT_ENERGON = 100;
+	public final static int MAX_HQ_ENERGON = 500;
+	
 	//actual constants
 	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
 	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
@@ -34,6 +41,7 @@ public class Utils {
 	
 	//this is for messaging
 	public static MessagingSystem messagingSystem;
+	public static int ID;
 	
 	//these might be set at the beginning of the round
 	public static Strategy strategy = Strategy.NORMAL;
@@ -46,8 +54,24 @@ public class Utils {
 	public static Robot[] enemyRobots = new Robot[0];
 	public static double forward;
 	
+	public static boolean[] UPGRADES_RESEARCHED = new boolean[Upgrade.values().length];
+	
+	public static final int[] SQUARES_IN_RANGE = 
+		{1, 5, 9, 9, 13, 21, 21, 21, 25, 29, 
+		37, 37, 37, 45, 45, 45, 49, 57, 61, 61, 
+		69, 69, 69, 69, 69, 81, 89, 89, 89, 97, 
+		97, 97, 101, 101, 109, 109, 113, 121, 121, 121, 
+		129, 137, 137, 137, 137, 145, 145, 145, 145, 149, 
+		161, 161, 169, 177, 177, 177, 177, 177, 185, 185, 
+		185, 193, 193, 193, 197, 213, 213, 213, 221, 221, 
+		221, 221, 225, 233, 241, 241, 241, 241, 241, 241, 
+		249, 253, 261, 261, 261, 277, 277, 277, 277, 285, 
+		293, 293, 293, 293, 293, 293, 293, 301, 305, 305, 
+		317};
+	
 	public static void initUtils(RobotController rc) {
 		RC = rc;
+		ID = RC.getRobot().getID();
 		
 		MAP_WIDTH = rc.getMapWidth();
 		MAP_HEIGHT = rc.getMapHeight();
@@ -59,10 +83,13 @@ public class Utils {
 		
 		birthRound = Clock.getRoundNum();
 		
-		random = new Random(((long)RC.getRobot().getID()<< 32) ^ Clock.getRoundNum());
+		random = new Random(((long)ID<< 32) ^ Clock.getRoundNum());
 
 		messagingSystem = new MessagingSystem();
 		
+		for(Upgrade upgrade : Upgrade.values()) {
+			UPGRADES_RESEARCHED[upgrade.ordinal()] = RC.hasUpgrade(upgrade);
+		}
 		updateUtils();
 	}
 	

@@ -24,6 +24,9 @@ public class RobotBehavior {
 		messageHandlers[MessageType.MICRO_INFO.ordinal()] = getMicroHandler();
 		messageHandlers[MessageType.TAKE_ENCAMPMENT.ordinal()] = getTakeEncampmentHandler();
 		messageHandlers[MessageType.BIRTH_INFO.ordinal()] = getBirthInfoHandler();
+		messageHandlers[MessageType.LAYING_MINE.ordinal()] = getLayingMineHandler();
+		messageHandlers[MessageType.DEFUSING_MINE.ordinal()] = getDefusingMineHandler();
+		messageHandlers[MessageType.ANNOUNCE_UPGRADE.ordinal()] = getAnnounceUpgradeHandler();
 		messageHandlers[MessageType.TAKING_ENCAMPMENT.ordinal()] = getTakingEncampmentHandler();
 	}
 
@@ -99,6 +102,12 @@ public class RobotBehavior {
 	protected MessageHandler getTakeEncampmentHandler() {return new DefaultMessageHandler();}	
 	
 	protected MessageHandler getBirthInfoHandler() {return new DefaultMessageHandler();}
+	
+	protected MessageHandler getLayingMineHandler() {return new DefaultMessageHandler();}
+
+	protected MessageHandler getDefusingMineHandler() {return new DefaultMessageHandler();}	
+	
+	protected MessageHandler getAnnounceUpgradeHandler() {return new DefaultMessageHandler();}
 	
 	protected MessageHandler getTakingEncampmentHandler() {return new DefaultMessageHandler();}
 }

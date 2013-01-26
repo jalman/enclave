@@ -1,6 +1,7 @@
 package team059.soldiers;
 
 import team059.utils.Utils;
+import static team059.soldiers.SoldierUtils.*;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -20,7 +21,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private TaskManager taskManager;
 	private MineManager mineManager;
 	private ScoutManager scoutManager;
-		
+	
 	public static Micro microSystem;
 	private SingleTaskManager<AttackTask> attackManager;
 	private SingleTaskManager<ExpandTask> takeEncampmentManager;
@@ -28,12 +29,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
 	
-	public MapLocation battleSpot;
-	public int battleSpotAge;
-
 	public SoldierBehavior2() {
 		mover = new Mover();
-		microSystem = new Micro(this);
+		microSystem = new Micro();
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
@@ -49,6 +47,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 
 	@Override
 	public void run() throws GameActionException {
+
+		updateSoldierUtils();
+		
 		boolean compute = currentTask == null || currentTask.done();
 
 		int max_appeal = Integer.MIN_VALUE;
@@ -65,6 +66,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 				currentTask = t;
 				max_appeal = appeal;
 			}
+//			if(t instanceof MineTask) {
+//				System.out.println("Mine task " + (MineTask) t + " has appeal " + appeal);
+//			}
 		}
 		
 		if(currentTask != null && RC.isActive()) {
@@ -72,7 +76,6 @@ public class SoldierBehavior2 extends RobotBehavior {
 			currentTask.execute();
 		}
 	}
-
 	@Override
 	protected MessageHandler getAttackHandler() {
 		return new MessageHandler() {
@@ -92,7 +95,6 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};
 	}
-	
 	@Override
 	protected MessageHandler getTakingEncampmentHandler() {
 		return new MessageHandler() {
@@ -113,20 +115,43 @@ public class SoldierBehavior2 extends RobotBehavior {
 	protected MessageHandler getMicroHandler() {
 		return new MessageHandler() {
 			@Override
+			public void handleMessage(int[] message) {}
+		};
+	}
+	
+
+	@Override
+	protected MessageHandler getLayingMineHandler() {
+		return new MessageHandler() {
+			@Override
 			public void handleMessage(int[] message) {
-				if (battleSpot == null || battleSpotAge >= 4 || Utils.naiveDistance(battleSpot, Utils.currentLocation) >= 7)
-				{
-					battleSpot= new MapLocation(message[0], message[1]);
-					battleSpotAge = 0;
+				if(message[3] != ID) {
+					mineManager.receiveMineMessage(new MapLocation(message[1], message[2]));
 				}
-				
-				int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
-				
-				if(distance < 7 && distance > 4)
-				{
-					RC.setIndicatorString(2, "CHARGING TO " + battleSpot + " on turn " + Clock.getRoundNum());
-					mover.setTarget(battleSpot);
+			}
+		};
+	}
+	
+	/*
+	@Override
+
+	protected MessageHandler getDefusingMineHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				if(message[3] != ID) {
+					mineManager.receiveMineMessage(new MapLocation(message[1], message[2]));
 				}
+			}
+		};
+	}	*/
+	
+	@Override
+	protected MessageHandler getAnnounceUpgradeHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				UPGRADES_RESEARCHED[message[1]] = true;
 			}
 		};
 	}

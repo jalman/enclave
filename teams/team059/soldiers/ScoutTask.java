@@ -1,17 +1,12 @@
 package team059.soldiers;
 
 import team059.movement.Mover;
-import team059.movement.NavType;
-import battlecode.common.Clock;
 import battlecode.common.GameActionException;
-import battlecode.common.GameObject;
 import battlecode.common.MapLocation;
-import battlecode.common.RobotType;
-import battlecode.common.TerrainTile;
 import static team059.utils.Utils.*;
 
 public class ScoutTask extends TravelTask {
-	
+
 	public static Mover mover = new Mover();
 	public static final int SCOUT_PRIORITY = 10000;
 	public boolean scoutRight; // false: Left, true: Right
@@ -19,6 +14,7 @@ public class ScoutTask extends TravelTask {
 	private int waypointIndex;
 	private final int MAX_SCOUT_TURNS;
 
+	
 	private boolean runningAway = false;
 	
 	public ScoutTask() {
