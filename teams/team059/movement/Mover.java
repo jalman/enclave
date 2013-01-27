@@ -9,6 +9,7 @@ public class Mover {
 	private MapLocation dest, here;
 	private boolean defuseMoving;
 	private NavAlg navAlg;
+	private final NavAlg beelineAlg = NavType.BEELINE.navAlg;
 	
 	public Mover() { 
 		this.dest = null;
@@ -59,34 +60,34 @@ public class Mover {
 //	public void toggleDefuseMoving() {
 //		toggleDefuseMoving(!defuseMoving);
 //	}
-
-	public void execute(boolean canMoveMine) {
-		//RC.setIndicatorString(1, dest + "");
-		if(RC.isActive()) {
-			here = RC.getLocation();
-			if(dest == null || dest.equals(here)) {
-				return;
-			}
-			
-			Direction d = navAlg.getNextDir();			
-			
-			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
-				if(canMoveMine) {
-					try {
-					if(RC.canMove(d)) {
-						RC.move(d);
-					}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else {
-					moveMine(d);
-				}
-			}
-			
-		}
-	}
+//
+//	public void execute(boolean canMoveMine) {
+//		//RC.setIndicatorString(1, dest + "");
+//		if(RC.isActive()) {
+//			here = RC.getLocation();
+//			if(dest == null || dest.equals(here)) {
+//				return;
+//			}
+//			
+//			Direction d = navAlg.getNextDir();			
+//			
+//			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
+//				if(canMoveMine) {
+//					try {
+//					if(RC.canMove(d)) {
+//						RC.move(d);
+//					}
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//				}
+//				else {
+//					moveMine(d);
+//				}
+//			}
+//			
+//		}
+//	}
 	
 	public void execute() {
 		//int bc = Clock.getBytecodesLeft();
@@ -98,12 +99,25 @@ public class Mover {
 			if(dest == null || dest.equals(here)) {
 				return;
 			}
-			
-			Direction d = navAlg.getNextDir();
-
-			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
-				moveMine(d);
+			Direction d;
+			if(RC.getShields() > 10.0) {
+				d = beelineAlg.getNextDir();
+				if(d != null && d != Direction.NONE && d != Direction.OMNI) {
+					try {
+						//if(RC.canMove(d)) {
+							RC.move(d);
+						//}
+					} catch (Exception e) {
+						System.out.println("ERROR: Can't move in direction " + d);
+					}
+				}
+			} else {
+				d = navAlg.getNextDir();
+				if(d != null && d != Direction.NONE && d != Direction.OMNI) {
+					moveMine(d);
+				}
 			}
+
 		}
 		//System.out.println("Bytecodes used by Mover.execute() = " + Integer.toString(bc-Clock.getBytecodesLeft()));
 	}
