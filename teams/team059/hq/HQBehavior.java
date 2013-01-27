@@ -33,8 +33,8 @@ public class HQBehavior extends RobotBehavior {
 	ExpandSystem expandSystem;
 
 	public HQBehavior(Strategy strategy) {
-		this.strategy = strategy;
-		buildOrder = strategy.buildOrder;
+		Utils.strategy = strategy;
+		buildOrder = strategy.buildOrder;	
 		expandSystem = new ExpandSystem();
 	}
 
