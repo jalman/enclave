@@ -26,13 +26,16 @@ public class MineTask extends TravelTask {
 	//should depend on the strategy and round number, and an evaluation of how many mines there are around the target
 	@Override
 	public int appeal() {
-		if( mineHere != null) {
-			return -10000;
-		} else if(Clock.getRoundNum() < 100 && RC.getLocation().distanceSquaredTo(ALLY_HQ) < 16) {
-			return 1000;
-		} else return priority;
+//		if( mineHere != null) {
+//			return -10000;
+//		} else if(Clock.getRoundNum() < 100 && RC.getLocation().distanceSquaredTo(ALLY_HQ) < 16) {
+//			return 1000;
+//		} else return priority;
 		//else return (int) ((1.0 - density) * 10.0);
-		
+		if(mineHere != null) {
+			return -1000+priority;
+		}
+		return priority;
 	}
 
 	@Override
@@ -48,9 +51,9 @@ public class MineTask extends TravelTask {
 			} else {
 				
 			}	*/
-			if(mineHere == null) {
+//			if(mineHere == null) {
 				RC.layMine();
-			}
+//			}
 		} else {
 			super.execute();
 		}
