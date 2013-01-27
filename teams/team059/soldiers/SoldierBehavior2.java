@@ -37,7 +37,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
-		mineManager = new MineManager(this);
+		mineManager = new MineManager();
 		attackManager = new SingleTaskManager<AttackTask>();
 		takeEncampmentManager = new SingleTaskManager<ExpandTask>();
 		scoutManager = new ScoutManager();
