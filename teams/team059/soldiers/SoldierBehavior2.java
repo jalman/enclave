@@ -1,7 +1,6 @@
 package team059.soldiers;
 
 import team059.utils.Shields;
-import team059.utils.Utils;
 import static team059.soldiers.SoldierUtils.*;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
@@ -29,6 +28,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private SingleTaskManager<ExpandTask> takeEncampmentManager;
 
 	private TaskGiver[] taskGivers;
+	private final TaskGiver[] normalTaskGivers;
+	private final TaskGiver[] nuclearTaskGivers;
+	private final TaskGiver[] rushTaskGivers;
 	private Task currentTask;
 	
 	public SoldierBehavior2() {
@@ -42,15 +44,33 @@ public class SoldierBehavior2 extends RobotBehavior {
 		takeEncampmentManager = new SingleTaskManager<ExpandTask>();
 		scoutManager = new ScoutManager();
 		
-		taskGivers = new TaskGiver[]
+		normalTaskGivers = new TaskGiver[]
 				{patrolManager, taskManager, attackManager, scoutManager,
 				mineManager, expandManager, takeEncampmentManager};
+		nuclearTaskGivers = new TaskGiver[] 
+				{attackManager, mineManager, expandManager, takeEncampmentManager};
+		rushTaskGivers = new TaskGiver[] 
+				{attackManager, expandManager, takeEncampmentManager};
 	}
 
 	@Override
 	public void run() throws GameActionException {
 
 		updateSoldierUtils();
+//		System.out.println(strategy);
+		switch(strategy) {
+		case NUCLEAR:
+			taskGivers = nuclearTaskGivers;
+			break;
+		case NORMAL:
+			taskGivers = normalTaskGivers;
+			break;
+		case RUSH:
+			taskGivers = rushTaskGivers;
+			break;
+		default:
+			taskGivers = normalTaskGivers;
+		}
 		
 		boolean compute = currentTask == null || currentTask.done();
 
@@ -62,6 +82,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				tg.compute();
 			}
 			Task t = tg.getTask();
+//			System.out.println("|||||" + t);
 			if(t == null) continue;
 			int appeal = t.appeal();
 			if(appeal > max_appeal) {
