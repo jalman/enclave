@@ -145,9 +145,7 @@ public class HQBehavior extends RobotBehavior {
 		expand();
 
 		if(panic()) {
-			System.out.println("PANIC!");
-			RC.setIndicatorString(2, Clock.getRoundNum() + " PANIC!");
-			messagingSystem.writeAttackMessage(ENEMY_HQ, 500000);
+			messagingSystem.writeAttackMessage(ENEMY_HQ, 100);
 		}
 	}
 

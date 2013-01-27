@@ -1,6 +1,5 @@
 package team059.hq;
 
-import static team059.utils.Utils.RC;
 import battlecode.common.GameActionException;
 
 public class BuildSoldier implements HQAction {
