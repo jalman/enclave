@@ -33,7 +33,7 @@ public class HQBehavior extends RobotBehavior {
 	ExpandSystem expandSystem;
 
 	public HQBehavior(Strategy strategy) {
-		this.strategy = strategy;
+		Utils.strategy = strategy;
 		buildOrder = strategy.buildOrder;	
 		expandSystem = new ExpandSystem();
 	}
@@ -145,6 +145,8 @@ public class HQBehavior extends RobotBehavior {
 		expand();
 
 		if(panic()) {
+			System.out.println("PANIC!");
+			RC.setIndicatorString(2, Clock.getRoundNum() + " PANIC!");
 			messagingSystem.writeAttackMessage(ENEMY_HQ, 500000);
 		}
 	}
