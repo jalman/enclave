@@ -1,5 +1,6 @@
 package team059.soldiers;
 
+import team059.utils.Shields;
 import team059.utils.Utils;
 import static team059.soldiers.SoldierUtils.*;
 import battlecode.common.Clock;

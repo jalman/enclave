@@ -28,8 +28,8 @@ public class MessagingSystem {
 	private static final int MASK = (1 << 16) - 1;
 	
 	private static final MessageType[] MESSAGE_TYPE = MessageType.values();
-	
-	public static final double MESSAGING_COST = 2;
+
+	public static final double MESSAGING_COST = 10;
 
 	public static final int HQ = RobotType.HQ.ordinal(), 
 			SOLDIER = RobotType.SOLDIER.ordinal(), 
@@ -61,10 +61,11 @@ public class MessagingSystem {
 	 * Whether any messages were written this round.
 	 */
 	private boolean message_written;
+	
 	/**
-	 * Whether this is the first round of messaging.
+	 * Whether we want to send messages this round.
 	 */
-	//private boolean first_round = true;
+	private boolean send_messages = true;
 
 	public MessagingSystem() {}
 
@@ -238,7 +239,9 @@ public class MessagingSystem {
 	 * @param message The message data.
 	 * @throws GameActionException
 	 */
-	public void writeMessage(int type, int... message) throws GameActionException {		
+	public void writeMessage(int type, int... message) throws GameActionException {
+		if(!send_messages) return;
+		
 		int off = total_messages * BLOCK_SIZE;
 
 		for(int i = 0; i < COPIES; i++) {
@@ -249,6 +252,11 @@ public class MessagingSystem {
 	}
 
 	public void beginRound(MessageHandler[] handlers) throws GameActionException {
+		if(RC.getTeamPower() < MESSAGING_COST) {
+			send_messages = false;
+			return;
+		}
+		
 		//read previous round's messages
 		if(!isFirstRound()) {
 			readMessages(handlers);
@@ -264,9 +272,10 @@ public class MessagingSystem {
 		readMessages(handlers);
 
 		message_written = false;
+		send_messages = RC.getTeamPower() >= MESSAGING_COST;
 	}
 
-	public void beginRoundHQ(MessageHandler[] handlers) throws GameActionException {
+	public void beginRoundHQ(MessageHandler[] handlers) throws GameActionException {		
 		//read previous round's messages
 		if(!isFirstRound()) {
 			readMessages(handlers);
@@ -385,6 +394,10 @@ public class MessagingSystem {
 	 */
 	public void writeAnnounceUpgradeMessage(int upgradeId) throws GameActionException {
 		writeMessage(MessageType.ANNOUNCE_UPGRADE.ordinal(), upgradeId);
+	}
+	
+	public void writeShieldLocationMessage(MapLocation loc) throws GameActionException {
+		writeMessage(MessageType.SHIELD_LOCATION.ordinal(), loc.x, loc.y);
 	}
 	
 	public void printMessageBoard() {

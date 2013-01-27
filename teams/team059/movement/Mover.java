@@ -3,6 +3,7 @@ package team059.movement;
 import team059.RobotBehavior;
 import team059.utils.*;
 import battlecode.common.*;
+import static movertest.Utils.RC;
 import static team059.utils.Utils.*;
 
 public class Mover {
@@ -43,21 +44,49 @@ public class Mover {
 		return dest;
 	}
 	
-	public boolean getDefuseMoving() {
-		return defuseMoving;
-	}
-	
-	public void toggleDefuseMoving(boolean b) { 
-		defuseMoving = b;
-		if(defuseMoving) {
-			setNavType(NavType.BUG_DIG_2);
-		} else {
-			setNavType(NavType.BUG);
+//	public boolean getDefuseMoving() {
+//		return defuseMoving;
+//	}
+//	
+//	public void toggleDefuseMoving(boolean b) { 
+//		defuseMoving = b;
+//		if(defuseMoving) {
+//			setNavType(NavType.BUG_DIG_2);
+//		} else {
+//			setNavType(NavType.BUG);
+//		}
+//	}
+//	
+//	public void toggleDefuseMoving() {
+//		toggleDefuseMoving(!defuseMoving);
+//	}
+
+	public void execute(boolean canMoveMine) {
+		//RC.setIndicatorString(1, dest + "");
+		if(RC.isActive()) {
+			here = RC.getLocation();
+			if(dest == null || dest.equals(here)) {
+				return;
+			}
+			
+			Direction d = navAlg.getNextDir();			
+			
+			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
+				if(canMoveMine) {
+					try {
+					if(RC.canMove(d)) {
+						RC.move(d);
+					}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else {
+					moveMine(d);
+				}
+			}
+			
 		}
-	}
-	
-	public void toggleDefuseMoving() {
-		toggleDefuseMoving(!defuseMoving);
 	}
 	
 	public void execute() {
