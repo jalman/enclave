@@ -11,7 +11,7 @@ import battlecode.common.MapLocation;
 public class RobotBehavior {
 
 	protected MessageHandler[] messageHandlers;
-	protected Strategy strategy;
+	//protected Strategy strategy;
 
 	public RobotBehavior() {
 		messageHandlers = new MessageHandler[MessageType.values().length];
