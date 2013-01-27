@@ -5,13 +5,13 @@ import static movertest.Utils.*;
 
 public class Mover {
 	private MapLocation dest, here;
-	private boolean defuseMoving;
+//	private boolean defuseMoving;
 	private NavAlg navAlg;
 
 	public Mover() { 
 		this.dest = null;
-		this.navAlg = NavType.PARTIAL_ASTAR3.navAlg;
-		this.defuseMoving = true;
+		this.navAlg = NavType.BUG_DIG_2.navAlg;
+//		this.defuseMoving = true;
 	}
 
 	public void setNavType(NavType navtype) {
@@ -29,22 +29,22 @@ public class Mover {
 		return dest;
 	}
 
-	public boolean getDefuseMoving() {
-		return defuseMoving;
-	}
-
-	public void toggleDefuseMoving(boolean b) { 
-		defuseMoving = b;
-		if(defuseMoving) {
-			setNavType(NavType.PARTIAL_ASTAR3);
-		} else {
-			//setNavType(NavType.BUG);
-		}
-	}
-
-	public void toggleDefuseMoving() {
-		toggleDefuseMoving(!defuseMoving);
-	}
+//	public boolean getDefuseMoving() {
+//		return defuseMoving;
+//	}
+//
+//	public void toggleDefuseMoving(boolean b) { 
+//		defuseMoving = b;
+//		if(defuseMoving) {
+//			setNavType(NavType.BUG);
+//		} else {
+//			//setNavType(NavType.BUG);
+//		}
+//	}
+//
+//	public void toggleDefuseMoving() {
+//		toggleDefuseMoving(!defuseMoving);
+//	}
 
 	public void execute() {
 		RC.setIndicatorString(1, dest + "");
@@ -67,7 +67,7 @@ public class Mover {
 		try {
 			MapLocation nextSquare = RC.getLocation().add(dir);
 			if(Utils.isEnemyMine(nextSquare)) {
-				RC.defuseMine(RC.getLocation().add(dir));
+				RC.defuseMine(nextSquare);
 			} else if(RC.canMove(dir)) {
 				RC.move(dir);
 			}

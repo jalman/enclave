@@ -16,7 +16,8 @@ public class RobotPlayer {
 		RobotBehavior robot = null;
 		switch(rc.getType()) {
 		case HQ:
-			robot = new HQBehavior();
+			Strategy strategy = Strategy.decide();
+			robot = new HQBehavior(strategy);
 			break;
 		case SOLDIER:
 			robot = new SoldierBehavior2();

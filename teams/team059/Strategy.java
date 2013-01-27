@@ -8,9 +8,9 @@ import battlecode.common.MapLocation;
 import battlecode.common.Team;
 
 public enum Strategy {
-	NORMAL(30, 0.0, new BuildSoldier(2), UPGRADE_FUSION, new BuildSoldier(2), UPGRADE_PICKAXE),
-	NUCLEAR(5, -1.0, new BuildSoldier(4), UPGRADE_PICKAXE, new BuildSoldier(4)),
-	RUSH(5, 100.0, new BuildSoldier(2), UPGRADE_DEFUSION);
+	NORMAL(30, 0.0, 0, new BuildSoldier(2), UPGRADE_FUSION, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(8), UPGRADE_DEFUSION),
+	NUCLEAR(5, -4.0, 50, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(4), UPGRADE_NUKE),
+	RUSH(5, 100.0, -50, new BuildSoldier(2), UPGRADE_DEFUSION);
 	
 	/**
 	 * How quickly to expand at the beginning.
@@ -28,11 +28,17 @@ public enum Strategy {
 	public static final double margin = 0.3;
 	
 	public final HQAction[] buildOrder;
+
+	/**
+	 * priority with which to mine the HQ
+	 */
+	public final int mineHQPriority;
 	
-	private Strategy(int greed, double border, HQAction... buildOrder) {
+	private Strategy(int greed, double border, int mineHQPriority, HQAction... buildOrder) {
 		this.greed = greed;
 		this.border = border;
 		this.buildOrder = buildOrder;
+		this.mineHQPriority = mineHQPriority;
 	}
 	
 	/**

@@ -19,27 +19,33 @@ public class HQBehavior extends RobotBehavior {
 	boolean enemyNukeHalfDone = false;
 	int enemyNukeHalfRound;
 
+	int numBots;
+
 	ArraySet<Robot> generators = new ArraySet<Robot>(500);
 	ArraySet<Robot> suppliers =  new ArraySet<Robot>(500);
 	int genIndex = 0, supIndex = 0;
 
-	double lastFlux = 0, thisFlux = 0, fluxDiff = 0;
+	double lastFlux = 0, thisFlux = 0, fluxDiff = 0, actualFlux = 0;
 
 	boolean panicking = false;
 
 	ExpandSystem expandSystem;
 
-	public HQBehavior() {
-		strategy = Strategy.decide();
+	public HQBehavior(Strategy strategy) {
+		this.strategy = strategy;
 		buildOrder = strategy.buildOrder;	
 		expandSystem = new ExpandSystem();
 	}
 
 	@Override
 	public void beginRound() throws GameActionException {
-		thisFlux = RC.getTeamPower();
-		fluxDiff = thisFlux - lastFlux;
-		lastFlux = thisFlux;
+		//RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
+		numBots = RC.senseNearbyGameObjects(Robot.class, currentLocation, MAP_WIDTH+MAP_HEIGHT, ALLY_TEAM).length;
+		actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
+		//thisFlux = RC.getTeamPower();
+		fluxDiff = actualFlux - lastFlux;
+		lastFlux = actualFlux;
+
 		try {
 			messagingSystem.beginRoundHQ(messageHandlers);
 		} catch (GameActionException e1) {
@@ -56,7 +62,6 @@ public class HQBehavior extends RobotBehavior {
 	 * Handle upgrades and robots.
 	 */
 	private void macro() {
-		RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(RC.getTeamPower()) + " is pow");
 		boolean built = false;
 		if(Clock.getRoundNum() % 3 == 0) {
 			updateEncampmentCounts();
@@ -75,8 +80,7 @@ public class HQBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		} else if(RC.isActive()) {
-			double actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
-			if(actualFlux > 10.0 && 3*fluxDiff + actualFlux > 0) {
+			if(actualFlux > 400.0 || (actualFlux > 10.0 && fluxDiff > 0)) {
 				try {
 					built = buildSoldier();
 				} catch (Exception e) {
