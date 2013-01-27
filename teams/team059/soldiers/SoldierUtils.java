@@ -12,7 +12,7 @@ public class SoldierUtils {
 	public final static int MAX_ENCAMPMENT_ENERGON = 100;
 	public final static int MAX_HQ_ENERGON = 500;
 	
-	public final static int sensorRadius = 16;
+	public final static int sensorRadius = ENEMY_RADIUS2;
 	public final static int closeEnoughToGoToBattleSquared = 100;
 	private static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
 	public static final int maxNumberOfEnemiesToCheckToFindATarget = 5;
@@ -70,7 +70,26 @@ public class SoldierUtils {
 		if (r.type == RobotType.SOLDIER)
 		{
 			//Full health soldier returns 20.
-			return Math.max(0, 8 - 3*r.roundsUntilAttackIdle + (int)(12*(r.energon)/MAX_SOLDIER_ENERGON));
+			return Math.max(0, 6 - 3*r.roundsUntilMovementIdle + (int)(14*(r.energon)/MAX_SOLDIER_ENERGON));
+		}
+		else if (r.type == RobotType.ARTILLERY)
+		{
+			//full health medium charge artillery returns 35
+			return 10 - (int)(r.roundsUntilAttackIdle/2) + (int)(30*(r.energon)/MAX_ENCAMPMENT_ENERGON);
+		}
+		else if (r.type == RobotType.HQ)
+		{
+			return -70;
+		}
+		return 7;
+	}
+	private static int findAllyWeight(RobotInfo r)
+	{	
+		if (r.type == RobotType.SOLDIER)
+		{
+			if (r.roundsUntilAttackIdle <= 2)
+				//full helath soldier returns 20
+				return Math.max(0, 8 - 2*r.roundsUntilAttackIdle + (int)(12*(r.energon)/MAX_SOLDIER_ENERGON));
 		}
 		else if (r.type == RobotType.ARTILLERY)
 		{
@@ -79,30 +98,9 @@ public class SoldierUtils {
 		}
 		else if (r.type == RobotType.HQ)
 		{
-			return -70;
-		}
-		return 0;
-	}
-	private static int findAllyWeight(RobotInfo r)
-	{	
-		if (r.type == RobotType.SOLDIER)
-		{
-			if (r.roundsUntilAttackIdle <= 2)
-				//full helath soldier returns 20
-				return 10 + (int)(10*(r.energon)/MAX_SOLDIER_ENERGON);
-		}
-		else if (r.type == RobotType.ARTILLERY)
-		{
-			//full health medium charge artillery returns 35
-			return 20 + (int)(20*(r.energon)/MAX_ENCAMPMENT_ENERGON);
-		}
-		else if (r.type == RobotType.HQ)
-		{
 			return 120;
 		}
-		else
-			return 7;
-		return 0;
+		return 7;
 	}
 	/**
 	 * Finds enemy target within the micro radius with highest priority. 
@@ -155,7 +153,7 @@ public class SoldierUtils {
 		double healthPercent = robotHealthPercent(r);
 		int priority = robotTypePriority(r);
 		int roundsUntilAttackActive = r.roundsUntilAttackIdle;
-		return (100-(int)(20*healthPercent)-(int)(Math.sqrt((double)distanceSquared)*10)+priority*2+roundsUntilAttackActive*3);
+		return (100-(int)(20*healthPercent)-(int)(Math.sqrt((double)distanceSquared)*12)+priority+roundsUntilAttackActive*2);
 	}
 	
 	//Helper methods for overallPriority
