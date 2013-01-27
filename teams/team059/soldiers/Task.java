@@ -10,7 +10,7 @@ public abstract class Task {
 	/**
 	 * Updates task-related information.
 	 */
-	//public void update() {}
+	public void update() {}
 	
 	/**
 	 * Evaluates the appeal of this task. Takes into account strategy, messages, round number, etc...

@@ -9,8 +9,8 @@ import battlecode.common.Team;
 
 public enum Strategy {
 	NORMAL(30, 0.0, 0, new BuildSoldier(2), UPGRADE_FUSION, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(8), UPGRADE_DEFUSION),
-	NUCLEAR(5, -4.0, 50, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(4), UPGRADE_NUKE),
-	RUSH(5, 100.0, -50, new BuildSoldier(2), UPGRADE_DEFUSION);
+	NUCLEAR(5, -3.0, 50, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(4), UPGRADE_NUKE),
+	RUSH(5, 3.0, -50, new BuildSoldier(2), UPGRADE_DEFUSION);
 	
 	/**
 	 * How quickly to expand at the beginning.
