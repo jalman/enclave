@@ -30,15 +30,15 @@ public class HQBehavior extends RobotBehavior {
 	
 	ExpandSystem expandSystem;
 	
-	public HQBehavior() {
-		strategy = Strategy.decide();
+	public HQBehavior(Strategy strategy) {
+		this.strategy = strategy;
 		buildOrder = strategy.buildOrder;	
 		expandSystem = new ExpandSystem();
 	}
 	
 	@Override
 	public void beginRound() throws GameActionException {
-		RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
+		//RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
 		numBots = RC.senseNearbyGameObjects(Robot.class, currentLocation, MAP_WIDTH+MAP_HEIGHT, ALLY_TEAM).length;
 		actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
 		//thisFlux = RC.getTeamPower();

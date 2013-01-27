@@ -1,5 +1,6 @@
 package team059;
 
+import preSprintBot.Strategy;
 import team059.encampment.ArtilleryBehavior;
 import team059.encampment.EncampmentBehavior;
 import team059.hq.HQBehavior;
@@ -16,7 +17,8 @@ public class RobotPlayer {
 		RobotBehavior robot = null;
 		switch(rc.getType()) {
 		case HQ:
-			robot = new HQBehavior();
+			Strategy strategy = Strategy.decide();
+			robot = new HQBehavior(strategy);
 			break;
 		case SOLDIER:
 			robot = new SoldierBehavior2();
