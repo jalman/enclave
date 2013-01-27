@@ -1,6 +1,5 @@
 package team059.movement;
 
-import team059.RobotBehavior;
 import battlecode.common.*;
 import static team059.utils.Utils.*;
 
@@ -37,8 +36,12 @@ public class BuggingDigMove extends NavAlg {
 		if(tryDir == Direction.NONE || tryDir == Direction.OMNI) return Direction.NONE;
 		
 		if(!bugging) {
-			if(RC.canMove(tryDir)) {
+			if(canMoveNoMine(tryDir)) {
 				return tryDir;
+			} else if(canMoveNoMine(tryDir.rotateLeft())) {
+				return tryDir.rotateLeft();
+			} else if(canMoveNoMine(tryDir.rotateRight())) {
+				return tryDir.rotateRight();
 			} else {
 				bugging = true;
 				hugLeft = ( naiveDistance(curLoc.add(tryDir.rotateRight()), finish) 
@@ -69,5 +72,11 @@ public class BuggingDigMove extends NavAlg {
 				return (refDir.equals(tryDir) ? Direction.NONE : tryDir ) ;
 			}
 		}
+	}
+
+	private boolean canMoveNoMine(Direction d) {
+		//System.out.println(d);
+		if(d==null) return true;
+		return ( RC.canMove(d) && !isEnemyMine(curLoc.add(d)) );
 	}
 }
