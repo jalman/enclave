@@ -54,10 +54,13 @@ public class SoldierBehavior2 extends RobotBehavior {
 	}
 
 	@Override
-	public void run() throws GameActionException {
-
+	public void beginRound() throws GameActionException {
 		updateSoldierUtils();
-//		System.out.println(strategy);
+		super.beginRound();
+	}
+	
+	@Override
+	public void run() throws GameActionException {
 		switch(strategy) {
 		case NUCLEAR:
 			taskGivers = nuclearTaskGivers;
@@ -72,9 +75,20 @@ public class SoldierBehavior2 extends RobotBehavior {
 			taskGivers = normalTaskGivers;
 		}
 		
-		boolean compute = currentTask == null || currentTask.done();
-
+		boolean compute = false;
 		int max_appeal = Integer.MIN_VALUE;
+		
+		if(currentTask == null) {
+			compute = true;
+		} else {
+			currentTask.update();
+			if(currentTask.done()) {
+				compute = true;
+				currentTask = null;
+			} else {
+				max_appeal = currentTask.appeal();
+			}
+		}
 
 		for(int i = 0; i < taskGivers.length; i++) {
 			TaskGiver tg = taskGivers[i];
@@ -82,20 +96,17 @@ public class SoldierBehavior2 extends RobotBehavior {
 				tg.compute();
 			}
 			Task t = tg.getTask();
-//			System.out.println("|||||" + t);
-			if(t == null) continue;
+			if(t == null || t == currentTask) continue;
+			t.update();
 			int appeal = t.appeal();
 			if(appeal > max_appeal) {
 				currentTask = t;
 				max_appeal = appeal;
 			}
-//			if(t instanceof MineTask) {
-//				System.out.println("Task " + t + " has appeal " + appeal);
-//			}
 		}
 		
 		if(currentTask != null && RC.isActive()) {
-			RC.setIndicatorString(1, currentTask.toString());
+			RC.setIndicatorString(1, currentTask.toString() + " with appeal " + currentTask.appeal());
 			currentTask.execute();
 		}
 	}
