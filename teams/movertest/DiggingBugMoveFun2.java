@@ -206,6 +206,7 @@ public class DiggingBugMoveFun2 extends NavAlg {
                                 }
                         }
                 	}
+                }
                 	if(passability == HAS_ENEMY_MINE) {
 
                         int dir = getDirTowards(tx-sx, ty-sy);
@@ -241,7 +242,7 @@ public class DiggingBugMoveFun2 extends NavAlg {
                             }
                     }
                 	}
-                }
+                
 //                if(passability == PASSABLE) {
 //                	return computeMove(sx, sy, movableTerrain, HAS_ENEMY_MINE);
 //                }

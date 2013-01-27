@@ -1,6 +1,5 @@
 package team059;
 
-import preSprintBot.Strategy;
 import team059.encampment.ArtilleryBehavior;
 import team059.encampment.EncampmentBehavior;
 import team059.hq.HQBehavior;
