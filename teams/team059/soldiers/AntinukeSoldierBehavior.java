@@ -11,18 +11,18 @@ import team059.RobotBehavior;
 import team059.movement.Mover;
 import team059.movement.NavType;
 import team059.soldiers.micro.Micro;
+import team059.utils.Shields;
 import static team059.utils.Utils.*;
 
-public class AntinukeSoldierBehavior extends RobotBehavior {
+public class AntinukeSoldierBehavior extends SoldierBehavior2 {
 
 //	0-9: encamp
 //	10-34: DIFFUSION
 //	35,45,55,65,75,85,95,105: ATTACKER group 1
 //	115,125,135,145,155: Diffusers
 //	after: ATTACKER unless need more diffusers
-	
-	
-	
+
+
 	
 	/* TODOS
 	 * - make different kinds of movement
@@ -41,9 +41,6 @@ public class AntinukeSoldierBehavior extends RobotBehavior {
 	}
 	
 	private Role role;
-
-	Mover mover = new Mover();
-	Micro microSystem = new Micro();
 	
 	MapLocation shield = null;
 	
@@ -53,14 +50,16 @@ public class AntinukeSoldierBehavior extends RobotBehavior {
 	
 	int chargeCounter = 0;
 	
+	AttackTask attack = new AttackTask(ENEMY_HQ,1000);
+	
 	public AntinukeSoldierBehavior() {
 		if(Clock.getRoundNum() < 3) {
 			role = Role.ENCAMPMENT;
-		} else if (Clock.getRoundNum() < 108) {
+		}/* else if (Clock.getRoundNum() < 108) {
 			initAttacker();
 		} else if (Clock.getRoundNum() < 158) {
 			initDefuser();
-		} else {
+		}*/ else {
 			role = Role.ATTACKER;
 		}
 	}
@@ -78,7 +77,7 @@ public class AntinukeSoldierBehavior extends RobotBehavior {
 	@Override
 	public void run() throws GameActionException {
 		if(shield == null) {
-			shield = new MapLocation(14,25);//Shields.shieldLocations.get(0);
+			shield = Shields.shieldLocations.get(0);
 			attackerDirection = shield.directionTo(ALLY_HQ);
 			target = shield.add(attackerDirection);
 		}
@@ -132,11 +131,9 @@ public class AntinukeSoldierBehavior extends RobotBehavior {
 		Direction cur = shield.directionTo(currentLocation);
 		MapLocation want = shield.add(cur.rotateRight());
 		Direction go = currentLocation.directionTo(want);
-		Team mine = RC.senseMine(want);
-		if(mine == ENEMY_TEAM || mine == Team.NEUTRAL) {
-			RC.defuseMine(want);
-		} else if(RC.canMove(go)) {
-			RC.move(go);
+		//Team mine = RC.senseMine(want);
+		if(RC.isActive()) {
+			mover.moveMine(go);
 		}
 		
 		if(RC.senseNearbyGameObjects(Robot.class, shield, 2, ALLY_TEAM).length > 7) {
@@ -149,10 +146,9 @@ public class AntinukeSoldierBehavior extends RobotBehavior {
 		
 	}
 	
-	private void runKiller() {
+	private void runKiller() throws GameActionException {
 		mover.setNavType(NavType.BEELINE);
-		mover.setTarget(ENEMY_HQ);
-		mover.execute(true);
+		attack.execute();
 	}
 	
 	private void runDefuser() {

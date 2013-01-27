@@ -62,7 +62,7 @@ public class HQBehavior extends RobotBehavior {
 	/**
 	 * Handle upgrades and robots.
 	 */
-	private void macro() {
+	protected void macro() {
 		boolean built = false;
 		if(Clock.getRoundNum() % 3 == 0) {
 			updateEncampmentCounts();
@@ -97,7 +97,7 @@ public class HQBehavior extends RobotBehavior {
 		}
 	}
 
-	private void expand() {
+	protected void expand() {
 		if(RC.senseCaptureCost() + 10 < RC.getTeamPower()) {
 			try {
 				expandSystem.considerExpanding(0); //fix this

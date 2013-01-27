@@ -6,10 +6,11 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Upgrade;
 import team059.RobotBehavior;
+import team059.Strategy;
 import team059.utils.Shields;
 import static team059.utils.Utils.*;
 
-public class AntinukeHQBehavior extends RobotBehavior {
+public class AntinukeHQBehavior extends HQBehavior {
 
 //	0-9: encamp
 //	10-34: DIFFUSION
@@ -21,16 +22,13 @@ public class AntinukeHQBehavior extends RobotBehavior {
 	MapLocation shield = ALLY_HQ;
 	int dist = Integer.MAX_VALUE;
 
-	public AntinukeHQBehavior() {
-		//pick the direction to spawn guys in
-		if(RC.senseMine(ALLY_HQ.add(spawndir)) != null) {
-			spawndir = spawndir.rotateLeft();
-		}
+	public AntinukeHQBehavior() throws GameActionException {
+		super(Strategy.RUSH);
 		
 		//decide where the shield will be
 		MapLocation[] encampments = { ALLY_HQ };
 		try {
-			encampments = RC.senseEncampmentSquares(ALLY_HQ, ALLY_HQ.distanceSquaredTo(ENEMY_HQ)/4, null);
+			encampments = RC.senseEncampmentSquares(ALLY_HQ, ALLY_HQ.distanceSquaredTo(ENEMY_HQ)/16, null);
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
@@ -42,7 +40,6 @@ public class AntinukeHQBehavior extends RobotBehavior {
 				shield = encampment;
 			}
 		}
-		shield = new MapLocation(14,25);
 		Shields.insertShield(shield);
 	}
 
@@ -53,7 +50,7 @@ public class AntinukeHQBehavior extends RobotBehavior {
 			if(Clock.getRoundNum() < 35 && Clock.getRoundNum() > 9) {
 				RC.researchUpgrade(Upgrade.DEFUSION);
 			} else {
-				RC.spawn(spawndir);
+				buildSoldier();
 			}
 		}
 	}
