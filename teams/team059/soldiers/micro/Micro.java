@@ -39,7 +39,7 @@ public class Micro {
 		//farawayEnemyTarget should be already set if micro mode is entered
 		mover.setNavType(NavType.BUG_DIG_2);
 
-		if (enemyRobots.length == 0 && farawayEnemyTarget != null)
+		if (farawayEnemyTarget != null)
 		{
 			attackTarget(farawayEnemyTarget);
 		}
@@ -61,9 +61,6 @@ public class Micro {
 //		}
 //		return true;
 //	}
-	public void setBattleVariables() throws GameActionException{
-		
-	}
 	public void setMicroVariables() throws GameActionException{
 		setEnemyTarget(numberOfTargetsToCheck);
 		setEnemyWeight(enemyTarget, sensorRadius);
@@ -116,7 +113,7 @@ public class Micro {
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(allyWeight > enemyWeight && allyWeight > 1)
+		if(allyWeight > enemyWeight*1.1 && allyWeight > 1)
 		{
 			return true;
 		}		
