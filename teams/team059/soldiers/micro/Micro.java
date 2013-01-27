@@ -31,7 +31,7 @@ public class Micro {
 			setMicroVariables();
 			farawayEnemyTarget = enemyTarget;
 			micro();
-			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + "Target: " + mover.getTarget());
+			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + "EnemyTarget: " + enemyTarget);
 		}
 	}
 
@@ -62,9 +62,15 @@ public class Micro {
 //		return true;
 //	}
 	public void setMicroVariables() throws GameActionException{
-		setEnemyTarget(numberOfTargetsToCheck);
-		setEnemyWeight(enemyTarget, sensorRadius);
-		setAllyWeight(enemyTarget, sensorRadius);
+		setEnemyTargetAndWeight();
+//		setEnemyTarget(numberOfTargetsToCheck);
+//		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 1/2);
+//		setEnemyWeight(m, sensorRadius);
+		setAllyWeight(currentLocation, sensorRadius);
+	}
+	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)
+	{
+		return new MapLocation((int)((k*m1.x+(1-k)*m2.x)), (int)(k*m1.y+(1-k)*m2.y));
 	}
 	
 	/**
@@ -113,7 +119,7 @@ public class Micro {
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(allyWeight > enemyWeight*1.1 && allyWeight > 1)
+		if(allyWeight > enemyWeight && allyWeight > 1)
 		{
 			return true;
 		}		
