@@ -10,6 +10,7 @@ import battlecode.common.Direction;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotController;
+import battlecode.common.RobotType;
 import battlecode.common.Team;
 import battlecode.common.Upgrade;
 import team059.soldiers.micro.Micro;
@@ -21,6 +22,7 @@ public class Utils {
 	public final static int MAX_SOLDIER_ENERGON = 40;
 	public final static int MAX_ENCAMPMENT_ENERGON = 100;
 	public final static int MAX_HQ_ENERGON = 500;
+	public static final RobotType[] ROBOT_TYPE = RobotType.values();
 	
 	//actual constants
 	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
@@ -30,6 +32,8 @@ public class Utils {
 	// Mining constants
 	public static final int CHECK_MINE_RADIUS_SQUARED = 13; // make sure this matches CHECK_MINE_RADIUS!!!
 	public static final int CHECK_MINE_RADIUS = 4;
+
+	
 	
 	//these are set from the beginning of the game
 	public static RobotController RC;

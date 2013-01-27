@@ -3,6 +3,7 @@ package team059;
 import team059.messaging.MessageHandler;
 import team059.messaging.MessageType;
 import team059.messaging.MessagingSystem;
+import team059.utils.Shields;
 import static team059.utils.Utils.*;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -24,6 +25,7 @@ public class RobotBehavior {
 		messageHandlers[MessageType.DEFUSING_MINE.ordinal()] = getDefusingMineHandler();
 		messageHandlers[MessageType.ANNOUNCE_UPGRADE.ordinal()] = getAnnounceUpgradeHandler();
 		messageHandlers[MessageType.TAKING_ENCAMPMENT.ordinal()] = getTakingEncampmentHandler();
+		messageHandlers[MessageType.SHIELD_LOCATION.ordinal()] = getShieldLocationHandler();
 	}
 
 	protected int danger(MapLocation loc) {return 0;}
@@ -99,4 +101,14 @@ public class RobotBehavior {
 	protected MessageHandler getAnnounceUpgradeHandler() {return new DefaultMessageHandler();}
 
 	protected MessageHandler getTakingEncampmentHandler() {return new DefaultMessageHandler();}
+	
+	protected MessageHandler getShieldLocationHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				Shields.insertShield(new MapLocation(message[0], message[1]));
+			}
+		};
+	}
+
 }

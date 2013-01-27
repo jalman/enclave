@@ -7,6 +7,7 @@ import java.util.Arrays;
 import team059.RobotBehavior;
 import team059.Strategy;
 import team059.utils.ArraySet;
+import team059.utils.Shields;
 import team059.messaging.MessageHandler;
 import team059.messaging.MessagingSystem;
 import team059.utils.Utils;
@@ -158,7 +159,7 @@ public class HQBehavior extends RobotBehavior {
 		}
 		return panicking;
 	}
-
+	
 	/**
 	 * Tries to build a soldier.
 	 * @return Whether successful.
@@ -179,8 +180,8 @@ public class HQBehavior extends RobotBehavior {
 			// Spawn a soldier
 			for(int i = 0; i < 8; i++) {
 				if(goodPlaceToMakeSoldier(dir)) {
+					sendMessagesOnBuild();
 					RC.spawn(dir);
-					messagingSystem.writeHQMessage(strategy);
 					return true;
 				}
 				dir = dir.rotateRight();
@@ -194,6 +195,14 @@ public class HQBehavior extends RobotBehavior {
 		return RC.canMove(dir) && !Utils.isEnemyMine(RC.getLocation().add(dir));
 	}
 
+
+	private void sendMessagesOnBuild() throws GameActionException {
+		messagingSystem.writeHQMessage(strategy);
+		for(int i = 0; i < Shields.shieldLocations.size; i++) {
+			messagingSystem.writeShieldLocationMessage(Shields.shieldLocations.get(i));
+		}
+	}
+	
 	void researchUpgrade(Upgrade upg) throws GameActionException {
 		if(RC.isActive()) {
 			RC.researchUpgrade(upg);
@@ -214,12 +223,16 @@ public class HQBehavior extends RobotBehavior {
 						//System.out.println("wat");
 						return;
 					}
-					if(message[3] == MessagingSystem.SUPPLIER) {
+					switch(ROBOT_TYPE[message[3]]) {
+					case SUPPLIER:
 						suppliers.insert(newBot);
-						//System.out.println(" supplier born. suppliers.size = " + suppliers.size);
-					} else if(message[3] == MessagingSystem.GENERATOR) {
+						break;
+					case GENERATOR:
 						generators.insert(newBot);
-						//System.out.println(" generator born. generators.size = " + generators.size);
+						break;
+					case SHIELDS:
+						Shields.insertShield(loc);
+						break;
 					}
 				} catch (GameActionException e) {
 					e.printStackTrace();

@@ -396,6 +396,10 @@ public class MessagingSystem {
 		writeMessage(MessageType.ANNOUNCE_UPGRADE.ordinal(), upgradeId);
 	}
 	
+	public void writeShieldLocationMessage(MapLocation loc) throws GameActionException {
+		writeMessage(MessageType.SHIELD_LOCATION.ordinal(), loc.x, loc.y);
+	}
+	
 	public void printMessageBoard() {
 		for(int i = 0; i < total_messages; i++) {
 			int off = i * BLOCK_SIZE;

@@ -13,7 +13,8 @@ public enum MessageType {
 	BIRTH_INFO(4), 
 	LAYING_MINE(3),
 	DEFUSING_MINE(3),
-	ANNOUNCE_UPGRADE(1);
+	ANNOUNCE_UPGRADE(1),
+	SHIELD_LOCATION(2);
 
 	/**
 	 * Number of integers that comprise this message.

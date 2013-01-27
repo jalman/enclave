@@ -4,6 +4,7 @@ import team059.RobotBehavior;
 import battlecode.common.GameActionException;
 import battlecode.common.Robot;
 import battlecode.common.RobotController;
+import battlecode.common.RobotType;
 import static team059.utils.Utils.*;
 
 public class EncampmentBehavior extends RobotBehavior {
@@ -19,6 +20,9 @@ public class EncampmentBehavior extends RobotBehavior {
 				firstTurn = false;
 				//System.out.println("born!");
 				messagingSystem.writeBirthMessage(currentLocation, ID, RC.getType().ordinal());
+				if(RC.getType() == RobotType.SHIELDS) {
+					messagingSystem.writeShieldLocationMessage(currentLocation);
+				}
 			}
 		} catch (GameActionException e) {
 			e.printStackTrace();
