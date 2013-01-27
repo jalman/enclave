@@ -34,7 +34,7 @@ public class HQBehavior extends RobotBehavior {
 
 	public HQBehavior(Strategy strategy) {
 		this.strategy = strategy;
-		buildOrder = strategy.buildOrder;	
+		buildOrder = strategy.buildOrder;
 		expandSystem = new ExpandSystem();
 	}
 
@@ -145,7 +145,7 @@ public class HQBehavior extends RobotBehavior {
 		expand();
 
 		if(panic()) {
-			messagingSystem.writeAttackMessage(ENEMY_HQ, 500000);
+			messagingSystem.writeAttackMessage(ENEMY_HQ, 100);
 		}
 	}
 

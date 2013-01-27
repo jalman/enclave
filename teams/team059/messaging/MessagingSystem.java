@@ -17,9 +17,9 @@ import static team059.utils.Utils.*;
  * @author vlad
  */
 public class MessagingSystem {
-
-	public static final int MESSAGE_SIZE = 10;
-	public static final int BLOCK_SIZE = MESSAGE_SIZE / 2 + 1;
+	
+	public static final int MESSAGE_SIZE = 6;
+	public static final int BLOCK_SIZE = 1 + MESSAGE_SIZE / 2;
 
 	private static final int MAX_CHANNEL = GameConstants.BROADCAST_MAX_CHANNELS - 1024;
 	private static final int COPIES = 2;
@@ -30,7 +30,7 @@ public class MessagingSystem {
 	private static final MessageType[] MESSAGE_TYPE = MessageType.values();
 
 	public static final double MESSAGING_COST = 10;
-
+	
 	public static final int HQ = RobotType.HQ.ordinal(), 
 			SOLDIER = RobotType.SOLDIER.ordinal(), 
 			ARTILLERY = RobotType.ARTILLERY.ordinal(),
@@ -95,20 +95,21 @@ public class MessagingSystem {
 	public int readBlock(int channel, int[] block) throws GameActionException {
 		int header = RC.readBroadcast(channel++);
 		int type = header & MASK;
-		if(type < 0 || type >= MESSAGE_TYPE.length) return -1;
+		if(type >= MESSAGE_TYPE.length) return -1;
+		
+		short check = (short) ((header >> 16) - type);
 		
 		final int length = MESSAGE_TYPE[type].length;
-		int check = (header >> 16) - type;
 		
 		for(int i = 0; i < length / 2; i++) {
 			int data = RC.readBroadcast(channel++);
 			
-			check -= (block[2*i] = (data & MASK));
-			check -= (block[2*i+1] = (data >> 16));
+			check -= (block[2*i] = (short)(data & MASK));
+			check -= (block[2*i+1] = (short)(data >> 16));
 		}
 		
 		if(length % 2 == 1) {
-			check -= (block[length-1] = RC.readBroadcast(channel));
+			check -= (block[length-1] = (short)(RC.readBroadcast(channel) & MASK));
 		}
 		
 		if(check == 0) {
@@ -129,12 +130,12 @@ public class MessagingSystem {
 		int header = RC.readBroadcast(channel++);
 		if((header & MASK) != type) return false;
 		
+		short check = (short)((header >> 16) - type);
 		int length = (MESSAGE_TYPE[type].length+1)/2;
-		int check = (header >> 16) - type;
 		
 		for(int i = 0; i < length; i++) {
 			int data = RC.readBroadcast(channel++);
-			check -= (data >> 16) + (data & MASK);
+			check -= (short)(data >> 16) + (short)(data & MASK);
 		}
 		
 		return check == 0;
@@ -210,12 +211,12 @@ public class MessagingSystem {
 		RC.broadcast(channel++, (checksum << 16) ^ type);
 		
 		for(int i = 0; i < length / 2; i++) {
-			RC.broadcast(channel++, (block[2*i+1] << 16) ^ block[2*i]);
+			RC.broadcast(channel++, (block[2*i+1] << 16) ^ (block[2*i] & MASK));
 		}
 		
 		if(length % 2 == 1) {
-			RC.broadcast(channel, block[length-1] );
-		}		
+			RC.broadcast(channel, block[length-1] & MASK);
+		}
 	}
 
 	/**
@@ -279,6 +280,7 @@ public class MessagingSystem {
 		//read previous round's messages
 		if(!isFirstRound()) {
 			readMessages(handlers);
+			//printMessageBoard();
 		}
 
 		//set channels for new round
@@ -405,7 +407,8 @@ public class MessagingSystem {
 			int off = i * BLOCK_SIZE;
 			for(int j = 0; j < BLOCK_SIZE; j++) {
 				try {
-					System.out.print(RC.readBroadcast(channels[0] + off + j) + " ");
+					int broadcast = RC.readBroadcast(channels[0] + off + j);
+					System.out.print((broadcast >> 16) + " " + (broadcast & MASK) + " ");
 				} catch (GameActionException e) {
 					e.printStackTrace();
 				}
@@ -414,6 +417,8 @@ public class MessagingSystem {
 		}
 	}
 
+	
+	
 	public void scramble(int start, int end) {
 		start = start < 0 ? 0 : start;
 		end = end > 9999 ? 9999 : end;
