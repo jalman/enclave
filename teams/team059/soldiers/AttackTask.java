@@ -3,12 +3,12 @@ package team059.soldiers;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import team059.movement.Mover;
+import static team059.soldiers.SoldierUtils.*;
 import static team059.utils.Utils.*;
 
 public class AttackTask extends TravelTask {
 
 	private static final Mover mover = new Mover();
-
 	public AttackTask(MapLocation target, int priority) {
 		super(mover, target, priority, 0);
 	}
@@ -21,7 +21,7 @@ public class AttackTask extends TravelTask {
 
 	@Override
 	public void execute() throws GameActionException {
-		if(enemyRobots.length > 0) {
+		if(farawayEnemyTarget != null) {
 			SoldierBehavior2.microSystem.run();
 		} else {
 			super.execute();

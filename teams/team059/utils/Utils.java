@@ -16,6 +16,12 @@ import team059.soldiers.micro.Micro;
 import team059.movement.*;
 
 public class Utils {
+	
+	//Game constants
+	public final static int MAX_SOLDIER_ENERGON = 40;
+	public final static int MAX_ENCAMPMENT_ENERGON = 100;
+	public final static int MAX_HQ_ENERGON = 500;
+	
 	//actual constants
 	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
 	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
@@ -31,6 +37,7 @@ public class Utils {
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
 	public static Random random;
+	public static int birthRound;
 	
 	//this is for messaging
 	public static MessagingSystem messagingSystem;
@@ -73,6 +80,8 @@ public class Utils {
 		ENEMY_TEAM = (ALLY_TEAM == Team.A) ? Team.B : Team.A;
 		ALLY_HQ = rc.senseHQLocation();
 		ENEMY_HQ = rc.senseEnemyHQLocation();
+		
+		birthRound = Clock.getRoundNum();
 		
 		random = new Random(((long)ID<< 32) ^ Clock.getRoundNum());
 
@@ -138,14 +147,8 @@ public class Utils {
 		//return Math.max(Math.abs(x1-x2), Math.abs(y1-y2));
 	}
 	
-	public static int mapLocationToInt(MapLocation loc) {
-		return (loc.x << 16) ^ loc.y;
-	}
-
-	public static final int YMASK = (1 << 16) - 1;
-	
-	public static MapLocation intToMapLocation(int loc) {
-		return new MapLocation(loc >> 16, loc & YMASK);
+	public static boolean isFirstRound() {
+		return Clock.getRoundNum() == birthRound;
 	}
 	
 	/**
@@ -185,4 +188,6 @@ public class Utils {
 	public static <T> T[] newArray(int length, T... array) {
 		return Arrays.copyOf(array, length);
 	}
+	
+	
 }

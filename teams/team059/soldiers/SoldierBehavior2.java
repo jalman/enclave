@@ -1,6 +1,7 @@
 package team059.soldiers;
 
 import team059.utils.Utils;
+import static team059.soldiers.SoldierUtils.*;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -20,7 +21,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private TaskManager taskManager;
 	private MineManager mineManager;
 	private ScoutManager scoutManager;
-		
+	
 	public static Micro microSystem;
 	private SingleTaskManager<AttackTask> attackManager;
 	private SingleTaskManager<ExpandTask> takeEncampmentManager;
@@ -28,12 +29,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private TaskGiver[] taskGivers;
 	private Task currentTask;
 	
-	public MapLocation battleSpot;
-	public int battleSpotAge;
-
 	public SoldierBehavior2() {
 		mover = new Mover();
-		microSystem = new Micro(this);
+		microSystem = new Micro();
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
 		taskManager = new TaskManager();
@@ -49,6 +47,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 
 	@Override
 	public void run() throws GameActionException {
+
+		updateSoldierUtils();
+		
 		boolean compute = currentTask == null || currentTask.done();
 
 		int max_appeal = Integer.MIN_VALUE;
@@ -75,13 +76,12 @@ public class SoldierBehavior2 extends RobotBehavior {
 			currentTask.execute();
 		}
 	}
-
 	@Override
 	protected MessageHandler getAttackHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				attackManager.considerTask(new AttackTask(new MapLocation(message[1], message[2]), message[3]));
+				attackManager.considerTask(new AttackTask(new MapLocation(message[0], message[1]), message[2]));
 			}
 		};
 	}
@@ -91,17 +91,16 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				takeEncampmentManager.considerTask(new ExpandTask(new MapLocation(message[1], message[2]), message[3], RobotType.values()[message[4]]));
+				takeEncampmentManager.considerTask(new ExpandTask(new MapLocation(message[0], message[1]), message[2], RobotType.values()[message[3]]));
 			}
 		};
 	}
-	
 	@Override
 	protected MessageHandler getTakingEncampmentHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				MapLocation loc = new MapLocation(message[1], message[2]);
+				MapLocation loc = new MapLocation(message[0], message[1]);
 				int appeal = message[3];
 				
 				ExpandTask task = takeEncampmentManager.getTask();
@@ -116,21 +115,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	protected MessageHandler getMicroHandler() {
 		return new MessageHandler() {
 			@Override
-			public void handleMessage(int[] message) {
-				if (battleSpot == null || battleSpotAge >= 4 || Utils.naiveDistance(battleSpot, Utils.currentLocation) >= 7)
-				{
-					battleSpot= new MapLocation(message[1], message[2]);
-					battleSpotAge = 0;
-				}
-				
-				int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
-				
-				if(distance < 7 && distance > 4)
-				{
-					RC.setIndicatorString(2, "CHARGING TO " + battleSpot + " on turn " + Clock.getRoundNum());
-					mover.setTarget(battleSpot);
-				}
-			}
+			public void handleMessage(int[] message) {}
 		};
 	}
 	

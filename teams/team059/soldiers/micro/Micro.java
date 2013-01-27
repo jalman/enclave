@@ -1,54 +1,80 @@
 package team059.soldiers.micro;
 
+
+import battlecode.common.*;
 import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
-import team059.soldiers.SoldierBehavior2;
 import static team059.utils.Utils.*;
-import battlecode.common.*;
 import static team059.soldiers.SoldierUtils.*;
 
 public class Micro {
 	
 	MapLocation retreatTarget = null;
-	MapLocation encampTarget = null;
 	public int goIn = 0;
-	private static final int maxNumberOfEnemiesToCheckToFindATarget = 5;
 	public static final Mover mover = new Mover();
-	public SoldierBehavior2 sb;
-	int count = 0;
+	int numberOfTargetsToCheck = 5;
+	public boolean microModeEntered = false;
 	
-	public static int sensorRadius = 11; // The radius the RC uses to detect enemies and allies. This distance.
-	
-	public Micro(SoldierBehavior2 sb) {		
+	public Micro() {
 		enemyTarget = null;
-		this.sb = sb;
 	}
-	
 	public void run() throws GameActionException{
-		if (count % 2 == 0)
+		
+		if (enemyRobots.length == 0)
 		{
-			setVariables();
+			updateFarawayEnemyTarget(2);
+			rushToBattle();
+			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
 		}
-		if(enemyTarget != null && sb.battleSpotAge >= 4)
+		else{
+			setMicroVariables();
+			farawayEnemyTarget = enemyTarget;
+			micro();
+			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + "Target: " + mover.getTarget());
+		}
+	}
+
+	public void rushToBattle() throws GameActionException{
+		//farawayEnemyTarget should be already set if micro mode is entered
+		mover.setNavType(NavType.BUG_DIG_2);
+
+		if (enemyRobots.length == 0 && farawayEnemyTarget != null)
 		{
-			messagingSystem.writeMicroMessage(enemyTarget, goIn);
-		}
-		if(enemyTarget != null) {		
-			attackOrRetreat();
+			attackTarget(farawayEnemyTarget);
 		}
 		if(RC.isActive())
 			mover.execute();
-		count++;
 	}
-	
-	public void setVariables() throws GameActionException{
-		setEnemyTargetAndWeight();
+	public void micro() throws GameActionException{
+		if(enemyTarget != null) {		
+			attackOrRetreat();
+		}	
+		if(RC.isActive())
+			mover.execute();
+	}
+//	public boolean shouldIBeRunningMicroSystem(){
+//		if (farawayEnemyTarget == null)
+//		{
+//			microModeEntered = false;
+//			return false;
+//		}
+//		return true;
+//	}
+	public void setBattleVariables() throws GameActionException{
+		
+	}
+	public void setMicroVariables() throws GameActionException{
+		setEnemyTarget(numberOfTargetsToCheck);
+		setEnemyWeight(enemyTarget, sensorRadius);
 		setAllyWeight(enemyTarget, sensorRadius);
 	}
 	
 	/**
-	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
+	 * Determines whether a soldier should attack or retreat
+	 * If: adjacent enemies: stay put. 
+	 * Else if: there aren't enough allies nearby to engage: retreat
+	 * Else: attack
 	 * @throws GameActionException
 	 */
 	
@@ -61,53 +87,39 @@ public class Micro {
 		else if (!shouldIAttack())
 		{
 			setRetreatBack();
+			mover.setNavType(NavType.BUG);
 			mover.setTarget(retreatTarget);
 		}
 		else
-		{	
+		{
+			mover.setNavType(NavType.BUG);
 			attackTarget(enemyTarget);
 		}
 	}
-	
-	/**
-	 * Writes a message when enemies are nearby
-	 * @throws GameActionException
-	 */
 
-	
 	/**
-	 * Sets the destinations to retreat to.
+	 * Sets the retreat target.
 	 * @throws GameActionException
 	 */
 	public void setRetreatBack() throws GameActionException
 	{
 		if (enemyTarget != null)
 		{
-			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite(), 2);
+			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite());
 		}
 		else
 		{
 			retreatTarget = ALLY_HQ;
 		}
 	}
-	public void setRetreatEncampment() throws GameActionException //makes the retreat target the nearest encampment
-	{
-		// fill in with messaging
-	}
-
-	/**
-	 * Methods for detecting Allies and Enemies within a certain radius
-	 */
 	
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(allyWeight > enemyWeight)
+		if(allyWeight > enemyWeight && allyWeight > 1)
 		{
-			mover.setNavType(NavType.BUG_DIG_2);
 			return true;
 		}		
-		mover.setNavType(NavType.BUG);
 		return false;
 	}
 		
@@ -122,5 +134,18 @@ public class Micro {
 			mover.setTarget(RC.getLocation());
 		}
 	}
-		
+//	public void goToBattle(int mapLocX, int mapLocY){
+//		MapLocation tempBattleSpot = new MapLocation(mapLocX, mapLocY);
+//		if (battleSpot == null || naiveDistance(tempBattleSpot, currentLocation) < naiveDistance(battleSpot, currentLocation) 
+//				||  battleSpotAge >= 2)
+//		{
+//			battleSpot = tempBattleSpot;
+//			battleSpotAge = 0;
+//		}
+//		int distanceSquared = battleSpot.distanceSquaredTo(currentLocation);
+//		if(distanceSquared < closeEnoughToGoToBattleSquared && distance > ENEMY_RADIUS2)
+//		{
+//			mover.setTarget(battleSpot);
+//		}
+//	}	
 }
