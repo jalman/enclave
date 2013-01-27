@@ -6,6 +6,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Upgrade;
 import team059.RobotBehavior;
+import team059.utils.Shields;
 import static team059.utils.Utils.*;
 
 public class AntinukeHQBehavior extends RobotBehavior {
@@ -41,6 +42,8 @@ public class AntinukeHQBehavior extends RobotBehavior {
 				shield = encampment;
 			}
 		}
+		shield = new MapLocation(14,25);
+		Shields.insertShield(shield);
 	}
 
 	
