@@ -8,7 +8,7 @@ public enum NavType {
 	STRAIGHT_DIG(new DigMove()), // Try to go straight, defusing along the way
 	TANGENT_BUG,  // Tangent bug
 	RANDOM, // Wiggle randomly? 
-	BEELINE, // Go straight there, disregarding mines?
+	BEELINE(new BugMoveCrazy()), // Go straight there, disregarding mines?
 	BUG_HIGH_DIG(new BuggingDigMove()),  // Dig-move with a bit of bugging
 	BUG_LOW_DIG(new DiggingBugMoveFunLong()), // Normal bug, defuse when bugging for too long. Probably sucks.
 	BUG_DIG_1(new DiggingBugMoveFun1()), // Normal bug, defuse when only option is to go backwards

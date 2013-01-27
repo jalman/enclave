@@ -67,7 +67,7 @@ public class DiggingBugMoveFun2 extends NavAlg {
         }
         
         public void recompute() {
-        	//reset();
+        	reset();
         }
         
         public void setTarget(int tx, int ty) {

@@ -47,14 +47,13 @@ public class Mover {
 //	}
 
 	public void execute() {
-		RC.setIndicatorString(1, dest + "");
+		//RC.setIndicatorString(1, dest + "");
 		if(RC.isActive()) {
 			here = RC.getLocation();
 			if(dest == null || dest.equals(here)) {
 				return;
 			}
-
-			navAlg.recompute();
+			
 			Direction d = navAlg.getNextDir();
 			
 			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
@@ -62,6 +61,35 @@ public class Mover {
 			}
 		}
 	}
+
+	public void execute(boolean canMoveMine) {
+		//RC.setIndicatorString(1, dest + "");
+		if(RC.isActive()) {
+			here = RC.getLocation();
+			if(dest == null || dest.equals(here)) {
+				return;
+			}
+			
+			Direction d = navAlg.getNextDir();			
+			
+			if(d != null && d != Direction.NONE && d != Direction.OMNI) {
+				if(canMoveMine) {
+					try {
+					if(RC.canMove(d)) {
+						RC.move(d);
+					}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else {
+					moveMine(d);
+				}
+			}
+			
+		}
+	}
+
 
 	public void moveMine(Direction dir) {
 		try {
