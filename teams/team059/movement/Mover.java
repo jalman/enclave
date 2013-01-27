@@ -3,7 +3,6 @@ package team059.movement;
 import team059.RobotBehavior;
 import team059.utils.*;
 import battlecode.common.*;
-import static movertest.Utils.RC;
 import static team059.utils.Utils.*;
 
 public class Mover {
@@ -13,7 +12,7 @@ public class Mover {
 	
 	public Mover() { 
 		this.dest = null;
-		this.navAlg = NavType.BUG_DIG_2.navAlg;
+		this.navAlg = NavType.BUG_HIGH_DIG.navAlg;
 		this.defuseMoving = true;
 	}
 	
@@ -23,11 +22,11 @@ public class Mover {
 		this.defuseMoving = true;		
 	}
 	
-	public Mover(RobotBehavior rb) { 
-		this.dest = null;
-		this.navAlg = NavType.BUG_DIG_2.navAlg;
-		this.defuseMoving = true;
-	}
+//	public Mover(RobotBehavior rb) { 
+//		this.dest = null;
+//		this.navAlg = NavType.BUG_HIGH_DIG.navAlg;
+//		this.defuseMoving = true;
+//	}
 
 	public void setNavType(NavType navtype) {
 		this.navAlg = navtype.navAlg;
