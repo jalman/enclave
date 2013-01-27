@@ -25,6 +25,8 @@ public class MineManager extends TaskGiver {
 		if(!RC.isActive()) return;
 		
 		
+		
+		
 //		MapLocation[] mineLocs = RC.senseMineLocations(currentLocation, CHECK_MINE_RADIUS_SQUARED, null);
 //		Direction dir = currentLocation.directionTo(ALLY_HQ);
 //		int dx = dir.dx, dy = dir.dy;
