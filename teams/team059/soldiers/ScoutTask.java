@@ -1,8 +1,10 @@
 package team059.soldiers;
 
+import team059.Strategy;
 import team059.movement.Mover;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
+import battlecode.common.Robot;
 import static team059.utils.Utils.*;
 
 public class ScoutTask extends TravelTask {
@@ -13,6 +15,9 @@ public class ScoutTask extends TravelTask {
 	private MapLocation[] waypoint;
 	private int waypointIndex;
 	private final int MAX_SCOUT_TURNS;
+	
+	private MapLocation firstMine = null;
+	private MapLocation firstSuppGen = null;
 
 	
 	private boolean runningAway = false;
@@ -55,6 +60,20 @@ public class ScoutTask extends TravelTask {
 
 	@Override
 	public void execute() throws GameActionException {
+//		//Figure out what they are doing
+//		if(RC.senseMine(currentLocation) == ENEMY_TEAM) {
+//			if(firstMine == null) {
+//				firstMine = currentLocation;
+//			} else {
+//				messagingSystem.writeHQMessage(Strategy.RUSH);
+//			}
+//		}
+//		
+//		Robot[] nearby = RC.senseNearbyGameObjects(Robot.class, 14, ENEMY_TEAM);
+//		
+//		
+//		
+//		//Move in!
 		if(!runningAway) {
 			if(waypointIndex < 2 && currentLocation.isAdjacentTo(waypoint[waypointIndex])) {
 				waypointIndex++;
