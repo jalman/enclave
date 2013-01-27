@@ -9,13 +9,9 @@ import battlecode.common.MapLocation;
 
 public class RobotBehavior {
 
-	/**
-	 * Whether we want to send messages this round.
-	 */
-	public boolean messaging;
 	protected MessageHandler[] messageHandlers;
 	protected Strategy strategy;
-	
+
 	public RobotBehavior() {
 		messageHandlers = new MessageHandler[MessageType.values().length];
 		messageHandlers[MessageType.HQ_INFO.ordinal()] = getHQHandler();		
@@ -35,17 +31,11 @@ public class RobotBehavior {
 	/**
 	 * Called at the beginning of each round.
 	 */
-	public void beginRound() throws GameActionException{
-		messaging = RC.getTeamPower() > MessagingSystem.MESSAGING_COST;
-		//messaging = false;
-		
-		if(messaging) {
-			try {
-				messagingSystem.beginRound();
-				messagingSystem.handleMessages(messageHandlers);
-			} catch (GameActionException e) {
-				e.printStackTrace();
-			}
+	public void beginRound() throws GameActionException {
+		try {
+			messagingSystem.beginRound(messageHandlers);
+		} catch (GameActionException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -58,12 +48,10 @@ public class RobotBehavior {
 	 * Called at the end of each round.
 	 */
 	public void endRound() {
-		if(messaging) {
-			try {
-				messagingSystem.endRound();
-			} catch (GameActionException e) {
-				e.printStackTrace();
-			}
+		try {
+			messagingSystem.endRound();
+		} catch (GameActionException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -77,7 +65,7 @@ public class RobotBehavior {
 	 * @return The default message handler (does nothing).
 	 */
 	protected MessageHandler getAttackHandler() {return new DefaultMessageHandler();}
-	
+
 	/**
 	 * Reads the strategy from the HQ.
 	 * @return The default HQ-message handler.
@@ -86,7 +74,7 @@ public class RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				strategy = Strategy.values()[message[1]];
+				strategy = Strategy.values()[message[0]];
 				//System.out.println(strategy);
 			}
 		};
@@ -97,18 +85,18 @@ public class RobotBehavior {
 	 * @return The default message handler (does nothing).
 	 */
 	protected MessageHandler getCheckpointHandler() {return new DefaultMessageHandler();}	
-	
+
 	protected MessageHandler getMicroHandler() {return new DefaultMessageHandler();}
 
 	protected MessageHandler getTakeEncampmentHandler() {return new DefaultMessageHandler();}	
-	
+
 	protected MessageHandler getBirthInfoHandler() {return new DefaultMessageHandler();}
-	
+
 	protected MessageHandler getLayingMineHandler() {return new DefaultMessageHandler();}
 
 	protected MessageHandler getDefusingMineHandler() {return new DefaultMessageHandler();}	
-	
+
 	protected MessageHandler getAnnounceUpgradeHandler() {return new DefaultMessageHandler();}
-	
+
 	protected MessageHandler getTakingEncampmentHandler() {return new DefaultMessageHandler();}
 }

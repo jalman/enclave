@@ -1,10 +1,10 @@
-package team059.movement;
+package movertest;
 
 import java.util.Arrays;
 
-import team059.*;
+import movertest.*;
 import battlecode.common.*;
-import static team059.utils.Utils.*;
+import static movertest.Utils.*;
 
 public class DiggingBugMoveFun2 extends NavAlg {
         final static int[][] d = new int[8][2];
@@ -29,7 +29,7 @@ public class DiggingBugMoveFun2 extends NavAlg {
         /** the default direction to trace. Changes every time we trace too far. */
         int defaultTraceDirection = 0;
         /** trace threshold to reset to every time we get a new destination. */
-        static final int INITIAL_TRACE_THRESHOLD = 6;
+        static final int INITIAL_TRACE_THRESHOLD = 10;
         /** number of turns to trace before resetting. */
         int traceThreshold = -1;
         /** if we've hit the edge of the map by tracing in the other direction, 
@@ -67,7 +67,7 @@ public class DiggingBugMoveFun2 extends NavAlg {
         }
         
         public void recompute() {
-        	reset();
+        	//reset();
         }
         
         public void setTarget(int tx, int ty) {
@@ -130,6 +130,7 @@ public class DiggingBugMoveFun2 extends NavAlg {
          * <br/> -no directions to move
          */
         public int[] computeMove(int sx, int sy, int[] movableTerrain, int passability) {
+        	int round = Clock.getRoundNum();
                 if(sx==tx && sy==ty) 
                         return null;
                 if(Math.abs(sx-tx)<=1 && Math.abs(sy-ty)<=1) {
@@ -137,30 +138,35 @@ public class DiggingBugMoveFun2 extends NavAlg {
                 }
                 
                 double dist = (sx-tx)*(sx-tx)+(sy-ty)*(sy-ty);
-                if(tracing!=-1) { // already tracing
+                if(tracing!=-1) {
+                	RC.setIndicatorString(1, round + " | Still tracing... turns = " + turnsTraced);
                         turnsTraced++;
                         if(dist<traceDistance) {
+                        	RC.setIndicatorString(0, round + " | dist < traceDistance: stop tracing.");
                                 tracing = -1;
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(turnsTraced>=traceThreshold) {
+//                        	RC.setIndicatorString(0, round + " | turnsTraced>=traceThreshold: stop tracing, reverse etc");
                                 tracing = -1;
                                 traceThreshold *= 2;
                             	//System.out.println("turnsTraced >= traceThreshold! New threshold: " + traceThreshold);
                                 defaultTraceDirection = 1-defaultTraceDirection;
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(!(sx==expectedsx && sy==expectedsy)) {
+                        	RC.setIndicatorString(0, round + " | !(sx==expectedsx && sy==expectedsy): going toward (expectedsx-sx, expectedsy-sy)");
                                 int i = getDirTowards(expectedsx-sx, expectedsy-sy);
-                                if(movableTerrain[i]==passability) {
+                                if(movableTerrain[i]==passability)
                                         return d[i];
-                                }
                                 else
                                         wallDir = i;
-                        } else if(movableTerrain[wallDir]==PASSABLE) {
+                        } else if(movableTerrain[wallDir]==passability) {
+                        	RC.setIndicatorString(0, round + " | movableTerrain[wallDir] == true: phantom wall?");
                                 // Tracing around phantom wall 
                                 //   (could happen if a wall was actually a moving unit)
                                 tracing = -1;
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(!hitEdgeInOtherTraceDirection) {
+//                        	RC.setIndicatorString(0, round + " | !hitEdgeInOtherTraceDirection: change tracing dir");
                                 int x = sx + d[wallDir][0];
                                 int y = sy + d[wallDir][1];
                                 if(x<edgeXMin || x>=edgeXMax || y<edgeYMin || y>=edgeYMax) {
@@ -171,6 +177,7 @@ public class DiggingBugMoveFun2 extends NavAlg {
                         }
                 }
                 if(tracing==-1) {
+                	RC.setIndicatorString(1, round + " | Not tracing");
                         int dir = getDirTowards(tx-sx, ty-sy);
                         if(movableTerrain[dir]==passability) return d[dir];
                         tracing = defaultTraceDirection;
@@ -185,6 +192,7 @@ public class DiggingBugMoveFun2 extends NavAlg {
                                 if(movableTerrain[dir]==passability) {
                                 	if(naiveDistance(sx,sy,tx,ty) < naiveDistance(sx+d[dir][0],sy+d[dir][1],tx,ty)) { // if moving away from target, dig
                                 		//return computeMove(sx, sy, movableTerrain, HAS_ENEMY_MINE) ;
+                                		passability = HAS_ENEMY_MINE;
                                 		break;
                                 	}
                                     /*if(lastDir >= 0 && (dir - lastDir + 8) % 8 == 4) { //if turning around, dig!
@@ -198,7 +206,18 @@ public class DiggingBugMoveFun2 extends NavAlg {
                                 }
                         }
                 	}
+                }
                 	if(passability == HAS_ENEMY_MINE) {
+
+                        int dir = getDirTowards(tx-sx, ty-sy);
+                        if(movableTerrain[dir]==passability) {
+	                        tracing = defaultTraceDirection;
+	                        traceDistance = dist;
+	                        turnsTraced = 0;
+	                        wallDir = dir;
+	                        return d[dir];
+                        }
+                        
                 		if(!(sx==expectedsx && sy==expectedsy)) {
                             int i = getDirTowards(expectedsx-sx, expectedsy-sy);
                             if(movableTerrain[i]==passability) {
@@ -207,7 +226,7 @@ public class DiggingBugMoveFun2 extends NavAlg {
                 		}
                 		
                 		for(int ti=1; ti<8; ti++) {
-                            int dir = ((1-tracing*2)*ti + wallDir + 8) % 8;
+                            dir = ((1-tracing*2)*ti + wallDir + 8) % 8;
                             if(movableTerrain[dir]==passability) {
 //                            	if(naiveDistance(sx,sy,tx,ty) < naiveDistance(sx+d[dir][0],sy+d[dir][1],tx,ty)) { // if moving away from target, dig
 //                            		return computeMove(sx, sy, movableTerrain, HAS_ENEMY_MINE) ;
@@ -223,10 +242,10 @@ public class DiggingBugMoveFun2 extends NavAlg {
                             }
                     }
                 	}
-                }
-                if(passability == PASSABLE) {
-                	return computeMove(sx, sy, movableTerrain, HAS_ENEMY_MINE);
-                }
+                
+//                if(passability == PASSABLE) {
+//                	return computeMove(sx, sy, movableTerrain, HAS_ENEMY_MINE);
+//                }
                 return null;
         }
         

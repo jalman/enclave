@@ -81,7 +81,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				attackManager.considerTask(new AttackTask(new MapLocation(message[1], message[2]), message[3]));
+				attackManager.considerTask(new AttackTask(new MapLocation(message[0], message[1]), message[2]));
 			}
 		};
 	}
@@ -91,7 +91,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				takeEncampmentManager.considerTask(new ExpandTask(new MapLocation(message[1], message[2]), message[3], RobotType.values()[message[4]]));
+				takeEncampmentManager.considerTask(new ExpandTask(new MapLocation(message[0], message[1]), message[2], RobotType.values()[message[3]]));
 			}
 		};
 	}
@@ -100,7 +100,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				MapLocation loc = new MapLocation(message[1], message[2]);
+				MapLocation loc = new MapLocation(message[0], message[1]);
 				int appeal = message[3];
 				
 				ExpandTask task = takeEncampmentManager.getTask();
@@ -115,8 +115,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	protected MessageHandler getMicroHandler() {
 		return new MessageHandler() {
 			@Override
-			public void handleMessage(int[] message) {
-			}
+			public void handleMessage(int[] message) {}
 		};
 	}
 	

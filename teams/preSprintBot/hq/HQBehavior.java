@@ -11,7 +11,7 @@ public class HQBehavior extends RobotBehavior {
 	
 	HQAction[] buildOrder;
 	int buildOrderProgress = 0;
-	
+
 	public HQBehavior(RobotController therc) {
 		super(therc);
 	}
