@@ -9,6 +9,7 @@ import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotType;
 import team059.RobotBehavior;
+import team059.Strategy;
 import team059.messaging.MessageHandler;
 import team059.movement.Mover;
 import team059.soldiers.micro.Micro;
@@ -43,7 +44,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		
 		taskGivers = new TaskGiver[]
 				{patrolManager, taskManager, attackManager, scoutManager,
-				/*mineManager,*/ expandManager, takeEncampmentManager};
+				mineManager, expandManager, takeEncampmentManager};
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				max_appeal = appeal;
 			}
 //			if(t instanceof MineTask) {
-//				System.out.println("Mine task " + (MineTask) t + " has appeal " + appeal);
+				System.out.println("Task " + t + " has appeal " + appeal);
 //			}
 		}
 		
@@ -102,7 +103,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				MapLocation loc = new MapLocation(message[0], message[1]);
-				int appeal = message[3];
+				int appeal = message[2];
 				
 				ExpandTask task = takeEncampmentManager.getTask();
 				if(task != null && loc.equals(task.destination) && appeal > task.appeal()) {
@@ -126,8 +127,8 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if(message[3] != ID) {
-					mineManager.receiveMineMessage(new MapLocation(message[1], message[2]));
+				if(message[2] != ID) {
+					mineManager.receiveMineMessage(message[0], message[1]);
 				}
 			}
 		};
@@ -140,8 +141,8 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if(message[3] != ID) {
-					mineManager.receiveMineMessage(new MapLocation(message[1], message[2]));
+				if(message[2] != ID) {
+					mineManager.receiveMineMessage(new MapLocation(message[0], message[1]));
 				}
 			}
 		};
@@ -152,7 +153,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				UPGRADES_RESEARCHED[message[1]] = true;
+				UPGRADES_RESEARCHED[message[0]] = true;
 			}
 		};
 	}
