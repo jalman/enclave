@@ -37,6 +37,7 @@ public class Mover {
 		if(!dest.equals(this.dest)) {
 			this.dest = dest;
 			navAlg.recompute(dest);
+			beelineAlg.recompute(dest);
 		}
 	}
 
@@ -100,7 +101,7 @@ public class Mover {
 				return;
 			}
 			Direction d;
-			if(RC.getShields() > 10.0) {
+			if(RC.getShields() > 30.0) {
 				d = beelineAlg.getNextDir();
 				if(d != null && d != Direction.NONE && d != Direction.OMNI) {
 					try {
