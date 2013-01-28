@@ -15,11 +15,8 @@ import team059.soldiers.micro.Micro;
 import static team059.utils.Utils.*;
 
 public class SoldierBehavior2 extends RobotBehavior {
-	public Mover mover;
-
 	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
-	private TaskManager taskManager;
 	private MineManager mineManager;
 	private ScoutManager scoutManager;
 	
@@ -34,18 +31,16 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private Task currentTask;
 	
 	public SoldierBehavior2() {
-		mover = new Mover();
 		microSystem = new Micro();
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
-		taskManager = new TaskManager();
 		mineManager = new MineManager();
 		attackManager = new SingleTaskManager<AttackTask>();
 		takeEncampmentManager = new SingleTaskManager<ExpandTask>();
 		scoutManager = new ScoutManager();
 		
 		normalTaskGivers = new TaskGiver[]
-				{patrolManager, taskManager, attackManager, scoutManager,
+				{patrolManager, attackManager, scoutManager,
 				mineManager, expandManager, takeEncampmentManager};
 		nuclearTaskGivers = new TaskGiver[] 
 				{attackManager, mineManager, expandManager, takeEncampmentManager};
@@ -140,7 +135,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				ExpandTask task = takeEncampmentManager.getTask();
 				if(task != null && loc.equals(task.destination) && appeal > task.appeal()) {
 					takeEncampmentManager.clearTask();
-					System.out.println("Decided against taking encampment.");
+					//System.out.println("Decided against taking encampment.");
 				}
 			}
 		};
@@ -189,4 +184,15 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};
 	}
+	
+	@Override
+	protected MessageHandler getDefusingMineHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				Mines.defuse[message[0]][message[1]] = Clock.getRoundNum();
+			}
+		};		
+	}
+
 }

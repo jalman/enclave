@@ -2,6 +2,7 @@ package team059.messaging;
 
 import java.util.Random;
 
+import team059.Parameters;
 import team059.Strategy;
 
 
@@ -341,8 +342,17 @@ public class MessagingSystem {
 	 * @param strategy: strategy to execute
 	 * @throws GameActionException
 	 */
-	public void writeHQMessage(Strategy strategy) throws GameActionException {
-		writeMessage(MessageType.HQ_INFO.ordinal(), strategy.ordinal());
+	public void writeStrategy(Strategy strategy) throws GameActionException {
+		writeMessage(MessageType.STRATEGY.ordinal(), strategy.ordinal());
+	}
+	
+	/**
+	 * Announce the strategy parameters.
+	 * @param parameters Parameters which guide robot behavior.
+	 * @throws GameActionException
+	 */
+	public void writeParameters(Parameters parameters) throws GameActionException {
+		writeMessage(MessageType.STRATEGY.ordinal(), parameters.greed, (int)(parameters.border * 1024), parameters.attack);
 	}
 
 	/**
@@ -354,6 +364,12 @@ public class MessagingSystem {
 		writeMessage(MessageType.CHECKPOINT_NUMBER.ordinal(), pointNumber);
 	}
 
+	/**
+	 * Announce the attempted taking of an encampment.
+	 * @param loc The location of the encampment.
+	 * @param appeal How appealing this task is to this robot.
+	 * @throws GameActionException
+	 */
 	public void writeTakingEncampmentMessage(MapLocation loc, int appeal) throws GameActionException {
 		writeMessage(MessageType.TAKING_ENCAMPMENT.ordinal(), loc.x, loc.y, appeal);
 	}
@@ -371,22 +387,21 @@ public class MessagingSystem {
 
 	/**
 	 * Announce the [attempted] laying of [a] mine[s].
-	 * @param loc: location of mine (or center of 5 mines)
-	 * @param id: id of minelaying bot
+	 * @param loc location of mine (or center of 5 mines)
 	 * @throws GameActionException
 	 */
-	public void writeLayingMineMessage(MapLocation loc, int id) throws GameActionException {
-		writeMessage(MessageType.LAYING_MINE.ordinal(), loc.x, loc.y, id);
+	public void writeLayingMineMessage(MapLocation loc) throws GameActionException {
+		writeMessage(MessageType.LAYING_MINE.ordinal(), loc.x, loc.y);
 	}
 
 	/**
 	 * Announce the [attempted] defusing of a mine.
-	 * @param loc: location of mine
-	 * @param id: id of defusing bot
+	 * @param loc The location of the mine.
+	 * @param appeal How appealing this task is to this robot.
 	 * @throws GameActionException
 	 */
-	public void writeDefusingMineMessage(MapLocation loc, int id) throws GameActionException {
-		writeMessage(MessageType.LAYING_MINE.ordinal(), loc.x, loc.y, id);
+	public void writeDefusingMineMessage(MapLocation loc, int appeal) throws GameActionException {
+		writeMessage(MessageType.DEFUSING_MINE.ordinal(), loc.x, loc.y, appeal);
 	}
 
 	/**

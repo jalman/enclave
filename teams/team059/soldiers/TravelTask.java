@@ -38,8 +38,12 @@ public class TravelTask extends Task {
 	}
 	
 	@Override
+	public void update() {
+		eta = naiveDistance(currentLocation, destination) - distance;		
+	}
+	
+	@Override
 	public int appeal() {
-		eta = naiveDistance(currentLocation, destination) - distance;
 		return priority - eta;
 	}
 
@@ -51,13 +55,12 @@ public class TravelTask extends Task {
 
 	@Override
 	public boolean done() {
-		eta = naiveDistance(currentLocation, destination) - distance;
 		return eta <= 0;
 	}
 	
 	@Override
 	public String toString() {
-		return "Move to " + destination + " with priority " + priority;
+		return "Move to " + destination;
 	}
 
 }

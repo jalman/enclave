@@ -47,11 +47,7 @@ public class HQBehavior extends RobotBehavior {
 		fluxDiff = actualFlux - lastFlux;
 		lastFlux = actualFlux;
 
-		try {
-			messagingSystem.beginRoundHQ(messageHandlers);
-		} catch (GameActionException e1) {
-			e1.printStackTrace();
-		}
+		messagingSystem.beginRoundHQ(messageHandlers);
 
 		if(!enemyNukeHalfDone && Clock.getRoundNum() > Upgrade.NUKE.numRounds / 2) {
 			enemyNukeHalfDone = RC.senseEnemyNukeHalfDone();
@@ -103,7 +99,7 @@ public class HQBehavior extends RobotBehavior {
 				expandSystem.considerExpanding(0); //fix this
 			} catch (GameActionException e) {
 				e.printStackTrace();
-			} 
+			}
 		}
 	}
 
@@ -145,7 +141,7 @@ public class HQBehavior extends RobotBehavior {
 		expand();
 
 		if(panic()) {
-			messagingSystem.writeAttackMessage(ENEMY_HQ, 100);
+			parameters.attack = 100;
 		}
 	}
 
@@ -197,7 +193,7 @@ public class HQBehavior extends RobotBehavior {
 
 
 	private void sendMessagesOnBuild() throws GameActionException {
-		messagingSystem.writeHQMessage(strategy);
+		messagingSystem.writeStrategy(strategy);
 		for(int i = 0; i < Shields.shieldLocations.size; i++) {
 			messagingSystem.writeShieldLocationMessage(Shields.shieldLocations.get(i));
 		}
