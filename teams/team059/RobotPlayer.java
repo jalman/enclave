@@ -20,13 +20,13 @@ public class RobotPlayer {
 		case HQ:
 			Strategy strategy = Strategy.decide();
 			try{
-				robot = strategy == Strategy.RUSH ? new AntinukeHQBehavior() : new HQBehavior(strategy);
+				robot = new HQBehavior(strategy); //strategy == Strategy.RUSH ? new AntinukeHQBehavior() : new HQBehavior(strategy);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			break;
 		case SOLDIER:
-			robot =new AntinukeSoldierBehavior(); //strategy == Strategy.RUSH ? new AntinukeSoldierBehavior() : new SoldierBehavior2();
+			robot = new SoldierBehavior2();
 			break;
 		case ARTILLERY:
 			robot = new ArtilleryBehavior();

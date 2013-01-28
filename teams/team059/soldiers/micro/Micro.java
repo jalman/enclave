@@ -23,7 +23,7 @@ public class Micro {
 		
 		if (enemyRobots.length == 0)
 		{
-			updateFarawayEnemyTarget(2);
+			updateFarawayEnemyTarget(1);
 			rushToBattle();
 			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
 		}
@@ -83,7 +83,7 @@ public class Micro {
 	
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
-		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
+		if (enemyTargetRobotInfo.type == RobotType.SOLDIER && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
 		{
 			mover.setTarget(RC.getLocation());
 		}
