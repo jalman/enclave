@@ -3,6 +3,7 @@ package team059.hq;
 import static team059.utils.Utils.*;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
+import battlecode.common.Robot;
 import battlecode.common.Upgrade;
 
 /**
@@ -25,6 +26,11 @@ public class WarSystem {
 			parameters.attack = 100;
 			messagingSystem.writeParameters(parameters);
 		}
+		
+		int home = defendMainPriority();
+		if(home > 0) {
+			messagingSystem.writeAttackMessage(ALLY_HQ, home);
+		}
 	}
 
 
@@ -33,5 +39,15 @@ public class WarSystem {
 			nukePanic = enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE);
 		}
 		return nukePanic;
+	}
+	
+	public int defendMainPriority() {
+		Robot[] nearbyEnemies = RC.senseNearbyGameObjects(Robot.class, 10, ENEMY_TEAM);
+		if(nearbyEnemies.length == 0) {
+			return 0;
+		} else if (nearbyEnemies.length < 3) {
+			return 20;
+		}
+			return 60;
 	}
 }
