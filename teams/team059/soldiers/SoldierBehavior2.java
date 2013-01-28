@@ -45,12 +45,12 @@ public class SoldierBehavior2 extends RobotBehavior {
 		defuseManager = new DefuseManager();
 		
 		normalTaskGivers = new TaskGiver[]
-				{patrolManager, attackManager, scoutManager, defuseManager,
+				{patrolManager, attackManager, scoutManager,
 				mineManager, expandManager, takeEncampmentManager, attackEnemyHQGiver};
 		nuclearTaskGivers = new TaskGiver[] 
 				{attackManager, mineManager, expandManager, takeEncampmentManager};
 		rushTaskGivers = new TaskGiver[] 
-				{attackManager, expandManager, takeEncampmentManager, attackEnemyHQGiver, defuseManager};
+				{attackManager, expandManager, takeEncampmentManager, attackEnemyHQGiver};
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import static battlecode.common.Upgrade.*;
 
 public enum Strategy {
 	NORMAL(30, 0.0, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
-	NUCLEAR(5, -3.0, 0, 50, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
+	NUCLEAR(5, -3.0, 10, 50, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
 	RUSH(1, 3.0, 20, -50, new BuildSoldier(2), new UpgradeAction(DEFUSION));
 	
 	/**
@@ -32,7 +32,7 @@ public enum Strategy {
 		if(RC.getTeam() == Team.A) {
 			return NUCLEAR;
 		}
-		return RUSH;
+		return NORMAL;
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
