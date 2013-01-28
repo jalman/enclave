@@ -57,6 +57,8 @@ public class HQBehavior extends RobotBehavior {
 	 * Handle upgrades and robots.
 	 */
 	protected void macro() {
+		if(!RC.isActive()) return;
+		
 		boolean built = false;
 		if(Clock.getRoundNum() % 3 == 0) {
 			updateEncampmentCounts();
@@ -65,6 +67,7 @@ public class HQBehavior extends RobotBehavior {
 		if(buildOrderProgress < buildOrder.length) {
 			try {
 				HQAction action = buildOrder[buildOrderProgress];
+				RC.setIndicatorString(1, action.toString());
 				if(action.execute(this)) {
 					if(action instanceof UpgradeAction) {
 						messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
