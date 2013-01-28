@@ -19,16 +19,19 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private ExpandManager expandManager;
 	private MineManager mineManager;
 	private ScoutManager scoutManager;
+	private DefuseManager defuseManager;
 	
-	public static Micro microSystem;
 	private SingleTaskManager<AttackTask> attackManager;
 	private SingleTaskManager<ExpandTask> takeEncampmentManager;
-
+	private SingleTaskManager<AttackTask> attackEnemyHQGiver;
+	
 	private TaskGiver[] taskGivers;
 	private final TaskGiver[] normalTaskGivers;
 	private final TaskGiver[] nuclearTaskGivers;
 	private final TaskGiver[] rushTaskGivers;
 	private Task currentTask;
+
+	public static Micro microSystem;
 	
 	public SoldierBehavior2() {
 		microSystem = new Micro();
@@ -38,14 +41,16 @@ public class SoldierBehavior2 extends RobotBehavior {
 		attackManager = new SingleTaskManager<AttackTask>();
 		takeEncampmentManager = new SingleTaskManager<ExpandTask>();
 		scoutManager = new ScoutManager();
+		attackEnemyHQGiver = new SingleTaskManager<AttackTask>(new AttackEnemyHQTask());
+		defuseManager = new DefuseManager();
 		
 		normalTaskGivers = new TaskGiver[]
-				{patrolManager, attackManager, scoutManager,
-				mineManager, expandManager, takeEncampmentManager};
+				{patrolManager, attackManager, scoutManager, defuseManager,
+				mineManager, expandManager, takeEncampmentManager, attackEnemyHQGiver};
 		nuclearTaskGivers = new TaskGiver[] 
 				{attackManager, mineManager, expandManager, takeEncampmentManager};
 		rushTaskGivers = new TaskGiver[] 
-				{attackManager, expandManager, takeEncampmentManager};
+				{attackManager, expandManager, takeEncampmentManager, attackEnemyHQGiver, defuseManager};
 	}
 
 	@Override

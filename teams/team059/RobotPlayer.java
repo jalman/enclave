@@ -2,9 +2,7 @@ package team059;
 
 import team059.encampment.ArtilleryBehavior;
 import team059.encampment.EncampmentBehavior;
-import team059.hq.AntinukeHQBehavior;
 import team059.hq.HQBehavior;
-import team059.soldiers.AntinukeSoldierBehavior;
 import team059.soldiers.SoldierBehavior2;
 import team059.utils.Utils;
 import battlecode.common.Clock;
@@ -19,14 +17,10 @@ public class RobotPlayer {
 		switch(rc.getType()) {
 		case HQ:
 			Strategy strategy = Strategy.decide();
-			try{
-				robot = strategy == Strategy.RUSH ? new AntinukeHQBehavior() : new HQBehavior(strategy);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			robot = new HQBehavior(strategy);
 			break;
 		case SOLDIER:
-			robot =new AntinukeSoldierBehavior(); //strategy == Strategy.RUSH ? new AntinukeSoldierBehavior() : new SoldierBehavior2();
+			robot = new SoldierBehavior2();
 			break;
 		case ARTILLERY:
 			robot = new ArtilleryBehavior();

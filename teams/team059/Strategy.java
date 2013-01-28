@@ -10,7 +10,7 @@ import battlecode.common.Team;
 public enum Strategy {
 	NORMAL(30, 0.0, 0, 0, new BuildSoldier(2), UPGRADE_FUSION, new BuildSoldier(12), UPGRADE_DEFUSION),
 	NUCLEAR(5, -3.0, 0, 50, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(4), UPGRADE_NUKE),
-	RUSH(5, 3.0, 20, -50, new BuildSoldier(2), UPGRADE_DEFUSION);
+	RUSH(1, 3.0, 20, -50, new BuildSoldier(2), UPGRADE_DEFUSION);
 	
 	/**
 	 * Default parameters for this strategy.

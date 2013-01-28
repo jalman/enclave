@@ -39,7 +39,7 @@ public class PatrolManager extends TaskGiver {
 	
 	private void advance() {
 		Direction dir = currentLocation.directionTo(ENEMY_HQ);
-		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY);				
+		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY);
 	}
 	
 	/**

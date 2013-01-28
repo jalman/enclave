@@ -49,6 +49,7 @@ public class AntinukeSoldierBehavior extends SoldierBehavior2 {
 	MapLocation target = null;
 	
 	int chargeCounter = 0;
+	Mover mover = new Mover();
 	
 	AttackTask attack = new AttackTask(ENEMY_HQ,1000);
 	
