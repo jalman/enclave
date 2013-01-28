@@ -18,15 +18,18 @@ public class Mines {
 	/**
 	 * Defuses the farthest mine towards the target.
 	 * @param target The target location.
-	 * @param team The type of mine to defuse.
+	 * @param enemy Whether to defuse only enemy mines.
 	 * @return Whether defusion was successful.
 	 * @throws GameActionException
 	 */
-	public static boolean tryDefuse(MapLocation target, Team team) throws GameActionException {
+	public static boolean tryDefuse(MapLocation target, boolean enemy) throws GameActionException {
 		MapLocation best = null;
 		int distance = currentLocation.distanceSquaredTo(target);
 		
-		MapLocation[] mines = RC.senseMineLocations(currentLocation, mineRange2, team);
+		
+		MapLocation[] mines = enemy ?
+				RC.senseMineLocations(currentLocation, mineRange2, ENEMY_TEAM) :
+					RC.senseNonAlliedMineLocations(currentLocation, mineRange2);
 		for(MapLocation loc : mines) {
 			if(Mines.defuse[loc.x][loc.y] < Clock.getRoundNum() - GameConstants.MINE_DEFUSE_DELAY) {
 				int d = loc.distanceSquaredTo(target);

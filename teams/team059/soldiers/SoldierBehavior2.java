@@ -23,7 +23,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	
 	private SingleTaskManager<AttackTask> attackManager;
 	private SingleTaskManager<ExpandTask> takeEncampmentManager;
-	private SingleTaskManager<AttackTask> attackEnemyHQGiver;
+	private SingleTaskManager<DodgeMineTask> dodgeMineManager;
 	
 	private TaskGiver[] taskGivers;
 	private final TaskGiver[] normalTaskGivers;
@@ -41,16 +41,16 @@ public class SoldierBehavior2 extends RobotBehavior {
 		attackManager = new SingleTaskManager<AttackTask>();
 		takeEncampmentManager = new SingleTaskManager<ExpandTask>();
 		scoutManager = new ScoutManager();
-		attackEnemyHQGiver = new SingleTaskManager<AttackTask>(new AttackEnemyHQTask());
-		defuseManager = new DefuseManager();
+		//defuseManager = new DefuseManager();
+		dodgeMineManager = new SingleTaskManager<DodgeMineTask>(new DodgeMineTask());
 		
 		normalTaskGivers = new TaskGiver[]
 				{patrolManager, attackManager, scoutManager,
-				mineManager, expandManager, takeEncampmentManager, attackEnemyHQGiver};
+				mineManager, expandManager, takeEncampmentManager, dodgeMineManager};
 		nuclearTaskGivers = new TaskGiver[] 
-				{attackManager, mineManager, expandManager, takeEncampmentManager};
+				{attackManager, mineManager, expandManager, takeEncampmentManager, dodgeMineManager};
 		rushTaskGivers = new TaskGiver[] 
-				{attackManager, expandManager, takeEncampmentManager, attackEnemyHQGiver};
+				{attackManager, expandManager, takeEncampmentManager, dodgeMineManager};
 	}
 
 	@Override
@@ -100,6 +100,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 			t.update();
 			int appeal = t.appeal();
 			if(appeal > max_appeal) {
+				RC.setIndicatorString(0, "Task giver " + i);
 				currentTask = t;
 				max_appeal = appeal;
 			}
