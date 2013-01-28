@@ -64,7 +64,7 @@ public class Micro {
 	public void setMicroVariables() throws GameActionException{
 //		setEnemyTargetAndWeight();
 		setEnemyTarget(numberOfTargetsToCheck);
-//		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 1/2);
+//		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
 		setEnemyWeight(enemyTarget, sensorRadius);
 		setAllyWeight(enemyTarget, sensorRadius);
 	}
@@ -83,11 +83,12 @@ public class Micro {
 	
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
-//		if (enemyTargetRobotInfo.type == RobotType.SOLDIER && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
-//		{
-//			mover.setTarget(RC.getLocation());
-//		}
-		if (!shouldIAttack())
+		//TODO: Account for robot types!!!
+		if (allyWeight > (int)(0.7*enemyWeight) && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
+		{
+			mover.setTarget(RC.getLocation());
+		}
+		else if (!shouldIAttack())
 		{
 			setRetreatBack();
 			mover.setNavType(NavType.BUG);
