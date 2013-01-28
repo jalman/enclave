@@ -1,5 +1,6 @@
 package team059.soldiers;
 
+import team059.Strategy;
 import team059.movement.Mover;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -50,6 +51,10 @@ public class ScoutTask extends TravelTask {
 	@Override
 	public int appeal() {
 		//return Clock.getRoundNum() < MAX_SCOUT_TURNS ? SCOUT_PRIORITY : 0;
+		if(strategy.equals(Strategy.NUCLEAR)) {
+			System.out.println("NUCLEAR NO SCOUT");
+			return 0;
+		}
 		return SCOUT_PRIORITY;
 	}
 
@@ -68,6 +73,6 @@ public class ScoutTask extends TravelTask {
 	
 	@Override
 	public String toString() {
-		return "SCOUTING TO " + mover.getTarget();
+		return "SCOUTING TO " + super.mover.getTarget();
 	}
 }

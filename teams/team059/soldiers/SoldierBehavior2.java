@@ -57,7 +57,6 @@ public class SoldierBehavior2 extends RobotBehavior {
 	public void run() throws GameActionException {
 
 		updateSoldierUtils();
-//		System.out.println(strategy);
 		switch(strategy) {
 		case NUCLEAR:
 			taskGivers = nuclearTaskGivers;
@@ -82,7 +81,6 @@ public class SoldierBehavior2 extends RobotBehavior {
 				tg.compute();
 			}
 			Task t = tg.getTask();
-//			System.out.println("|||||" + t);
 			if(t == null) continue;
 			int appeal = t.appeal();
 			if(appeal > max_appeal) {
@@ -148,9 +146,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if(message[2] != ID) {
-					mineManager.receiveMineMessage(message[0], message[1]);
-				}
+				mineManager.receiveMineMessage(message[0], message[1]);
 			}
 		};
 	}

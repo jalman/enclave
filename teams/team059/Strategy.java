@@ -46,7 +46,7 @@ public enum Strategy {
 	 * @return The decided-upon strategy.
 	 */
 	public static Strategy decide() {
-		return NORMAL;
+		return NUCLEAR;
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		

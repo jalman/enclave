@@ -1,5 +1,6 @@
 package team059.soldiers;
 
+import team059.Strategy;
 import team059.movement.Mover;
 import team059.movement.NavType;
 import battlecode.common.Clock;
@@ -50,6 +51,9 @@ public class ExpandTask extends TravelTask {
 
 	@Override
 	public int appeal() {
+		if(strategy.equals(Strategy.NUCLEAR)) {
+			return -1;
+		}
 		return destination.equals(badA) || destination.equals(badB) ? -10000 : (int) (super.appeal() - RC.senseCaptureCost() / 5);
 	}
 
