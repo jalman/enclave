@@ -25,13 +25,11 @@ public class Micro {
 		{
 			updateFarawayEnemyTarget(1);
 			rushToBattle();
-			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
 		}
 		else{
 			setMicroVariables();
 			farawayEnemyTarget = enemyTarget;
 			micro();
-			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget() +  " NAVTYPE ");
 		}
 	}
 
@@ -44,14 +42,20 @@ public class Micro {
 			attackTarget(farawayEnemyTarget);
 		}
 		if(RC.isActive())
+		{
+			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
 			mover.execute();
+		}
 	}
 	public void micro() throws GameActionException{
 		if(enemyTarget != null) {		
 			attackOrRetreat();
 		}	
 		if(RC.isActive())
+		{
+			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget());
 			mover.execute();
+		}
 	}
 //	public boolean shouldIBeRunningMicroSystem(){
 //		if (farawayEnemyTarget == null)
@@ -65,8 +69,9 @@ public class Micro {
 //		setEnemyTargetAndWeight();
 		setEnemyTarget(numberOfTargetsToCheck);
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
-		setEnemyWeight(enemyTarget, sensorRadius);
-		setAllyWeight(enemyTarget, sensorRadius);
+		MapLocation m = enemyTarget;
+		setEnemyWeight(m, sensorRadius);
+		setAllyWeight(m, sensorRadius);
 	}
 	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)
 	{
@@ -84,7 +89,7 @@ public class Micro {
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
 		//TODO: Account for robot types!!!
-		if (allyWeight > (int)(0.7*enemyWeight) && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
+		if (allyWeight > (int)(0.85*enemyWeight) && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
 		{
 			mover.setTarget(RC.getLocation());
 		}

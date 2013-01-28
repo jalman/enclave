@@ -30,7 +30,7 @@ public enum Strategy {
 	 */
 	public static Strategy decide() {
 		if(RC.getTeam() == Team.A) {
-			return NUCLEAR;
+			return NORMAL;
 		}
 		return RUSH;
 		/*
