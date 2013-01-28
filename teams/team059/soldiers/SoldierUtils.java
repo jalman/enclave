@@ -78,11 +78,11 @@ public class SoldierUtils {
 		else if (r.type == RobotType.ARTILLERY)
 		{
 			//full health medium charge artillery returns 35
-			return Math.max(0, 15 - (int)(1.5*r.roundsUntilAttackIdle) + (int)((robotHealthPercent(r)*30)));
+			return Math.max(0, 15 - (int)(1.5*r.roundsUntilAttackIdle) + (int)((robotHealthPercent(r)*25)));
 		}
 		else if (r.type == RobotType.HQ)
 		{
-			return -40;
+			return -12;
 		}
 		else if (r.type == RobotType.MEDBAY)
 		{
@@ -99,7 +99,7 @@ public class SoldierUtils {
 		else if (r.type == RobotType.ARTILLERY)
 		{
 			//full health medium charge artillery returns 35
-			return 22 - (int)(r.roundsUntilAttackIdle/2) + (int)(robotHealthPercent(r)*20);
+			return 22 - (int)(r.roundsUntilAttackIdle/2) + (int)(robotHealthPercent(r)*18);
 		}
 		else if (r.type == RobotType.HQ)
 		{
@@ -166,8 +166,16 @@ public class SoldierUtils {
 		int naiveDistance = naiveDistance(currentLocation, r.location);
 		double healthPercent = robotHealthPercent(r);
 		int priority = robotTypePriority(r);
-		int roundsUntilAttackActive = r.roundsUntilAttackIdle;
-		return (200-(int)(healthPercent*22)-naiveDistance*15+priority+(int)(1.5*roundsUntilAttackActive));
+		int roundsUntilActive = 0;
+		if (r.type == RobotType.SOLDIER)
+		{
+			roundsUntilActive = r.roundsUntilMovementIdle;
+		}
+		else if (r.type == RobotType.ARTILLERY)
+		{
+			roundsUntilActive = r.roundsUntilAttackIdle;
+		}
+		return (200-(int)(healthPercent*22)-naiveDistance*15+priority+(int)(1.5*roundsUntilActive));
 	}
 	
 	//Helper methods for overallPriority
@@ -182,11 +190,15 @@ public class SoldierUtils {
 		}
 		if (r.type == RobotType.HQ)
 		{
-			return 40;
+			return 50;
+		}
+		else if (r.type == RobotType.HQ)
+		{
+			return 20;
 		}
 		else
 		{
-			return -5;
+			return -30;
 		}
 	}
 	
@@ -224,7 +236,7 @@ public class SoldierUtils {
 	public static int setAllyWeight(MapLocation m, int radiusSquared) throws GameActionException 
 	{
 		//if we scan from currentLocaiton
-		allyWeight = 10;
+		allyWeight = 4+(int)((RC.senseRobotInfo(RC.getRobot()).energon)/MAX_SOLDIER_ENERGON * 12);
 		RobotInfo r;
 		Robot[] allies = RC.senseNearbyGameObjects(Robot.class, m, radiusSquared, ALLY_TEAM);
 		for(Robot ally : allies) {

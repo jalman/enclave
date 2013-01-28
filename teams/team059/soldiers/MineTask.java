@@ -14,6 +14,8 @@ public class MineTask extends TravelTask {
 	private double density;
 	
 	private boolean sentMessageFlag = false;
+	private int waiting = 0;
+	private final int MAX_WAITING = 4;
 	
 	//public final double HIGH_DENSITY = 0.9;
 	public Team mineHere = null;
@@ -41,8 +43,10 @@ public class MineTask extends TravelTask {
 	public void execute() throws GameActionException {
 		//mines = RC.senseMineLocations(destination, 1, null);
 		mineHere = RC.senseMine(destination);
-		if(!sentMessageFlag) 
+		if(!sentMessageFlag) {
 			messagingSystem.writeLayingMineMessage(destination);
+			sentMessageFlag = true;
+		}
 		if(super.done()) {
 			/*
 			if(RC.hasUpgrade(Upgrade.PICKAXE)) {
@@ -62,6 +66,17 @@ public class MineTask extends TravelTask {
 	@Override
 	public boolean done() {
 		mineHere = RC.senseMine(destination);
+		if(currentLocation.isAdjacentTo(destination)) {
+			try {
+				if(RC.senseObjectAtLocation(destination) != null) {
+					if(waiting++ > MAX_WAITING) {
+						return true;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 //		density = (double) mines.length / distance;
 //		return density > HIGH_DENSITY;
 		return mineHere == ALLY_TEAM;

@@ -31,7 +31,7 @@ public class Micro {
 			setMicroVariables();
 			farawayEnemyTarget = enemyTarget;
 			micro();
-			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + "Target: " + mover.getTarget());
+			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget() +  " NAVTYPE ");
 		}
 	}
 
@@ -83,11 +83,11 @@ public class Micro {
 	
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
-		if (enemyTargetRobotInfo.type == RobotType.SOLDIER && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
-		{
-			mover.setTarget(RC.getLocation());
-		}
-		else if (!shouldIAttack())
+//		if (enemyTargetRobotInfo.type == RobotType.SOLDIER && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
+//		{
+//			mover.setTarget(RC.getLocation());
+//		}
+		if (!shouldIAttack())
 		{
 			setRetreatBack();
 			mover.setNavType(NavType.BUG);
@@ -108,7 +108,7 @@ public class Micro {
 	{
 		if (enemyTarget != null)
 		{
-			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite());
+			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite(), 2);
 		}
 		else
 		{

@@ -22,7 +22,7 @@ public class DefuseTask extends TravelTask {
 	
 	@Override
 	public boolean done() {
-		return isEnemyMine(destination) || Mines.defuse[destination.x][destination.y] > Clock.getRoundNum() - GameConstants.MINE_DEFUSE_DELAY;
+		return !isEnemyMine(destination) || Mines.defuse[destination.x][destination.y] > Clock.getRoundNum() - GameConstants.MINE_DEFUSE_DELAY;
 	}
 	
 	@Override
