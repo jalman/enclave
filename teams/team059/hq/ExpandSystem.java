@@ -11,7 +11,7 @@ import static team059.utils.Utils.*;
 
 /**
  * Coordinates early-game expanding.
- * @author vlad
+ * @author timothy zaran "tiberius" chu 
  */
 public class ExpandSystem {
 	private final int NC = 8;
@@ -57,6 +57,8 @@ public class ExpandSystem {
 	public void considerExpanding(int far) throws GameActionException {
 		if(far >= NC) return;
 		if(numSent*10 > Clock.getRoundNum()) return;
+		if(numSent >= parameters.greed) return;
+		//System.out.println(numSent + " " + parameters.greed);
 		
 		while(finished[far] || encampments[far] == null) {
 			far++;

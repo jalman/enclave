@@ -8,37 +8,20 @@ import battlecode.common.MapLocation;
 import battlecode.common.Team;
 
 public enum Strategy {
-	NORMAL(30, 0.0, 0, new BuildSoldier(2), UPGRADE_FUSION, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(8), UPGRADE_DEFUSION),
-	NUCLEAR(5, -4.0, 50, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(4), UPGRADE_NUKE),
-	RUSH(5, 100.0, -50, new BuildSoldier(2), UPGRADE_DEFUSION);
+	NORMAL(30, 0.0, 0, 0, new BuildSoldier(2), UPGRADE_FUSION, new BuildSoldier(12), UPGRADE_DEFUSION),
+	NUCLEAR(5, -3.0, 0, 50, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(4), UPGRADE_NUKE),
+	RUSH(1, 3.0, 20, -50, new BuildSoldier(2), UPGRADE_DEFUSION);
 	
 	/**
-	 * How quickly to expand at the beginning.
+	 * Default parameters for this strategy.
 	 */
-	public final int greed;
-	
-	/**
-	 * Roughly defines the border between us and the enemy.
-	 */
-	public final double border;
-	
-	/**
-	 * Half the "width" of the border.
-	 */
-	public static final double margin = 0.3;
+	public final Parameters parameters;
 	
 	public final HQAction[] buildOrder;
-
-	/**
-	 * priority with which to mine the HQ
-	 */
-	public final int mineHQPriority;
 	
-	private Strategy(int greed, double border, int mineHQPriority, HQAction... buildOrder) {
-		this.greed = greed;
-		this.border = border;
+	private Strategy(int greed, double border, int attack, int mine, HQAction... buildOrder) {
+		parameters = new Parameters(greed, border, attack, mine);
 		this.buildOrder = buildOrder;
-		this.mineHQPriority = mineHQPriority;
 	}
 	
 	/**
@@ -46,7 +29,7 @@ public enum Strategy {
 	 * @return The decided-upon strategy.
 	 */
 	public static Strategy decide() {
-		return NUCLEAR;
+		return RUSH;
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		

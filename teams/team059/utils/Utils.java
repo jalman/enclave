@@ -4,9 +4,11 @@ import java.util.Arrays;
 import java.util.Random;
 
 import battlecode.common.Clock;
+import team059.Parameters;
 import team059.Strategy;
 import team059.messaging.MessagingSystem;
 import battlecode.common.Direction;
+import battlecode.common.GameConstants;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotController;
@@ -37,6 +39,9 @@ public class Utils {
 	
 	//these are set from the beginning of the game
 	public static RobotController RC;
+	public static Robot ROBOT;
+	public static int ID;
+	public static RobotType TYPE;
 	public static int MAP_WIDTH, MAP_HEIGHT;
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
@@ -45,10 +50,10 @@ public class Utils {
 	
 	//this is for messaging
 	public static MessagingSystem messagingSystem;
-	public static int ID;
 	
 	//these might be set at the beginning of the round
 	public static Strategy strategy = Strategy.NORMAL;
+	public static Parameters parameters = strategy.parameters;
 	
 	public static MapLocation currentLocation;
 	public static int curX, curY;
@@ -57,8 +62,11 @@ public class Utils {
 	public static final int ENEMY_RADIUS2 = ENEMY_RADIUS * ENEMY_RADIUS;
 	public static Robot[] enemyRobots = new Robot[0];
 	public static double forward;
+	public static Team currentMine;
 	
 	public static boolean[] UPGRADES_RESEARCHED = new boolean[Upgrade.values().length];
+	public static int siteRange2;
+	public static int mineRange2;
 	
 	public static final int[] SQUARES_IN_RANGE = 
 		{1, 5, 9, 9, 13, 21, 21, 21, 25, 29, 
@@ -75,7 +83,9 @@ public class Utils {
 	
 	public static void initUtils(RobotController rc) {
 		RC = rc;
-		ID = RC.getRobot().getID();
+		ROBOT = rc.getRobot();
+		TYPE = rc.getType();
+		ID = ROBOT.getID();
 		
 		MAP_WIDTH = rc.getMapWidth();
 		MAP_HEIGHT = rc.getMapHeight();
@@ -107,6 +117,9 @@ public class Utils {
 		alliedEncampments = null;
 		forward = Math.log((double)naiveDistance(currentLocation, ALLY_HQ) / naiveDistance(currentLocation, ENEMY_HQ));
 		enemyRobots = RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
+		siteRange2 = TYPE.sensorRadiusSquared + (RC.hasUpgrade(Upgrade.VISION) ? GameConstants.VISION_UPGRADE_BONUS : 0);
+		mineRange2 = RC.hasUpgrade(Upgrade.DEFUSION) ? siteRange2 : 2;
+		currentMine = RC.senseMine(currentLocation);
 	}
 	
 	public static boolean isEnemyMine(Team team) {

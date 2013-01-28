@@ -18,14 +18,14 @@ public class PatrolManager extends TaskGiver {
 	
 	@Override
 	public void compute() throws GameActionException {
-		double position = forward - strategy.border;
+		double position = forward - parameters.border;
 		//System.out.println("Forward = " + forward + ", border = " + strategy.border + ", position = " + position);
 		
 		RC.setIndicatorString(0, String.valueOf(position));
 		
-		if(position > strategy.margin) {
+		if(position > parameters.margin) {
 			retreat();
-		} else if(position < strategy.margin) {
+		} else if(position < parameters.margin) {
 			advance();
 		} else {
 			patrol();
@@ -39,7 +39,7 @@ public class PatrolManager extends TaskGiver {
 	
 	private void advance() {
 		Direction dir = currentLocation.directionTo(ENEMY_HQ);
-		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY);				
+		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY);
 	}
 	
 	/**

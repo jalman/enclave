@@ -3,7 +3,8 @@ package team059.messaging;
 public enum MessageType {
 
 	HEADER(1), 
-	HQ_INFO(1), 
+	STRATEGY(1),
+	PARAMETERS(3),
 	ATTACK_LOCATION(3), 
 	CHECKPOINT_NUMBER(1), 
 	TASK_TAKEN(3),  
@@ -11,7 +12,7 @@ public enum MessageType {
 	TAKE_ENCAMPMENT(4), 
 	MICRO_INFO(3), 
 	BIRTH_INFO(4), 
-	LAYING_MINE(3),
+	LAYING_MINE(2),
 	DEFUSING_MINE(3),
 	ANNOUNCE_UPGRADE(1),
 	SHIELD_LOCATION(2);

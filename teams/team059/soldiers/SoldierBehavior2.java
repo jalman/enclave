@@ -15,48 +15,52 @@ import team059.soldiers.micro.Micro;
 import static team059.utils.Utils.*;
 
 public class SoldierBehavior2 extends RobotBehavior {
-	public Mover mover;
-
 	private PatrolManager patrolManager;
 	private ExpandManager expandManager;
-	private TaskManager taskManager;
 	private MineManager mineManager;
 	private ScoutManager scoutManager;
+	private DefuseManager defuseManager;
 	
-	public static Micro microSystem;
 	private SingleTaskManager<AttackTask> attackManager;
 	private SingleTaskManager<ExpandTask> takeEncampmentManager;
-
+	private SingleTaskManager<AttackTask> attackEnemyHQGiver;
+	
 	private TaskGiver[] taskGivers;
 	private final TaskGiver[] normalTaskGivers;
 	private final TaskGiver[] nuclearTaskGivers;
 	private final TaskGiver[] rushTaskGivers;
 	private Task currentTask;
+
+	public static Micro microSystem;
 	
 	public SoldierBehavior2() {
-		mover = new Mover();
 		microSystem = new Micro();
 		patrolManager = new PatrolManager();
 		expandManager = new ExpandManager();
-		taskManager = new TaskManager();
 		mineManager = new MineManager();
 		attackManager = new SingleTaskManager<AttackTask>();
 		takeEncampmentManager = new SingleTaskManager<ExpandTask>();
 		scoutManager = new ScoutManager();
+		attackEnemyHQGiver = new SingleTaskManager<AttackTask>(new AttackEnemyHQTask());
+		defuseManager = new DefuseManager();
 		
 		normalTaskGivers = new TaskGiver[]
-				{patrolManager, taskManager, attackManager, scoutManager,
-				mineManager, expandManager, takeEncampmentManager};
+				{patrolManager, attackManager, scoutManager, defuseManager,
+				mineManager, expandManager, takeEncampmentManager, attackEnemyHQGiver};
 		nuclearTaskGivers = new TaskGiver[] 
 				{attackManager, mineManager, expandManager, takeEncampmentManager};
 		rushTaskGivers = new TaskGiver[] 
-				{attackManager, expandManager, takeEncampmentManager};
+				{attackManager, expandManager, takeEncampmentManager, attackEnemyHQGiver, defuseManager};
 	}
 
 	@Override
-	public void run() throws GameActionException {
-
+	public void beginRound() throws GameActionException {
 		updateSoldierUtils();
+		super.beginRound();
+	}
+	
+	@Override
+	public void run() throws GameActionException {
 		switch(strategy) {
 		case NUCLEAR:
 			taskGivers = nuclearTaskGivers;
@@ -71,9 +75,20 @@ public class SoldierBehavior2 extends RobotBehavior {
 			taskGivers = normalTaskGivers;
 		}
 		
-		boolean compute = currentTask == null || currentTask.done();
-
+		boolean compute = false;
 		int max_appeal = Integer.MIN_VALUE;
+		
+		if(currentTask == null) {
+			compute = true;
+		} else {
+			currentTask.update();
+			if(currentTask.done()) {
+				compute = true;
+				currentTask = null;
+			} else {
+				max_appeal = currentTask.appeal();
+			}
+		}
 
 		for(int i = 0; i < taskGivers.length; i++) {
 			TaskGiver tg = taskGivers[i];
@@ -81,19 +96,17 @@ public class SoldierBehavior2 extends RobotBehavior {
 				tg.compute();
 			}
 			Task t = tg.getTask();
-			if(t == null) continue;
+			if(t == null || t == currentTask) continue;
+			t.update();
 			int appeal = t.appeal();
 			if(appeal > max_appeal) {
 				currentTask = t;
 				max_appeal = appeal;
 			}
-//			if(t instanceof MineTask) {
-//				System.out.println("Task " + t + " has appeal " + appeal);
-//			}
 		}
 		
 		if(currentTask != null && RC.isActive()) {
-			RC.setIndicatorString(1, currentTask.toString());
+			RC.setIndicatorString(1, currentTask.toString() + " with appeal " + currentTask.appeal());
 			currentTask.execute();
 		}
 	}
@@ -127,7 +140,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				ExpandTask task = takeEncampmentManager.getTask();
 				if(task != null && loc.equals(task.destination) && appeal > task.appeal()) {
 					takeEncampmentManager.clearTask();
-					System.out.println("Decided against taking encampment.");
+					//System.out.println("Decided against taking encampment.");
 				}
 			}
 		};
@@ -174,4 +187,15 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};
 	}
+	
+	@Override
+	protected MessageHandler getDefusingMineHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				Mines.defuse[message[0]][message[1]] = Clock.getRoundNum();
+			}
+		};		
+	}
+
 }

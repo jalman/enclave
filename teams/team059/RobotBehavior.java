@@ -15,7 +15,8 @@ public class RobotBehavior {
 
 	public RobotBehavior() {
 		messageHandlers = new MessageHandler[MessageType.values().length];
-		messageHandlers[MessageType.HQ_INFO.ordinal()] = getHQHandler();		
+		messageHandlers[MessageType.STRATEGY.ordinal()] = getStrategyHandler();
+		messageHandlers[MessageType.PARAMETERS.ordinal()] = getParametersHandler();
 		messageHandlers[MessageType.ATTACK_LOCATION.ordinal()] = getAttackHandler();
 		messageHandlers[MessageType.CHECKPOINT_NUMBER.ordinal()] = getCheckpointHandler();
 		messageHandlers[MessageType.MICRO_INFO.ordinal()] = getMicroHandler();
@@ -72,16 +73,27 @@ public class RobotBehavior {
 	 * Reads the strategy from the HQ.
 	 * @return The default HQ-message handler.
 	 */
-	protected MessageHandler getHQHandler() {
+	protected MessageHandler getStrategyHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
 				strategy = Strategy.values()[message[0]];
-				//System.out.println(strategy);
+				parameters = strategy.parameters;
 			}
 		};
 	}
 
+	protected MessageHandler getParametersHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				parameters.greed = message[0];
+				parameters.border = (double) message[1] / 1024;
+				parameters.attack = message[2];
+			}
+		};
+	}
+	
 	/**
 	 * Override in order to respond to this type of message.
 	 * @return The default message handler (does nothing).
@@ -107,6 +119,7 @@ public class RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				Shields.insertShield(new MapLocation(message[0], message[1]));
+				System.out.println("Read shield message.");
 			}
 		};
 	}
