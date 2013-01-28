@@ -159,9 +159,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				if(message[2] != ID) {
-					mineManager.receiveMineMessage(message[0], message[1]);
-				}
+				mineManager.receiveMineMessage(message[0], message[1]);
 			}
 		};
 	}

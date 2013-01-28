@@ -27,13 +27,16 @@ public class BuggingDigMove extends NavAlg {
 	*/
 	
 	public Direction getNextDir() {
-		this.curLoc = RC.getLocation();
 		
 		if(finish == null) return Direction.NONE;
 		
-		tryDir = curLoc.directionTo(finish);
+		tryDir = currentLocation.directionTo(finish);
 		
 		if(tryDir == Direction.NONE || tryDir == Direction.OMNI) return Direction.NONE;
+		
+		if(currentLocation.isAdjacentTo(finish)) {
+			return currentLocation.directionTo(finish);
+		}
 		
 		if(!bugging) {
 			if(canMoveNoMine(tryDir)) {
@@ -44,8 +47,8 @@ public class BuggingDigMove extends NavAlg {
 				return tryDir.rotateRight();
 			} else {
 				bugging = true;
-				hugLeft = ( naiveDistance(curLoc.add(tryDir.rotateRight()), finish) 
-								< naiveDistance(curLoc.add(tryDir.rotateLeft()), finish) ? true : false );
+				hugLeft = ( naiveDistance(currentLocation.add(tryDir.rotateRight()), finish) 
+								< naiveDistance(currentLocation.add(tryDir.rotateLeft()), finish) ? true : false );
 			}
 		}
 		
@@ -77,6 +80,6 @@ public class BuggingDigMove extends NavAlg {
 	private boolean canMoveNoMine(Direction d) {
 		//System.out.println(d);
 		if(d==null) return true;
-		return ( RC.canMove(d) && !isEnemyMine(curLoc.add(d)) );
+		return ( RC.canMove(d) && !isEnemyMine(currentLocation.add(d)) );
 	}
 }
