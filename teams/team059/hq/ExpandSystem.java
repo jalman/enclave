@@ -59,6 +59,8 @@ public class ExpandSystem {
 		if(far >= NC) return;
 		if(numSent*10 > Clock.getRoundNum()) return;
 		if(numSent >= parameters.greed) return;
+		///CHANGE THE 4 INTO SOMETHING ELSE?!
+		if(RC.senseAlliedEncampmentSquares().length*4 > RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ALLY_TEAM).length) return;
 		//System.out.println(numSent + " " + parameters.greed);
 		
 		while((finished[far] && numLost == 0) || encampments[far] == null) {
