@@ -22,7 +22,6 @@ public class MineTask extends TravelTask {
 	
 	public MineTask(MapLocation target, int priority) {
 		super(target, priority, 0);
-		//System.out.println("New MineTask with target " + target + ", priority " + priority);
 	}
 	
 	//should depend on the strategy and round number, and an evaluation of how many mines there are around the target

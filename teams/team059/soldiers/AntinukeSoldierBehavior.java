@@ -13,6 +13,7 @@ import team059.movement.NavType;
 import team059.soldiers.micro.Micro;
 import team059.utils.Shields;
 import static team059.utils.Utils.*;
+import static team059.soldiers.SoldierUtils.*;
 
 public class AntinukeSoldierBehavior extends SoldierBehavior2 {
 
@@ -82,7 +83,6 @@ public class AntinukeSoldierBehavior extends SoldierBehavior2 {
 			attackerDirection = shield.directionTo(ALLY_HQ);
 			target = shield.add(attackerDirection);
 		}
-		RC.setIndicatorString(2, role.name());
 		switch (role) {
 		case ENCAMPMENT:
 			runEncampment();
@@ -100,6 +100,8 @@ public class AntinukeSoldierBehavior extends SoldierBehavior2 {
 			runDefuser();
 			break;
 		}
+		RC.setIndicatorString(2, role.name() + Clock.getRoundNum() + mover.getTarget());
+
 	}
 	
 	private void runEncampment() throws GameActionException {
@@ -148,8 +150,20 @@ public class AntinukeSoldierBehavior extends SoldierBehavior2 {
 	}
 	
 	private void runKiller() throws GameActionException {
-		mover.setNavType(NavType.BEELINE);
-		attack.execute();
+		if (farawayEnemyTarget != null)
+		{
+			microSystem.run();
+		}
+		else
+		{	
+			mover.setNavType(NavType.BUG_HIGH_DIG);
+			mover.setTarget(ENEMY_HQ);
+			if (RC.isActive())
+			{
+				RC.setIndicatorString(1, Clock.getRoundNum() + " KILLER MESSAGE SET");
+				mover.execute();
+			}
+		}
 	}
 	
 	private void runDefuser() {
