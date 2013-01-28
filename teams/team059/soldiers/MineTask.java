@@ -42,7 +42,7 @@ public class MineTask extends TravelTask {
 		//mines = RC.senseMineLocations(destination, 1, null);
 		mineHere = RC.senseMine(destination);
 		if(!sentMessageFlag) 
-			messagingSystem.writeLayingMineMessage(destination, ID);
+			messagingSystem.writeLayingMineMessage(destination);
 		if(super.done()) {
 			/*
 			if(RC.hasUpgrade(Upgrade.PICKAXE)) {

@@ -4,6 +4,14 @@ public class SingleTaskManager<T extends Task> extends TaskGiver {
 
 	private T currentTask;
 	
+	public SingleTaskManager() {
+		currentTask = null;
+	}
+	
+	public SingleTaskManager(T task) {
+		currentTask = task;
+	}
+	
 	@Override
 	public void compute() {
 		if(currentTask != null && currentTask.done()) {

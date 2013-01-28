@@ -2,14 +2,11 @@ package team059.hq;
 
 import static team059.utils.Utils.*;
 
-import java.util.Arrays;
-
 import team059.RobotBehavior;
 import team059.Strategy;
 import team059.utils.ArraySet;
 import team059.utils.Shields;
 import team059.messaging.MessageHandler;
-import team059.messaging.MessagingSystem;
 import team059.utils.Utils;
 import battlecode.common.*;
 
@@ -17,8 +14,6 @@ public class HQBehavior extends RobotBehavior {
 
 	HQAction[] buildOrder;
 	int buildOrderProgress = 0;
-	boolean enemyNukeHalfDone = false;
-	int enemyNukeHalfRound;
 
 	int numBots;
 
@@ -28,14 +23,14 @@ public class HQBehavior extends RobotBehavior {
 
 	double lastFlux = 0, thisFlux = 0, fluxDiff = 0, actualFlux = 0;
 
-	boolean panicking = false;
-
 	ExpandSystem expandSystem;
+	WarSystem warSystem;
 
 	public HQBehavior(Strategy strategy) {
 		Utils.strategy = strategy;
 		buildOrder = strategy.buildOrder;	
 		expandSystem = new ExpandSystem();
+		warSystem = new WarSystem();
 	}
 
 	@Override
@@ -47,16 +42,14 @@ public class HQBehavior extends RobotBehavior {
 		fluxDiff = actualFlux - lastFlux;
 		lastFlux = actualFlux;
 
-		try {
-			messagingSystem.beginRoundHQ(messageHandlers);
-		} catch (GameActionException e1) {
-			e1.printStackTrace();
-		}
+		messagingSystem.beginRoundHQ(messageHandlers);
+	}
 
-		if(!enemyNukeHalfDone && Clock.getRoundNum() > Upgrade.NUKE.numRounds / 2) {
-			enemyNukeHalfDone = RC.senseEnemyNukeHalfDone();
-			enemyNukeHalfRound = Clock.getRoundNum();
-		}
+	@Override
+	public void run() throws GameActionException {
+		macro();
+		expand();
+		warSystem.run();
 	}
 
 	/**
@@ -103,7 +96,7 @@ public class HQBehavior extends RobotBehavior {
 				expandSystem.considerExpanding(0); //fix this
 			} catch (GameActionException e) {
 				e.printStackTrace();
-			} 
+			}
 		}
 	}
 
@@ -137,27 +130,6 @@ public class HQBehavior extends RobotBehavior {
 				supIndex++;
 			}
 		}
-	}
-
-	@Override
-	public void run() throws GameActionException {
-		macro();
-		expand();
-
-		if(panic()) {
-			messagingSystem.writeAttackMessage(ENEMY_HQ, 100);
-		}
-	}
-
-	public boolean panic() {
-		try {
-			if(!panicking) {
-				panicking = enemyNukeHalfDone && Clock.getRoundNum() - enemyNukeHalfRound + Upgrade.NUKE.numRounds / 2 > RC.checkResearchProgress(Upgrade.NUKE);
-			}
-		} catch (GameActionException e) {
-			e.printStackTrace();
-		}
-		return panicking;
 	}
 	
 	/**
@@ -197,7 +169,7 @@ public class HQBehavior extends RobotBehavior {
 
 
 	private void sendMessagesOnBuild() throws GameActionException {
-		messagingSystem.writeHQMessage(strategy);
+		messagingSystem.writeStrategy(strategy);
 		for(int i = 0; i < Shields.shieldLocations.size; i++) {
 			messagingSystem.writeShieldLocationMessage(Shields.shieldLocations.get(i));
 		}

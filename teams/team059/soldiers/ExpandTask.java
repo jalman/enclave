@@ -1,7 +1,5 @@
 package team059.soldiers;
 
-import team059.movement.Mover;
-import team059.movement.NavType;
 import battlecode.common.Clock;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
@@ -11,19 +9,17 @@ import battlecode.common.RobotType;
 import static team059.utils.Utils.*;
 
 public class ExpandTask extends TravelTask {
-
-	private static final Mover mover = new Mover();
 	
 	private final RobotType buildType;
 	private final MapLocation badA, badB;
 	private boolean init = true;
 	
 	public ExpandTask(MapLocation encampment) {
-		this(encampment, strategy.greed, null);
+		this(encampment, parameters.greed, null);
 	}
 
 	public ExpandTask(MapLocation encampment, int priority, RobotType buildType) {
-		super(mover, encampment, priority, 0);
+		super(encampment, priority, 0);
 		this.buildType = buildType;
 		
 		Direction dirToEnemy = ALLY_HQ.directionTo(ENEMY_HQ);
@@ -73,7 +69,7 @@ public class ExpandTask extends TravelTask {
 	
 	private RobotType getCaptureType() {
 		//overrides build type
-		if(forward >= strategy.border - strategy.margin) {
+		if(forward >= parameters.border - parameters.margin) {
 			//TODO: make medbays?
 			return RobotType.ARTILLERY;
 		}
