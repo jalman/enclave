@@ -16,11 +16,17 @@ public class Micro {
 	int numberOfTargetsToCheck = 5;
 	public boolean microModeEntered = false;
 	
+	/**
+	 * Timidity
+	 */
+	public int timidity = 0;
+	
 	public Micro() {
 		enemyTarget = null;
 	}
 	public void run() throws GameActionException{
 		
+		timidity = strategy.parameters.timidity;
 		if (enemyRobots.length == 0)
 		{
 			updateFarawayEnemyTarget(1);
@@ -83,7 +89,7 @@ public class Micro {
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
 		//TODO: Account for robot types!!!
-		if (allyWeight > (int)(0.85*enemyWeight) && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
+		if (allyWeight > (int)(0.7*enemyWeight) && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
 		{
 			mover.setTarget(RC.getLocation());
 		}
@@ -119,7 +125,7 @@ public class Micro {
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(allyWeight > enemyWeight)
+		if(15*allyWeight > (15+timidity)*enemyWeight)
 		{
 			return true;
 		}		

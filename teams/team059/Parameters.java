@@ -32,10 +32,16 @@ public class Parameters {
 	 */
 	public int mine;
 	
-	public Parameters(int greed, double border, int attack, int mine) {
+	/**
+	 *A parameter for how timid microsystem is in rushing in.
+	 */
+	public int timidity;
+	
+	public Parameters(int greed, double border, int attack, int mine, int timidity) {
 		this.greed = greed;
 		this.border = border;
 		this.attack = attack;
 		this.mine = mine;
+		this.timidity = timidity;
 	}
 }
