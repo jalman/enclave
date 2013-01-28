@@ -28,6 +28,7 @@ public class HQBehavior extends RobotBehavior {
 
 	public HQBehavior(Strategy strategy) {
 		Utils.strategy = strategy;
+		Utils.parameters = strategy.parameters;
 		buildOrder = strategy.buildOrder;	
 		expandSystem = new ExpandSystem();
 		warSystem = new WarSystem();

@@ -31,7 +31,7 @@ public class Micro {
 			setMicroVariables();
 			farawayEnemyTarget = enemyTarget;
 			micro();
-			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + "EnemyTarget: " + enemyTarget);
+			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + "Target: " + mover.getTarget());
 		}
 	}
 
@@ -62,10 +62,10 @@ public class Micro {
 //		return true;
 //	}
 	public void setMicroVariables() throws GameActionException{
-		setEnemyTargetAndWeight();
-//		setEnemyTarget(numberOfTargetsToCheck);
+//		setEnemyTargetAndWeight();
+		setEnemyTarget(numberOfTargetsToCheck);
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 1/2);
-//		setEnemyWeight(m, sensorRadius);
+		setEnemyWeight(enemyTarget, sensorRadius);
 		setAllyWeight(enemyTarget, sensorRadius);
 	}
 	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)

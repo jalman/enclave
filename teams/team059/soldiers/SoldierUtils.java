@@ -12,7 +12,7 @@ public class SoldierUtils {
 	public final static int MAX_ENCAMPMENT_ENERGON = 100;
 	public final static int MAX_HQ_ENERGON = 500;
 	
-	public final static int sensorRadius = ENEMY_RADIUS2;
+	public final static int sensorRadius = 14;
 	public final static int closeEnoughToGoToBattleSquared = 100;
 	private static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
 	public static final int maxNumberOfEnemiesToCheckToFindATarget = 9;
@@ -78,7 +78,7 @@ public class SoldierUtils {
 		else if (r.type == RobotType.ARTILLERY)
 		{
 			//full health medium charge artillery returns 35
-			return 15 - (int)(r.roundsUntilAttackIdle) + (int)((robotHealthPercent(r)*30));
+			return Math.max(0, 15 - (int)(1.5*r.roundsUntilAttackIdle) + (int)((robotHealthPercent(r)*30)));
 		}
 		else if (r.type == RobotType.HQ)
 		{
@@ -103,9 +103,13 @@ public class SoldierUtils {
 		}
 		else if (r.type == RobotType.HQ)
 		{
-			return 150;
+			return 110;
 		}
-		return 18;
+		else if (r.type == RobotType.MEDBAY)
+		{
+			return 25;
+		}
+		return 8;
 	}
 	/**
 	 * Finds enemy target within the micro radius with highest priority. 
@@ -141,9 +145,11 @@ public class SoldierUtils {
 			tempRobotInfo = RC.senseRobotInfo(enemyRobots[i]);
 			if(overallPriority(tempRobotInfo) > priority)
 			{
-				enemyTarget = tempRobotInfo.location;
+				enemyTargetRobotInfo = tempRobotInfo;
 				priority = overallPriority(tempRobotInfo);
 			}
+			enemyTarget = enemyTargetRobotInfo.location;
+
 		}	
 	}
 	
