@@ -79,7 +79,7 @@ public class ExpandTask extends TravelTask {
 		//overrides build type
 		if(forward >= parameters.border - parameters.margin) {
 			//TODO: make medbays?
-			return RobotType.ARTILLERY;
+			//return RobotType.ARTILLERY;
 		}
 		
 		if(buildType != null) return buildType;
