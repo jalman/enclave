@@ -97,7 +97,7 @@ public class HQBehavior extends RobotBehavior {
 	protected void expand() {
 		if(RC.senseCaptureCost() + 10 < RC.getTeamPower()) {
 			try {
-				expandSystem.considerExpanding(0); //fix this
+				expandSystem.considerExpanding();
 			} catch (GameActionException e) {
 				e.printStackTrace();
 			}
@@ -117,6 +117,7 @@ public class HQBehavior extends RobotBehavior {
 			if(!RC.canSenseObject(generators.get(genIndex))) {
 				generators.delete(genIndex);
 				System.out.println("generator lost!");
+				expandSystem.lost();
 			} else {
 				genIndex++;
 			}
@@ -130,6 +131,7 @@ public class HQBehavior extends RobotBehavior {
 			if(!RC.canSenseObject(suppliers.get(supIndex))) {
 				suppliers.delete(supIndex);
 				System.out.println("supplier lost!");
+				expandSystem.lost();
 			} else {
 				supIndex++;
 			}
