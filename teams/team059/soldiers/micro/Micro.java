@@ -47,6 +47,7 @@ public class Micro {
 			mover.execute();
 		}
 	}
+	
 	public void micro() throws GameActionException{
 		if(enemyTarget != null) {		
 			attackOrRetreat();
@@ -57,14 +58,7 @@ public class Micro {
 			mover.execute();
 		}
 	}
-//	public boolean shouldIBeRunningMicroSystem(){
-//		if (farawayEnemyTarget == null)
-//		{
-//			microModeEntered = false;
-//			return false;
-//		}
-//		return true;
-//	}
+
 	public void setMicroVariables() throws GameActionException{
 //		setEnemyTargetAndWeight();
 		setEnemyTarget(numberOfTargetsToCheck);

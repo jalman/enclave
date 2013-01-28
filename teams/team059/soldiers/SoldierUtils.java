@@ -12,7 +12,7 @@ public class SoldierUtils {
 	public final static int MAX_ENCAMPMENT_ENERGON = 100;
 	public final static int MAX_HQ_ENERGON = 500;
 	
-	public final static int sensorRadius = 20;
+	public final static int sensorRadius = 14;
 	public final static int closeEnoughToGoToBattleSquared = 100;
 	private static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
 	public static final int maxNumberOfEnemiesToCheckToFindATarget = 9;
@@ -78,7 +78,7 @@ public class SoldierUtils {
 		else if (r.type == RobotType.ARTILLERY)
 		{
 			//full health medium charge artillery returns 35
-			return 3 - (int)(1.5*r.roundsUntilAttackIdle) + (int)((robotHealthPercent(r)*12));
+			return -4; //Math.max(-4, 3 - (int)(1.5*r.roundsUntilAttackIdle) + (int)((robotHealthPercent(r)*12)));
 		}
 		else if (r.type == RobotType.HQ)
 		{
@@ -86,7 +86,7 @@ public class SoldierUtils {
 		}
 		else if (r.type == RobotType.MEDBAY)
 		{
-			return 25;
+			return 14;
 		}
 		return 0;
 	}
@@ -186,7 +186,7 @@ public class SoldierUtils {
 		}
 		else if (r.type == RobotType.ARTILLERY)
 		{
-			return 35;
+			return 60;
 		}
 		if (r.type == RobotType.HQ)
 		{
