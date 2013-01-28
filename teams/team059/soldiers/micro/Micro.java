@@ -66,7 +66,7 @@ public class Micro {
 //		setEnemyTarget(numberOfTargetsToCheck);
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 1/2);
 //		setEnemyWeight(m, sensorRadius);
-		setAllyWeight(currentLocation, sensorRadius);
+		setAllyWeight(enemyTarget, sensorRadius);
 	}
 	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)
 	{
@@ -119,7 +119,7 @@ public class Micro {
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(allyWeight > enemyWeight && allyWeight > 1)
+		if(allyWeight > enemyWeight)
 		{
 			return true;
 		}		
@@ -137,18 +137,4 @@ public class Micro {
 			mover.setTarget(RC.getLocation());
 		}
 	}
-//	public void goToBattle(int mapLocX, int mapLocY){
-//		MapLocation tempBattleSpot = new MapLocation(mapLocX, mapLocY);
-//		if (battleSpot == null || naiveDistance(tempBattleSpot, currentLocation) < naiveDistance(battleSpot, currentLocation) 
-//				||  battleSpotAge >= 2)
-//		{
-//			battleSpot = tempBattleSpot;
-//			battleSpotAge = 0;
-//		}
-//		int distanceSquared = battleSpot.distanceSquaredTo(currentLocation);
-//		if(distanceSquared < closeEnoughToGoToBattleSquared && distance > ENEMY_RADIUS2)
-//		{
-//			mover.setTarget(battleSpot);
-//		}
-//	}	
 }

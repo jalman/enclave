@@ -214,7 +214,8 @@ public class SoldierUtils {
 	}
 	public static int setAllyWeight(MapLocation m, int radiusSquared) throws GameActionException 
 	{
-		allyWeight = 0;
+		//if we scan from currentLocaiton
+		allyWeight = 10;
 		RobotInfo r;
 		Robot[] allies = RC.senseNearbyGameObjects(Robot.class, m, radiusSquared, ALLY_TEAM);
 		for(Robot ally : allies) {

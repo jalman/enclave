@@ -119,6 +119,7 @@ public class RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				Shields.insertShield(new MapLocation(message[0], message[1]));
+				System.out.println("Read shield message.");
 			}
 		};
 	}

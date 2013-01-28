@@ -37,6 +37,7 @@ public class Mover {
 		if(!dest.equals(this.dest)) {
 			this.dest = dest;
 			navAlg.recompute(dest);
+			beelineAlg.recompute(dest);
 		}
 	}
 
@@ -94,6 +95,7 @@ public class Mover {
 		//RC.setIndicatorString(1, "my x = " + Integer.toString(RC.getLocation().x) + ", my y = " + Integer.toString(RC.getLocation().y)
 		//		+ "x = " + Integer.toString(dest.x) + ", y = " + Integer.toString(dest.y)); 
 		//RC.setIndicatorString(1, dest + "");
+		System.out.println("dest = " + dest);
 		if(RC.isActive()) {
 			here = RC.getLocation();
 			if(dest == null || dest.equals(here)) {
