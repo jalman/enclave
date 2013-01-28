@@ -106,7 +106,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		}
 		
 		if(currentTask != null && RC.isActive()) {
-			RC.setIndicatorString(1, currentTask.toString() + " with appeal " + currentTask.appeal());
+			RC.setIndicatorString(1, Clock.getRoundNum() + ": " + currentTask.toString() + " with appeal " + currentTask.appeal());
 			currentTask.execute();
 		}
 	}
