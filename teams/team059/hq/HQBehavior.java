@@ -75,7 +75,7 @@ public class HQBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		} else if(RC.isActive()) {
-			if(actualFlux > 400.0 || (actualFlux > 10.0 && fluxDiff > 0)) {
+			if(actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
 				try {
 					built = buildSoldier();
 				} catch (Exception e) {
