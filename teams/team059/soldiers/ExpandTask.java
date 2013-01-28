@@ -16,6 +16,7 @@ public class ExpandTask extends TravelTask {
 	private final RobotType buildType;
 	private final MapLocation badA, badB;
 	private boolean init = true;
+	int count = 0;
 	
 	public ExpandTask(MapLocation encampment) {
 		this(encampment, parameters.greed, null);
@@ -49,7 +50,7 @@ public class ExpandTask extends TravelTask {
 
 	@Override
 	public int appeal() {
-		if(strategy.equals(Strategy.NUCLEAR)) {
+		if(strategy.equals(Strategy.NUCLEAR) || count > 50) {
 			return -1;
 		}
 		return destination.equals(badA) || destination.equals(badB) ? -10000 : (int) (super.appeal() - RC.senseCaptureCost() / 5);
@@ -57,6 +58,7 @@ public class ExpandTask extends TravelTask {
 
 	@Override
 	public void execute() throws GameActionException {
+		count++;
 		if(init) {
 			messagingSystem.writeTakingEncampmentMessage(destination, appeal());
 			init = false;

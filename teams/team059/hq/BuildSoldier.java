@@ -15,6 +15,11 @@ public class BuildSoldier implements HQAction {
 		if(hq.buildSoldier()) {
 			number--;
 		}
-		return number > 0;
+		return number == 0;
+	}
+	
+	@Override
+	public String toString() {
+		return "Building " + number + " soldiers";
 	}
 }

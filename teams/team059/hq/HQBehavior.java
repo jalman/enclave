@@ -57,6 +57,8 @@ public class HQBehavior extends RobotBehavior {
 	 * Handle upgrades and robots.
 	 */
 	protected void macro() {
+		if(!RC.isActive()) return;
+		
 		boolean built = false;
 		if(Clock.getRoundNum() % 3 == 0) {
 			updateEncampmentCounts();
@@ -65,6 +67,7 @@ public class HQBehavior extends RobotBehavior {
 		if(buildOrderProgress < buildOrder.length) {
 			try {
 				HQAction action = buildOrder[buildOrderProgress];
+				RC.setIndicatorString(1, action.toString());
 				if(action.execute(this)) {
 					if(action instanceof UpgradeAction) {
 						messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
@@ -75,7 +78,7 @@ public class HQBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		} else if(RC.isActive()) {
-			if(actualFlux > 400.0 || (actualFlux > 10.0 && fluxDiff > 0)) {
+			if(actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
 				try {
 					built = buildSoldier();
 				} catch (Exception e) {
