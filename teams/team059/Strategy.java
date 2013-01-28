@@ -1,16 +1,16 @@
 package team059;
 
-import static team059.hq.UpgradeAction.*;
 import static team059.utils.Utils.*;
 import team059.hq.BuildSoldier;
 import team059.hq.HQAction;
-import battlecode.common.MapLocation;
+import team059.hq.UpgradeAction;
 import battlecode.common.Team;
+import static battlecode.common.Upgrade.*;
 
 public enum Strategy {
-	NORMAL(30, 0.0, 0, 0, new BuildSoldier(2), UPGRADE_FUSION, new BuildSoldier(12), UPGRADE_DEFUSION),
-	NUCLEAR(5, -3.0, 0, 50, new BuildSoldier(2), UPGRADE_PICKAXE, new BuildSoldier(4), UPGRADE_NUKE),
-	RUSH(1, 3.0, 20, -50, new BuildSoldier(2), UPGRADE_DEFUSION);
+	NORMAL(30, 0.0, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
+	NUCLEAR(5, -3.0, 0, 50, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
+	RUSH(1, 3.0, 20, -50, new BuildSoldier(2), new UpgradeAction(DEFUSION));
 	
 	/**
 	 * Default parameters for this strategy.
@@ -29,7 +29,10 @@ public enum Strategy {
 	 * @return The decided-upon strategy.
 	 */
 	public static Strategy decide() {
-		return NORMAL;
+		if(RC.getTeam() == Team.A) {
+			return NUCLEAR;
+		}
+		return RUSH;
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		

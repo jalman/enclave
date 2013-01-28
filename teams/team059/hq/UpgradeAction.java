@@ -1,7 +1,6 @@
 package team059.hq;
 
 import static team059.utils.Utils.RC;
-import static battlecode.common.Upgrade.*;
 import battlecode.common.GameActionException;
 import battlecode.common.Upgrade;
 
@@ -9,22 +8,23 @@ import battlecode.common.Upgrade;
  * Specifies opening build order.
  * @author vlad
  */
-public enum UpgradeAction implements HQAction {	
-	UPGRADE_FUSION(FUSION), UPGRADE_DEFUSION(DEFUSION), UPGRADE_PICKAXE(PICKAXE), UPGRADE_VISION(VISION), UPGRADE_NUKE(NUKE);
+public class UpgradeAction implements HQAction {
 	
 	public final Upgrade upgrade;
+	private int todo;
 	
-	private UpgradeAction(Upgrade upgrade) {
+	public UpgradeAction(Upgrade upgrade) {
 		this.upgrade = upgrade;
+		todo = upgrade.numRounds;
 	}
 	
 	@Override
 	public boolean execute(HQBehavior hq) throws GameActionException {
-		if(RC.hasUpgrade(upgrade)) {
-			return true;
-		} else {
-			hq.researchUpgrade(upgrade);
-			return false;
-		}
+		RC.researchUpgrade(upgrade);
+		return --todo == 0;
+	}
+	
+	public String toString() {
+		return "Upgrading " + upgrade;
 	}
 }
