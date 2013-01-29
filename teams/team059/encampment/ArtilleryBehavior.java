@@ -32,6 +32,7 @@ public class ArtilleryBehavior extends RobotBehavior {
 	};
 	
 	private final boolean canAttackEnemyHQ;
+	private boolean attackDelay = false;
 	
 	public ArtilleryBehavior() {
 		canAttackEnemyHQ = (currentLocation.distanceSquaredTo(ENEMY_HQ) < 64);
@@ -55,6 +56,13 @@ public class ArtilleryBehavior extends RobotBehavior {
 			MapLocation me = RC.getLocation();
 
 			Robot[] robots = RC.senseNearbyGameObjects(Robot.class, 98);
+			if(!attackDelay && robots.length > 0) {
+				attackDelay = true;
+				return;
+			} else if (attackDelay && robots.length == 0) {
+				attackDelay = false;
+				return;
+			}
 
 			int[][] weight = new int[17][17];
 
