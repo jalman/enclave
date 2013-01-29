@@ -39,6 +39,11 @@ public class Parameters {
 		this.timidity = timidity;
 	}
 	
+	@Override
+	public Parameters clone() {
+		return new Parameters(greed, border, mine, timidity);
+	}
+	
 	public String toString() {
 		return "greed " + greed + ", border " + border + ", mine " + mine + ", tim " + timidity;
 	}

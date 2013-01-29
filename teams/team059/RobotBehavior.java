@@ -72,7 +72,7 @@ public class RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				strategy = Strategy.values()[message[0]];
-				parameters = strategy.parameters;
+				parameters = strategy.parameters.clone();
 			}
 		};
 	}

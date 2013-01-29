@@ -53,7 +53,7 @@ public class Utils {
 
 	//these might be set at the beginning of the round
 	public static Strategy strategy = Strategy.NORMAL;
-	public static Parameters parameters = strategy.parameters;
+	public static Parameters parameters = strategy.parameters.clone();
 
 	public static MapLocation currentLocation;
 	public static int curX, curY;
@@ -95,8 +95,8 @@ public class Utils {
 		ALLY_HQ = rc.senseHQLocation();
 		ENEMY_HQ = rc.senseEnemyHQLocation();
 
-		HQ_DX = ALLY_HQ.x - ENEMY_HQ.x;
-		HQ_DY = ALLY_HQ.y - ENEMY_HQ.y;
+		HQ_DX = ENEMY_HQ.x - ALLY_HQ.x;
+		HQ_DY = ENEMY_HQ.y - ALLY_HQ.y;
 		HQ_DIST = naiveDistance(ALLY_HQ,ENEMY_HQ);
 
 		birthRound = Clock.getRoundNum();
@@ -244,7 +244,10 @@ public class Utils {
 		int dot1 = (loc.x - ALLY_HQ.x) * HQ_DX + (loc.y - ALLY_HQ.y) * HQ_DY;
 		int dot2 = (ENEMY_HQ.x - loc.x) * HQ_DX + (ENEMY_HQ.y - loc.y) * HQ_DY;
 		
-		return Math.log(Math.abs((double)dot1 / dot2));
+		if(dot1 < 0) return -10;
+		if(dot2 < 0) return 10;
+		
+		return Math.log((double)dot1 / dot2);
 	}
 	
 	public static boolean isSafe(MapLocation loc) {
