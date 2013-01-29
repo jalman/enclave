@@ -34,7 +34,7 @@ public enum Strategy {
 	 */
 	public static Strategy decide() {
 		if(ALLY_TEAM.equals(Team.A))
-			return NUCLEAR;
+			return NORMAL;
 		else if(ALLY_TEAM.equals(Team.B))
 		  return NORMAL;
 		//ADD SOMETHING THEREABOUT (THERE=NUKE)

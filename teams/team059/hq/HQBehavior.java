@@ -84,26 +84,21 @@ public class HQBehavior extends RobotBehavior {
 			}
 		} else if(RC.isActive()) {
 			//if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
-			if(numSoldiers*100 < strategy.soldierLimitPercentage*(40 + 10*generators.size) && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
-				try {
-					built = buildSoldier();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} 
-			if(!built){
-				if(!strategy.equals(Strategy.NUCLEAR) && fluxDiff*60 + actualFlux < 0) {
-					try {
-						messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				try {
+
+			try {
+				if(RC.getEnergon() > 50*RC.checkResearchProgress(Upgrade.NUKE)) {
 					researchUpgrade(Upgrade.NUKE);
-				} catch (GameActionException e) {
-					e.printStackTrace();
+				} else if(numSoldiers*100 < strategy.soldierLimitPercentage*(40 + 10*generators.size) && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
+					built = buildSoldier();
+				} 
+				if(!built){
+					if(!strategy.equals(Strategy.NUCLEAR) && fluxDiff*60 + actualFlux < 0) {
+						messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
+					}
+					researchUpgrade(Upgrade.NUKE);
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}

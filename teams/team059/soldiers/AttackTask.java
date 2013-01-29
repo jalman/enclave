@@ -40,9 +40,10 @@ public class AttackTask extends TravelTask {
 
 	@Override
 	public void execute() throws GameActionException {
+		if(Mines.tryDefuse(destination, true)) return;
 		if(farawayEnemyTarget != null && turnsMicroedForAwayFromDestination < turnsIShouldMicroFor && turnsMicroedForAwayFromDestination >= 0) {
 				runMicro();
-		} else if(!Mines.tryDefuse(destination, true)) {
+		} else {
 			returnToPreMicroLocation();
 			if(!(defuse && Mines.tryDefuse(destination, false))) {
 				super.execute();
