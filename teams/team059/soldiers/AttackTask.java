@@ -12,6 +12,7 @@ public class AttackTask extends TravelTask {
 	
 	private final boolean defuse;
 	private final int timidity;
+	private int turnsMicroedFor;
 	
 	public AttackTask(MapLocation target, int priority) {
 		this(target, priority, parameters.timidity, false);

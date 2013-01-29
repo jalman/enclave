@@ -132,6 +132,7 @@ public class MineManager extends TaskGiver {
 	//			minCoordSum = 0;
 	//			efficientMining = false;
 				break;
+
 			default:
 				return;
 			}

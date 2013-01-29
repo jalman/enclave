@@ -20,7 +20,7 @@ public class Parameters {
 	/**
 	 * Half the "width" of the border.
 	 */
-	public final double margin = 0.5;
+	public final double margin = 0.3;
 	
 	/**
 	 * Priority for laying mines.

@@ -2,8 +2,6 @@ package team059.soldiers;
 
 import static team059.utils.Utils.*;
 import team059.*;
-import team059.soldiers.micro.Micro;
-import team059.utils.Utils;
 import battlecode.common.*;
 
 public class SoldierUtils {
@@ -12,9 +10,9 @@ public class SoldierUtils {
 	public final static int MAX_ENCAMPMENT_ENERGON = 100;
 	public final static int MAX_HQ_ENERGON = 500;
 	
-	public final static int sensorRadius = ENEMY_RADIUS2;
-	public final static int closeEnoughToGoToBattleSquared = 144;
-	private static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
+	public static int sensorRadius = ENEMY_RADIUS2;
+	public static int closeEnoughToGoToBattleSquared = 121;
+	public static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
 	public static final int maxNumberOfEnemiesToCheckToFindATarget = 9;
 
 	static RobotInfo tempRobotInfo;	
@@ -34,8 +32,17 @@ public class SoldierUtils {
 	 * @throws GameActionException
 	 */
 	public static void updateSoldierUtils() throws GameActionException{
-		if ((Clock.getRoundNum() + RC.getRobot().getID())%2 == 0)
-		getFarAwayEnemyTarget();
+		if (strategy.parameters.timidity == 1)
+		{
+			sensorRadius = 14;
+			closeEnoughToGoToBattleSquared = 60;
+		}
+		else
+			closeEnoughToGoToBattleSquared=121;
+	
+		
+		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 2 == 0)
+			getFarAwayEnemyTarget();
 	}
 	public static void getFarAwayEnemyTarget() throws GameActionException{
 		detectenemiesFarAway();
@@ -74,7 +81,8 @@ public class SoldierUtils {
 		if (r.type == RobotType.SOLDIER)
 		{
 			//Full health soldier returns 16.
-			return Math.max(0, 10 - (int)(1.5*r.roundsUntilMovementIdle) + (int)(robotHealthPercent(r)*10)-Utils.naiveDistance(currentLocation, r.location));
+			return Math.max(0, 10 - (int)(1.5*r.roundsUntilMovementIdle) + 
+					(int)(robotHealthPercent(r)*10)-naiveDistance(currentLocation, r.location));
 		}
 		else if (r.type == RobotType.ARTILLERY)
 		{
@@ -95,7 +103,7 @@ public class SoldierUtils {
 	{	
 		if (r.type == RobotType.SOLDIER)
 		{
-			return Math.max(0, 10 - (int)(1.5*r.roundsUntilAttackIdle) + (int)(robotHealthPercent(r)*10) - Utils.naiveDistance(currentLocation, r.location));
+			return Math.max(0, 10 - (int)(1.5*r.roundsUntilAttackIdle) + (int)(robotHealthPercent(r)*10) - naiveDistance(currentLocation, r.location));
 		}
 		else if (r.type == RobotType.ARTILLERY)
 		{
@@ -110,7 +118,7 @@ public class SoldierUtils {
 		{
 			return 25;
 		}
-		return 8;
+		return 25;
 	}
 	/**
 	 * Finds enemy target within the micro radius with highest priority. 
@@ -119,15 +127,13 @@ public class SoldierUtils {
 	public static MapLocation setEnemyTarget() throws GameActionException{
 		int priority = -10000;
 		enemyTarget = null;
-		for (int i = 0; i < enemyRobots.length; i++)
+		for (Robot enemy : enemyRobots)
 		{
-			tempRobotInfo = RC.senseRobotInfo(enemyRobots[i]);
+			tempRobotInfo = RC.senseRobotInfo(enemy);
 			if(overallPriority(tempRobotInfo) > priority)
 			{
-				enemyTargetRobotInfo = tempRobotInfo;
-				priority = overallPriority(tempRobotInfo);
+				enemyTarget = tempRobotInfo.location;
 			}
-			enemyTarget = enemyTargetRobotInfo.location;
 		}
 		return enemyTarget;
 	}
@@ -139,8 +145,9 @@ public class SoldierUtils {
 	 * @throws GameActionException
 	 */
 	public static void setEnemyTarget(int numberOfTargetsToCheck) throws GameActionException{
-		int priority = 0;
+		int priority = -10000;
 		enemyTarget = null;
+		enemyTargetRobotInfo = null;
 		for (int i = 0; i < enemyRobots.length && i < numberOfTargetsToCheck; i++)
 		{
 			tempRobotInfo = RC.senseRobotInfo(enemyRobots[i]);
@@ -150,7 +157,6 @@ public class SoldierUtils {
 				priority = overallPriority(tempRobotInfo);
 			}
 			enemyTarget = enemyTargetRobotInfo.location;
-
 		}	
 	}
 	
@@ -176,7 +182,7 @@ public class SoldierUtils {
 		{
 			roundsUntilActive = r.roundsUntilAttackIdle;
 		}
-		return (200-(int)(healthPercent*22)-naiveDistance*15+priority+(int)(1.5*roundsUntilActive));
+		return (200-(int)(healthPercent*22)-naiveDistance*18+priority+(int)(1.5*roundsUntilActive));
 	}
 	
 	//Helper methods for overallPriority
@@ -191,7 +197,7 @@ public class SoldierUtils {
 		}
 		if (r.type == RobotType.HQ)
 		{
-			return 50;
+			return 70;
 		}
 		else if (r.type == RobotType.HQ)
 		{
