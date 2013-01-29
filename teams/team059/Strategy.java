@@ -30,18 +30,13 @@ public enum Strategy {
 	 * @return The decided-upon strategy.
 	 */
 	public static Strategy decide() {
-//		if(HQ_DIST < 35)
-//			return RUSH;
-//		else if(HQ_DIST > 60) 
-//			return NUCLEAR;
-//
-//		return NORMAL;
-		//ADD SOMETHING THEREABOUT (THERE=NUKE)
-		
-		if(RC.getTeam() == Team.A) {
+		if(HQ_DIST < 35)
+			return RUSH;
+		else if(HQ_DIST > 60) 
 			return NUCLEAR;
-		}
+
 		return NORMAL;
+		//ADD SOMETHING THEREABOUT (THERE=NUKE)
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
