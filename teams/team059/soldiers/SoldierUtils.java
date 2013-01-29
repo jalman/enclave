@@ -104,7 +104,7 @@ public class SoldierUtils {
 		}
 		else if (r.type == RobotType.HQ)
 		{
-			return 110;
+			return 150;
 		}
 		else if (r.type == RobotType.MEDBAY)
 		{

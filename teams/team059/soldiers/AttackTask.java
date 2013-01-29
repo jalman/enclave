@@ -24,7 +24,7 @@ public class AttackTask extends TravelTask {
 	public void execute() throws GameActionException {
 		if(farawayEnemyTarget != null) {
 			SoldierBehavior2.microSystem.run();
-		} else {
+		} else if(!Mines.tryDefuse(destination, true)) {
 			super.execute();
 		}
 	}

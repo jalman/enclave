@@ -21,7 +21,7 @@ public class PatrolManager extends TaskGiver {
 		double position = forward - parameters.border;
 		//System.out.println("Forward = " + forward + ", border = " + strategy.border + ", position = " + position);
 		
-		RC.setIndicatorString(0, String.valueOf(position));
+		//RC.setIndicatorString(0, String.valueOf(position));
 		
 		if(position > parameters.margin) {
 			retreat();
