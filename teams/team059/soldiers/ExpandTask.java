@@ -1,6 +1,7 @@
 package team059.soldiers;
 
 import team059.Encampments;
+import team059.utils.Shields;
 import battlecode.common.Clock;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
@@ -73,6 +74,11 @@ public class ExpandTask extends TravelTask {
 	}
 	
 	private RobotType getCaptureType() {
+		
+		if(isBorder(currentLocation) && Shields.shieldLocations.isEmpty()) {
+			return RobotType.SHIELDS;
+		}
+		
 		//overrides build type
 		if(!isSafe(currentLocation)) {
 			//TODO: make medbays?
