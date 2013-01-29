@@ -7,7 +7,7 @@ import battlecode.common.Team;
 import battlecode.common.Upgrade;
 import static team059.utils.Utils.*;
 
-public class MineTask extends AttackTask {
+public class MineTask extends TravelTask {
 
 	private MapLocation[] mines;
 	
@@ -40,7 +40,9 @@ public class MineTask extends AttackTask {
 //			return 1000;
 //		} else return priority;
 		//else return (int) ((1.0 - density) * 10.0);
-		if(mineAtDest == ALLY_TEAM) {
+		if(enemyRobots.length > 0) {
+			return priority - 5000;
+		} if(mineAtDest == ALLY_TEAM) {
 			return -1000;
 		}
 		return priority;

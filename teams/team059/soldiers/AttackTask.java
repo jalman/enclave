@@ -18,7 +18,7 @@ public class AttackTask extends TravelTask {
 		this.timidity = parameters.timidity;
 	}
 	
-	public AttackTask(MapLocation target, int priority, int distance, int timidty) {
+	public AttackTask(MapLocation target, int priority, int distance, int timidity) {
 		super(mover, target, priority, distance);
 		this.timidity = parameters.timidity;
 	}

@@ -370,7 +370,7 @@ public class MineManager extends TaskGiver {
 		} else {
 			Ox = Ax;
 			Oy = Ay;
-			System.out.println("ALLY_HQ.directionTo(ENEMY_HQ) = " + ALLY_HQ.directionTo(ENEMY_HQ));
+			//System.out.println("ALLY_HQ.directionTo(ENEMY_HQ) = " + ALLY_HQ.directionTo(ENEMY_HQ));
 			switch(ALLY_HQ.directionTo(ENEMY_HQ)) {
 			case SOUTH:
 				v2x = -1; v2y = 1; v1x = 1; v1y = 1;
