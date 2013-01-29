@@ -70,7 +70,7 @@ public class ExpandSystem {
 		for(int i = 0; i < encampments[far].length; i++) {
 			MapLocation loc = encampments[far][i];
 			if((!taken[far][i] || numLost > 0) && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
-				if(Clock.getRoundNum() < 200 || generators > suppliers) {
+				if(suppliers < 7 || generators > suppliers) {
 					messagingSystem.writeTakeEncampmentMessage(loc, 200, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
