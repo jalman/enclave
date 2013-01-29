@@ -86,20 +86,14 @@ public class ExpandTask extends TravelTask {
 			return RobotType.SHIELDS;
 		}
 		
-		//overrides build type
 		if(!isSafe(currentLocation)) {
-			//TODO: make medbays?
-//			if (ALLY_TEAM == Team.A)
 				return RobotType.ARTILLERY;
-//			if (random.nextDouble() * 4 < 1)
-//				return RobotType.GENERATOR;
-//			return RobotType.SUPPLIER;
 		}
 		
 		if(buildType != null) return buildType;
 		
 		//TODO: do something better
-		return RC.senseAlliedEncampmentSquares().length >= 8 && Clock.getRoundNum() % 2 == 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
+		return RC.senseAlliedEncampmentSquares().length > 8 && Clock.getRoundNum() % 4 != 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
 	}
 	
 	@Override

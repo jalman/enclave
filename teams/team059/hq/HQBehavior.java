@@ -45,6 +45,10 @@ public class HQBehavior extends RobotBehavior {
 		//thisFlux = RC.getTeamPower();
 		fluxDiff = actualFlux - lastFlux;
 		lastFlux = actualFlux;
+		
+		if(Clock.getRoundNum() % 50 == 0) {
+			parameters.greed++;
+		}
 
 		messagingSystem.beginRoundHQ(messageHandlers);
 	}
