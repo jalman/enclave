@@ -12,9 +12,9 @@ public class ScoutTask extends TravelTask {
 	public static Mover mover = new Mover();
 	public static final int SCOUT_PRIORITY = 10000;
 	public boolean scoutRight; // false: Left, true: Right
-	private MapLocation[] waypoint;
-	private int waypointIndex;
-	private final int MAX_SCOUT_TURNS;
+	protected MapLocation[] waypoint;
+	protected int waypointIndex;
+	protected int MAX_SCOUT_TURNS;
 	
 	private MapLocation firstMine = null;
 	private MapLocation firstSuppGen = null;
@@ -87,6 +87,15 @@ public class ScoutTask extends TravelTask {
 			
 		}
 		mover.execute();
+		
+		
+		if(RC.senseNearbyGameObjects(Robot.class, 14, ENEMY_TEAM).length > 0) {
+			seeEnemyWarn();
+		}
+	}
+	
+	protected void seeEnemyWarn() {
+		return;
 	}
 	
 	@Override
