@@ -22,7 +22,7 @@ public class MineManager extends TaskGiver {
 	//SoldierBehavior2 sb;
 	//private FastIterableLocSet currentlyMining = new FastIterableLocSet();
 	
-	public int miningPriority = 0;
+	public int miningEncampmentPriority = 0, miningPriority = 0;
 	
 	public int[][] mineLocs;
 	int Ax, Ay; // ally hq (x,y)
@@ -58,7 +58,12 @@ public class MineManager extends TaskGiver {
 	public static final int DONE_MINE_TARGET = -100; // if a target is "finished" mining around
 //	boolean biased = false;
 	
-//	public static final int NUCLEAR_MINING_PRIORITY = 5000;
+	public static final int NUCLEAR_ENCAMPMENT_MINING_PRIORITY = 200;
+	public static final int NORMAL_ENCAMPMENT_MINING_PRIORITY = 0;
+	public static final int RUSH_ENCAMPMENT_MINING_PRIORITY = -500;
+	public static final int NUCLEAR_HQ_MINING_PRIORITY = 5000;
+	public static final int NORMAL_HQ_MINING_PRIORITY = 0;
+	public static final int RUSH_HQ_MINING_PRIORITY = -500;
 	
 	MapLocation center, colStart; // colEnd;
 	RobotType centerType;
@@ -101,6 +106,7 @@ public class MineManager extends TaskGiver {
 //		System.out.println("Strategy is " + strategy);
 			switch(strategy) {
 			case NUCLEAR:
+				miningEncampmentPriority = NUCLEAR_ENCAMPMENT_MINING_PRIORITY;
 				hqMFLeft = 3; hqMFRight = 3; hqMFForward = 3; hqMFBackward = 1;
 				artMFLeft = 1; artMFRight = 1; artMFForward = 2; artMFBackward = 1;
 				encMFLeft = 1; encMFRight = 1; encMFForward = 1; encMFBackward = 1;
@@ -109,6 +115,7 @@ public class MineManager extends TaskGiver {
 	//			efficientMining = true;
 				break;
 			case NORMAL:
+				miningEncampmentPriority = NORMAL_ENCAMPMENT_MINING_PRIORITY;
 				hqMFLeft = 2; hqMFRight = 2; hqMFForward = 2; hqMFBackward = 2;
 				artMFLeft = 1; artMFRight = 1; artMFForward = 2; artMFBackward = 1;
 				encMFLeft = 1; encMFRight = 1; encMFForward = 1; encMFBackward = 1;
@@ -117,6 +124,7 @@ public class MineManager extends TaskGiver {
 	//			efficientMining = false;
 				break;
 			case RUSH:
+				miningEncampmentPriority = RUSH_ENCAMPMENT_MINING_PRIORITY;
 				hqMFLeft = 0; hqMFRight = 0; hqMFForward = 0; hqMFBackward = 0;
 				artMFLeft = 0; artMFRight = 0; artMFForward = 0; artMFBackward = 0;
 				encMFLeft = 0; encMFRight = 0; encMFForward = 0; encMFBackward = 0;
@@ -452,8 +460,9 @@ public class MineManager extends TaskGiver {
 		col = (col % 2 == 0) ? col/2 : -(col+1)/2; // 0 1 2 3 4 5 6 ==> 0 -1 1 -2 2 -3 3 etc hopefully
 //		System.out.print("soldierID = " + soldierID + ", width = " + width + ", col = " + col + ", height = " + height + " | ");
 		if(col%2 == 0) {
-			a = col/2;
-			b = -a-backward+1;
+			a = col/2-1;
+			b = -a-backward-1;
+			height++;
 		} else {
 			a = (col-1)/2;
 			b = -a-backward;
