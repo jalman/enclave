@@ -7,6 +7,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotType;
+import team059.Encampments;
 import team059.RobotBehavior;
 import team059.Strategy;
 import team059.messaging.MessageHandler;
@@ -23,7 +24,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 	
 	private SingleTaskManager<AttackTask> attackManager;
 	private SingleTaskManager<ExpandTask> takeEncampmentManager;
-	private SingleTaskManager<AttackTask> attackEnemyHQGiver;
+	private SingleTaskManager<DodgeMineTask> dodgeMineManager;
 	
 	private TaskGiver[] taskGivers;
 	private final TaskGiver[] normalTaskGivers;
@@ -41,16 +42,16 @@ public class SoldierBehavior2 extends RobotBehavior {
 		attackManager = new SingleTaskManager<AttackTask>();
 		takeEncampmentManager = new SingleTaskManager<ExpandTask>();
 		scoutManager = new ScoutManager();
-		attackEnemyHQGiver = new SingleTaskManager<AttackTask>(new AttackEnemyHQTask());
-		defuseManager = new DefuseManager();
+		//defuseManager = new DefuseManager();
+		dodgeMineManager = new SingleTaskManager<DodgeMineTask>(new DodgeMineTask());
 		
 		normalTaskGivers = new TaskGiver[]
-				{patrolManager, attackManager, scoutManager, defuseManager,
-				mineManager, expandManager, takeEncampmentManager, attackEnemyHQGiver};
+				{patrolManager, attackManager, scoutManager,
+				mineManager, expandManager, takeEncampmentManager, dodgeMineManager};
 		nuclearTaskGivers = new TaskGiver[] 
-				{attackManager, mineManager, expandManager, takeEncampmentManager};
+				{attackManager, mineManager, expandManager, takeEncampmentManager, dodgeMineManager};
 		rushTaskGivers = new TaskGiver[] 
-				{attackManager, expandManager, takeEncampmentManager, attackEnemyHQGiver, defuseManager};
+				{patrolManager, attackManager, expandManager, takeEncampmentManager, dodgeMineManager};
 	}
 
 	@Override
@@ -100,6 +101,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 			t.update();
 			int appeal = t.appeal();
 			if(appeal > max_appeal) {
+				RC.setIndicatorString(0, "Task giver " + i);
 				currentTask = t;
 				max_appeal = appeal;
 			}
@@ -129,19 +131,13 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};
 	}
+	
 	@Override
 	protected MessageHandler getTakingEncampmentHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				MapLocation loc = new MapLocation(message[0], message[1]);
-				int appeal = message[2];
-				
-				ExpandTask task = takeEncampmentManager.getTask();
-				if(task != null && loc.equals(task.destination) && appeal > task.appeal()) {
-					takeEncampmentManager.clearTask();
-					//System.out.println("Decided against taking encampment.");
-				}
+				Encampments.claim(message[0], message[1], message[2]);
 			}
 		};
 	}
@@ -164,20 +160,6 @@ public class SoldierBehavior2 extends RobotBehavior {
 		};
 	}
 	
-	/*
-	@Override
-
-	protected MessageHandler getDefusingMineHandler() {
-		return new MessageHandler() {
-			@Override
-			public void handleMessage(int[] message) {
-				if(message[2] != ID) {
-					mineManager.receiveMineMessage(new MapLocation(message[0], message[1]));
-				}
-			}
-		};
-	}	*/
-	
 	@Override
 	protected MessageHandler getAnnounceUpgradeHandler() {
 		return new MessageHandler() {
@@ -197,5 +179,4 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};		
 	}
-
 }

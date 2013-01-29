@@ -27,6 +27,8 @@ public class ExpandSystem {
 	int suppliers = 0;
 	int generators = 0;
 	
+	private int numLost = 0;
+	
 	public ExpandSystem() {
 		try {
 			initializeDelimiters();
@@ -48,39 +50,48 @@ public class ExpandSystem {
 		}
 	}
 	
-	/**
-	* far = 0: only nearby
-	* far = 1: medium
-	* far = 2: any
-	 * @throws GameActionException 
-	**/
+	public void considerExpanding() throws GameActionException {
+		considerExpanding(0);
+	}
+	
+
 	public void considerExpanding(int far) throws GameActionException {
 		if(far >= NC) return;
 		if(numSent*10 > Clock.getRoundNum()) return;
 		if(numSent >= parameters.greed) return;
+		///CHANGE THE 4 INTO SOMETHING ELSE?!
+		if(RC.senseAlliedEncampmentSquares().length*3 + numSent > RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ALLY_TEAM).length) return;
 		//System.out.println(numSent + " " + parameters.greed);
 		
-		while(finished[far] || encampments[far] == null) {
+		while((finished[far] && numLost == 0) || encampments[far] == null) {
 			far++;
 			if(far >= NC) return;
 		}
 		for(int i = 0; i < encampments[far].length; i++) {
 			MapLocation loc = encampments[far][i];
-			if(!taken[far][i] && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
-				if(Clock.getRoundNum() < 200 || generators > suppliers) {
-					messagingSystem.writeTakeEncampmentMessage(loc, 1000, RobotType.SUPPLIER);
+			if((!taken[far][i] || numLost > 0) && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
+				if(suppliers < 7 || generators > suppliers) {
+					messagingSystem.writeTakeEncampmentMessage(loc, 200, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
-					messagingSystem.writeTakeEncampmentMessage(loc, 1000, RobotType.GENERATOR);
+					messagingSystem.writeTakeEncampmentMessage(loc, 200, RobotType.GENERATOR);
 					generators++;
 				}
-				taken[far][i] = true;
+				if(taken[far][i]) {
+					numLost--;
+				} else {
+					taken[far][i] = true;
+				}
 				numSent++;
 				return;
 			}
 		}
 		finished[far] = true;
 		considerExpanding(far+1);
+	}
+	
+	public void lost() {
+		numLost++;
 	}
 	
 }

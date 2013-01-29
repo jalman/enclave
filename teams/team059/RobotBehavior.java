@@ -11,7 +11,6 @@ import battlecode.common.MapLocation;
 public class RobotBehavior {
 
 	protected MessageHandler[] messageHandlers;
-	//protected Strategy strategy;
 
 	public RobotBehavior() {
 		messageHandlers = new MessageHandler[MessageType.values().length];
@@ -28,8 +27,6 @@ public class RobotBehavior {
 		messageHandlers[MessageType.TAKING_ENCAMPMENT.ordinal()] = getTakingEncampmentHandler();
 		messageHandlers[MessageType.SHIELD_LOCATION.ordinal()] = getShieldLocationHandler();
 	}
-
-	protected int danger(MapLocation loc) {return 0;}
 
 	/**
 	 * Called at the beginning of each round.

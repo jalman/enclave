@@ -16,11 +16,17 @@ public class Micro {
 	int numberOfTargetsToCheck = 5;
 	public boolean microModeEntered = false;
 	
+	/**
+	 * Timidity
+	 */
+	public int timidity = 0;
+	
 	public Micro() {
 		enemyTarget = null;
 	}
 	public void run() throws GameActionException{
 		
+		timidity = strategy.parameters.timidity;
 		if (enemyRobots.length == 0)
 		{
 			updateFarawayEnemyTarget(1);
@@ -35,7 +41,7 @@ public class Micro {
 
 	public void rushToBattle() throws GameActionException{
 		//farawayEnemyTarget should be already set if micro mode is entered
-		mover.setNavType(NavType.BUG_DIG_2);
+		mover.setNavType(NavType.BUG);
 
 		if (farawayEnemyTarget != null)
 		{
@@ -47,6 +53,7 @@ public class Micro {
 			mover.execute();
 		}
 	}
+	
 	public void micro() throws GameActionException{
 		if(enemyTarget != null) {		
 			attackOrRetreat();
@@ -57,21 +64,23 @@ public class Micro {
 			mover.execute();
 		}
 	}
-//	public boolean shouldIBeRunningMicroSystem(){
-//		if (farawayEnemyTarget == null)
-//		{
-//			microModeEntered = false;
-//			return false;
-//		}
-//		return true;
-//	}
+
 	public void setMicroVariables() throws GameActionException{
 //		setEnemyTargetAndWeight();
 		setEnemyTarget(numberOfTargetsToCheck);
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
-		MapLocation m = enemyTarget;
-		setEnemyWeight(m, sensorRadius);
-		setAllyWeight(m, sensorRadius);
+		//cheap micro
+		if (timidity < -5)
+		{
+			enemyWeight = -10000;
+			allyWeight = 100000;
+		}
+		else
+		{
+			MapLocation m = enemyTarget;
+			setEnemyWeight(m, sensorRadius);
+			setAllyWeight(m, sensorRadius);
+		}
 	}
 	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)
 	{
@@ -89,19 +98,30 @@ public class Micro {
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
 		//TODO: Account for robot types!!!
-		if (allyWeight > (int)(0.85*enemyWeight) && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
+		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2 || ((naiveDistance(ALLY_HQ, currentLocation) <= 6) && 
+				(naiveDistance(ALLY_HQ, currentLocation) > naiveDistance(ALLY_HQ, ENEMY_HQ)/3)))
 		{
-			mover.setTarget(RC.getLocation());
+			mover.setTarget(currentLocation);
 		}
 		else if (!shouldIAttack())
 		{
-			setRetreatBack();
-			mover.setNavType(NavType.BUG);
-			mover.setTarget(retreatTarget);
+			if (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 81, ALLY_TEAM).length < 12)
+			{
+				setRetreatBack();
+				mover.setNavType(NavType.BUG);
+				mover.setTarget(retreatTarget);
+			}
+			else
+			{
+				mover.setTarget(currentLocation);
+			}
 		}
 		else
 		{
-			mover.setNavType(NavType.BUG);
+			if (enemyWeight > 0)
+				mover.setNavType(NavType.BUG);
+			else
+				mover.setNavType(NavType.BUG_DIG_2);
 			attackTarget(enemyTarget);
 		}
 	}
@@ -125,7 +145,7 @@ public class Micro {
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(allyWeight > enemyWeight)
+		if(15*allyWeight > (15+timidity)*enemyWeight)
 		{
 			return true;
 		}		

@@ -45,6 +45,7 @@ public class Utils {
 	public static int MAP_WIDTH, MAP_HEIGHT;
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
+	public static int HQ_DIST;
 	public static Random random;
 	public static int birthRound;
 	
@@ -59,7 +60,7 @@ public class Utils {
 	public static int curX, curY;
 	private static MapLocation[] alliedEncampments;
 	public static final int ENEMY_RADIUS = 4;
-	public static final int ENEMY_RADIUS2 = 20; //ENEMY_RADIUS * ENEMY_RADIUS;
+	public static final int ENEMY_RADIUS2 = 16; //ENEMY_RADIUS * ENEMY_RADIUS;
 	public static Robot[] enemyRobots = new Robot[0];
 	public static double forward;
 	public static Team currentMine;
@@ -94,6 +95,8 @@ public class Utils {
 		ENEMY_TEAM = (ALLY_TEAM == Team.A) ? Team.B : Team.A;
 		ALLY_HQ = rc.senseHQLocation();
 		ENEMY_HQ = rc.senseEnemyHQLocation();
+		
+		HQ_DIST = naiveDistance(ALLY_HQ,ENEMY_HQ);
 		
 		birthRound = Clock.getRoundNum();
 		
@@ -206,5 +209,26 @@ public class Utils {
 		return Arrays.copyOf(array, length);
 	}
 	
+	
+    public static int getDirTowards(int dx, int dy) {
+        if(dx==0) {
+                if(dy>0) return 4;
+                else return 0;
+        }
+        double slope = ((double)dy)/dx;
+        if(dx>0) {
+                if(slope>2.414) return 4;
+                else if(slope>0.414) return 3;
+                else if(slope>-0.414) return 2;
+                else if(slope>-2.414) return 1;
+                else return 0;
+        } else {
+                if(slope>2.414) return 0;
+                else if(slope>0.414) return 7;
+                else if(slope>-0.414) return 6;
+                else if(slope>-2.414) return 5;
+                else return 4;
+        }
+}
 	
 }

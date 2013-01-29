@@ -1,5 +1,6 @@
 package team059.soldiers;
 
+import team059.Strategy;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import team059.movement.Mover;
@@ -10,7 +11,7 @@ public class AttackTask extends TravelTask {
 
 	private static final Mover mover = new Mover();
 	public AttackTask(MapLocation target, int priority) {
-		super(mover, target, priority, 0);
+		super(mover, target, priority, 2);
 	}
 
 	@Override
@@ -23,7 +24,7 @@ public class AttackTask extends TravelTask {
 	public void execute() throws GameActionException {
 		if(farawayEnemyTarget != null) {
 			SoldierBehavior2.microSystem.run();
-		} else {
+		} else if(!Mines.tryDefuse(destination, true)) {
 			super.execute();
 		}
 	}

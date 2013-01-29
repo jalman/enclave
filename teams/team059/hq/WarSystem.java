@@ -24,7 +24,9 @@ public class WarSystem {
 		
 		if(nukePanic()) {
 			parameters.attack = 100;
+			parameters.border = 2.0;
 			messagingSystem.writeParameters(parameters);
+			messagingSystem.writeAttackMessage(ENEMY_HQ, 100);
 		}
 		
 		int home = defendMainPriority();
