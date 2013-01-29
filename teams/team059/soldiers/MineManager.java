@@ -58,7 +58,7 @@ public class MineManager extends TaskGiver {
 	public static final int DONE_MINE_TARGET = -100; // if a target is "finished" mining around
 //	boolean biased = false;
 	
-	public static final int NUCLEAR_MINING_PRIORITY = 5000;
+//	public static final int NUCLEAR_MINING_PRIORITY = 5000;
 	
 	MapLocation center, colStart; // colEnd;
 	RobotType centerType;
@@ -97,10 +97,10 @@ public class MineManager extends TaskGiver {
 	}
 
 	public void decideStrategy() {
+		miningPriority = strategy.parameters.mine;
 //		System.out.println("Strategy is " + strategy);
 			switch(strategy) {
 			case NUCLEAR:
-				miningPriority = NUCLEAR_MINING_PRIORITY;
 				hqMFLeft = 3; hqMFRight = 3; hqMFForward = 3; hqMFBackward = 1;
 				artMFLeft = 1; artMFRight = 1; artMFForward = 2; artMFBackward = 1;
 				encMFLeft = 1; encMFRight = 1; encMFForward = 1; encMFBackward = 1;
@@ -109,8 +109,7 @@ public class MineManager extends TaskGiver {
 	//			efficientMining = true;
 				break;
 			case NORMAL:
-				miningPriority = 0;
-				hqMFLeft = 2; hqMFRight = 2; hqMFForward = 2; hqMFBackward = 1;
+				hqMFLeft = 2; hqMFRight = 2; hqMFForward = 2; hqMFBackward = 2;
 				artMFLeft = 1; artMFRight = 1; artMFForward = 2; artMFBackward = 1;
 				encMFLeft = 1; encMFRight = 1; encMFForward = 1; encMFBackward = 1;
 	//			maxCoordSum = 1;
@@ -118,7 +117,6 @@ public class MineManager extends TaskGiver {
 	//			efficientMining = false;
 				break;
 			case RUSH:
-				miningPriority = -100;
 				hqMFLeft = 0; hqMFRight = 0; hqMFForward = 0; hqMFBackward = 0;
 				artMFLeft = 0; artMFRight = 0; artMFForward = 0; artMFBackward = 0;
 				encMFLeft = 0; encMFRight = 0; encMFForward = 0; encMFBackward = 0;
@@ -456,6 +454,7 @@ public class MineManager extends TaskGiver {
 		if(col%2 == 0) {
 			a = col/2;
 			b = -a-backward+1;
+			height++;
 		} else {
 			a = (col-1)/2;
 			b = -a-backward;

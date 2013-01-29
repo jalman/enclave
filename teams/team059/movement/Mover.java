@@ -104,9 +104,9 @@ public class Mover {
 				d = beelineAlg.getNextDir();
 				if(d != null && d != Direction.NONE && d != Direction.OMNI) {
 					try {
-						//if(RC.canMove(d)) {
+						if(RC.canMove(d)) {
 							RC.move(d);
-						//}
+						}
 					} catch (Exception e) {
 						System.out.println("ERROR: Can't move in direction " + d);
 					}
