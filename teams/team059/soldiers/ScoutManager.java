@@ -17,7 +17,9 @@ public class ScoutManager extends TaskGiver {
 	 */
 	@Override
 	public void compute() throws GameActionException {
-		if(Clock.getRoundNum() < 40 && scoutTask == null) {
+		if(Clock.getRoundNum() < 20 && scoutTask == null) {
+			scoutTask = new CenterScoutTask();
+		} else if(Clock.getRoundNum() < 40 && scoutTask == null) {
 			scoutTask = new ScoutTask();
 		}
 	}

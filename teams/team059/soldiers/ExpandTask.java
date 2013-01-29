@@ -29,7 +29,6 @@ public class ExpandTask extends TravelTask {
 		Direction dirToEnemy = ALLY_HQ.directionTo(ENEMY_HQ);
 		badA = ALLY_HQ.add(dirToEnemy);
 		badB = badA.add(dirToEnemy);
-		
 	}
 	
 	@Override
@@ -79,7 +78,7 @@ public class ExpandTask extends TravelTask {
 		//overrides build type
 		if(forward >= parameters.border - parameters.margin) {
 			//TODO: make medbays?
-			return RobotType.ARTILLERY;
+			//return RobotType.ARTILLERY;
 		}
 		
 		if(buildType != null) return buildType;
