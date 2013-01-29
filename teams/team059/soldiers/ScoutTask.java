@@ -2,6 +2,7 @@ package team059.soldiers;
 
 import team059.Strategy;
 import team059.movement.Mover;
+import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
@@ -24,7 +25,7 @@ public class ScoutTask extends TravelTask {
 	
 	public ScoutTask() {
 		super(mover, ENEMY_HQ, SCOUT_PRIORITY, 1);
-		this.scoutRight = (random.nextInt() % 2 == 0);
+		this.scoutRight = Clock.getRoundNum() < 5;
 		waypoint = new MapLocation[3];
 		waypointIndex = 0;
 

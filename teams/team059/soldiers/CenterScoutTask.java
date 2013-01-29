@@ -2,6 +2,7 @@ package team059.soldiers;
 
 import team059.Strategy;
 import team059.movement.Mover;
+import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
@@ -32,15 +33,18 @@ public class CenterScoutTask extends ScoutTask {
 				clamp(center.x + (int) 1.4*thirdx, 0, MAP_WIDTH), 
 				clamp(center.y + (int) 1.4*thirdy, 0, MAP_HEIGHT)
 		);
-
-		waypoint[2] = center;
+		
+		Direction dir = Direction.values()[getDirTowards(thirdy,thirdx)];
+		
+		waypoint[2] = center.add(dir).add(dir);
 		MAX_SCOUT_TURNS = 4*naiveDistance(ALLY_HQ, center);
 	}
 
 	@Override
 	protected void seeEnemyWarn() {
 		try {
-			messagingSystem.writeStrategy(Strategy.RUSH);
+			parameters.greed = 0;
+			messagingSystem.writeParameters(parameters);
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}

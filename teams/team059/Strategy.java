@@ -33,7 +33,7 @@ public enum Strategy {
 		if(RC.getTeam() == Team.A) {
 			return NORMAL;
 		}
-		return NORMAL1;
+		return NORMAL;
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
