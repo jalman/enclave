@@ -84,7 +84,7 @@ public class HQBehavior extends RobotBehavior {
 			}
 		} else if(RC.isActive()) {
 			//if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
-			if(numSoldiers*100 < strategy.soldierLimitPercentage*(40 + 10*generators.size)) {
+			if(numSoldiers*100 < strategy.soldierLimitPercentage*(40 + 10*generators.size) && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
 				try {
 					built = buildSoldier();
 				} catch (Exception e) {

@@ -454,7 +454,6 @@ public class MineManager extends TaskGiver {
 		if(col%2 == 0) {
 			a = col/2;
 			b = -a-backward+1;
-			height++;
 		} else {
 			a = (col-1)/2;
 			b = -a-backward;
