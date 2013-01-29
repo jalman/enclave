@@ -12,92 +12,86 @@ import battlecode.common.*;
 
 public class HQBehavior extends RobotBehavior {
 
-	HQAction[] buildOrder;
-	int buildOrderProgress = 0;
+        HQAction[] buildOrder;
+        int buildOrderProgress = 0;
 
-	int numBots, numEncampments, numSoldiers;
-	int soldierID = 0;
+        int numBots, numEncampments, numSoldiers;
+        int soldierID = 0;
 
-	ArraySet<Robot> generators = new ArraySet<Robot>(500);
-	ArraySet<Robot> suppliers =  new ArraySet<Robot>(500);
-	int genIndex = 0, supIndex = 0;
+        ArraySet<Robot> generators = new ArraySet<Robot>(500);
+        ArraySet<Robot> suppliers =  new ArraySet<Robot>(500);
+        int genIndex = 0, supIndex = 0;
 
-	double lastFlux = 0, thisFlux = 0, fluxDiff = 0, actualFlux = 0;
+        double lastFlux = 0, thisFlux = 0, fluxDiff = 0, actualFlux = 0;
 
-	ExpandSystem expandSystem;
-	WarSystem warSystem;
+        ExpandSystem expandSystem;
+        WarSystem warSystem;
 
-	public HQBehavior(Strategy strategy) {
-		Utils.strategy = strategy;
-		Utils.parameters = strategy.parameters;
-		buildOrder = strategy.buildOrder;	
-		expandSystem = new ExpandSystem();
-		warSystem = new WarSystem(this);
-	}
+        public HQBehavior(Strategy strategy) {
+            Utils.strategy = strategy;
+            Utils.parameters = strategy.parameters;
+            buildOrder = strategy.buildOrder;	
+            expandSystem = new ExpandSystem();
+            warSystem = new WarSystem(this);
+        }
 
-	@Override
-	public void beginRound() throws GameActionException {
-		//RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
-		numBots = RC.senseNearbyGameObjects(Robot.class, currentLocation, 10000, ALLY_TEAM).length;
-		numEncampments = RC.senseAlliedEncampmentSquares().length;
-		numSoldiers = numBots - numEncampments;
-		actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
-		//thisFlux = RC.getTeamPower();
-		fluxDiff = actualFlux - lastFlux;
-		lastFlux = actualFlux;
-		
-		if(Clock.getRoundNum() % 50 == 0) {
-			parameters.greed++;
-		}
+        @Override
+        public void beginRound() throws GameActionException {
+            //RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
+            numBots = RC.senseNearbyGameObjects(Robot.class, currentLocation, 10000, ALLY_TEAM).length;
+            numEncampments = RC.senseAlliedEncampmentSquares().length;
+            numSoldiers = numBots - numEncampments;
+            actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
+            //thisFlux = RC.getTeamPower();
+            fluxDiff = actualFlux - lastFlux;
+            lastFlux = actualFlux;
+            
+            if(Clock.getRoundNum() % 50 == 0) {
+                parameters.greed++;
+            }
 
-		messagingSystem.beginRoundHQ(messageHandlers);
-	}
+            messagingSystem.beginRoundHQ(messageHandlers);
+        }
 
-	@Override
-	public void run() throws GameActionException {
-		macro();
-		expand();
-		warSystem.run();
-		
-		RC.setIndicatorString(0, parameters.toString());
-	}
+        @Override
+        public void run() throws GameActionException {
+            macro();
+            expand();
+            warSystem.run();
+            
+            RC.setIndicatorString(0, parameters.toString());
+        }
 
-	/**
-	 * Handle upgrades and robots.
-	 */
-	protected void macro() {
-		if(!RC.isActive()) return;
-		
-		boolean built = false;
-		if(Clock.getRoundNum() % 3 == 0) {
-			updateEncampmentCounts();
-		}
-		//RC.setIndicatorString(1,""+RC.getTeamPower());
-		if(buildOrderProgress < buildOrder.length) {
-			try {
-				HQAction action = buildOrder[buildOrderProgress];
-				RC.setIndicatorString(1, action.toString());
-				if(action.execute(this)) {
-					if(action instanceof UpgradeAction) {
-						messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
-					}
-					buildOrderProgress++;
-				}
-			} catch (GameActionException e) {
-				e.printStackTrace();
-			}
-		} else if(RC.isActive()) {
-			//if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
-<<<<<<< HEAD
-
-			try {
-				if(RC.getEnergon() > 50*RC.checkResearchProgress(Upgrade.NUKE)) {
-					researchUpgrade(Upgrade.NUKE);
-				} else if(numSoldiers*100 < strategy.soldierLimitPercentage*(40 + 10*generators.size) && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
-=======
-			if(numAboveSoldierCap() < 0 && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
-				try {
->>>>>>> f76d6c700640d763eea23a5f561c7a3454b19daa
+        /**
+         * Handle upgrades and robots.
+         */
+        protected void macro() {
+            if(!RC.isActive()) return;
+            
+            boolean built = false;
+            if(Clock.getRoundNum() % 3 == 0) {
+                updateEncampmentCounts();
+            }
+            //RC.setIndicatorString(1,""+RC.getTeamPower());
+            if(buildOrderProgress < buildOrder.length) {
+                try {
+                    HQAction action = buildOrder[buildOrderProgress];
+                    RC.setIndicatorString(1, action.toString());
+                    if(action.execute(this)) {
+                        if(action instanceof UpgradeAction) {
+                            messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
+                        }
+                        buildOrderProgress++;
+                    }
+                } catch (GameActionException e) {
+                    e.printStackTrace();
+                }
+            } else if(RC.isActive()) {
+                //if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
+                try {
+                    if(RC.getEnergon() > 50*RC.checkResearchProgress(Upgrade.NUKE)) {
+                        researchUpgrade(Upgrade.NUKE);
+                    } else if(numAboveSoldierCap() < 0 && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
 					built = buildSoldier();
 				} 
 				if(!built){
