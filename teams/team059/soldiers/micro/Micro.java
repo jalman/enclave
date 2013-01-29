@@ -5,6 +5,7 @@ import battlecode.common.*;
 import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
+import team059.soldiers.Mines;
 import static team059.utils.Utils.*;
 import static team059.soldiers.SoldierUtils.*;
 
@@ -47,6 +48,10 @@ public class Micro {
 		{
 			attackTarget(farawayEnemyTarget);
 		}
+		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 4 ==0)
+		{		
+			Mines.tryDefuse(farawayEnemyTarget, true);
+		}
 		if(RC.isActive())
 		{
 			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
@@ -70,7 +75,7 @@ public class Micro {
 		setEnemyTarget(numberOfTargetsToCheck);
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
 		//cheap micro
-		if (timidity < -5)
+		if (timidity < -5 || RC.senseNearbyGameObjects(Robot.class, enemyTarget, 60, ALLY_TEAM).length > 8)
 		{
 			enemyWeight = -10000;
 			allyWeight = 100000;
@@ -105,16 +110,9 @@ public class Micro {
 		}
 		else if (!shouldIAttack())
 		{
-			if (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 81, ALLY_TEAM).length < 12)
-			{
-				setRetreatBack();
-				mover.setNavType(NavType.BUG);
-				mover.setTarget(retreatTarget);
-			}
-			else
-			{
-				mover.setTarget(currentLocation);
-			}
+			setRetreatBack();
+			mover.setNavType(NavType.BUG);
+			mover.setTarget(retreatTarget);
 		}
 		else
 		{
