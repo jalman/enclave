@@ -118,7 +118,10 @@ public class Micro {
 		}
 		else
 		{
-			mover.setNavType(NavType.BUG);
+			if (enemyWeight > 0)
+				mover.setNavType(NavType.BUG);
+			else
+				mover.setNavType(NavType.BUG_DIG_2);
 			attackTarget(enemyTarget);
 		}
 	}
