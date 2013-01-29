@@ -36,7 +36,7 @@ public class SoldierUtils {
 		{
 			if (strategy.parameters.timidity == 1)
 			{
-				closeEnoughToGoToBattleSquared = 81;
+				closeEnoughToGoToBattleSquared = 60;
 			}
 			else
 				closeEnoughToGoToBattleSquared=121;

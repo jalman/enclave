@@ -8,7 +8,7 @@ import battlecode.common.*;
 
 public class RushUtils {
 	
-	public static int locRetreatedFromTooFarSquared = 20;
+	public static int locRetreatedFromTooFarSquared = 50;
 	public static MapLocation locRetreatedFrom;
 	public static int turnRetreated;
 	public static Robot[] allyRobots;
@@ -29,7 +29,7 @@ public class RushUtils {
 	public static boolean shouldIUpdateTurnRetreated() throws GameActionException
 	{
 		if (locRetreatedFrom == null ||
-					Clock.getRoundNum() - turnRetreated >= 9 
+					Clock.getRoundNum() - turnRetreated >= 9
 				|| currentLocation.distanceSquaredTo(locRetreatedFrom) > locRetreatedFromTooFarSquared)
 		{
 			return true;
@@ -39,7 +39,9 @@ public class RushUtils {
 	}
 	public static boolean shouldIAttack() throws GameActionException
 	{		
-		if (Clock.getRoundNum() - turnRetreated >= 2 && 
+		if (naiveDistance(currentLocation, ALLY_HQ) <= 4)
+			return true;
+		else if ((enemyWeight < 13 || Clock.getRoundNum() - turnRetreated >= 3) && 
 				((setAllyWeight(currentLocation, 14) >25 && enemyWeight > allyWeight) || Clock.getRoundNum() - turnRetreated >= 5 ) )
 			return true;
 		return false;

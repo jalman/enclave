@@ -9,23 +9,38 @@ import team059.movement.NavType;
 import team059.soldiers.Mines;
 import static team059.utils.Utils.*;
 import static team059.soldiers.SoldierUtils.*;
+import team059.soldiers.micro.RushUtils;
 
 public class MicroOld{
 	MapLocation retreatTarget = null;
 	public int goIn = 0;
 	public static final Mover mover = new Mover();
 	int numberOfTargetsToCheck = 5;
-	
+	public boolean shouldIAttack;
 	/**
-	 * Timidity
+	 * Timidity is 1 during a rush.
 	 */
 	public int timidity = 0;
+	
+	/**
+	 * Rush variables
+	 */
+	MapLocation locationRetreatedFrom;
+	int turnRetreated; // the turn that locationRetreatedFrom was retreated from. 
 	
 	public MicroOld() {
 		enemyTarget = null;
 	}
 	public void run(int timidness) throws GameActionException{
-			timidity = timidness;
+		timidity = timidness;
+		//Rush code
+		if (timidity == 1)
+		{
+			RushUtils.updateRushUtils();
+			RC.setIndicatorString(2, "Round " + Clock.getRoundNum() + " " + " Last time retreated " + RushUtils.turnRetreated + " " + RushUtils.locRetreatedFrom);
+		}
+		
+		
 		if (enemyRobots.length == 0)
 		{
 			updateFarawayEnemyTarget(1);
@@ -41,7 +56,7 @@ public class MicroOld{
 	public void rushToBattle() throws GameActionException{
 		//farawayEnemyTarget should be already set if micro mode is entered
 		if (RC.getRobot().getID() % 7 == 0)
-			mover.setNavType(NavType.BUG_DIG_2);
+			mover.setNavType(NavType.BUG_HIGH_DIG);
 		else
 			mover.setNavType(NavType.BUG);
 		int k = Clock.getBytecodeNum();
@@ -55,9 +70,10 @@ public class MicroOld{
 		}
 		
 		if(RC.isActive())
-		{	
+		{
+			//RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
 			mover.execute();
-			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget() + " Bytecode used " + (Clock.getBytecodeNum()-k));
+			//RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget() + " Bytecode used " + (Clock.getBytecodeNum()-k));
 
 		}
 	}
@@ -69,7 +85,7 @@ public class MicroOld{
 		if(RC.isActive())
 		{
 			mover.execute();
-			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget() + enemyTarget);
+//			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget() + enemyTarget);
 		}
 	}
 
@@ -120,11 +136,19 @@ public class MicroOld{
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
 		//TODO: Account for robot types!!!
+		if (timidity == 1)
+		{
+			shouldIAttack = RushUtils.shouldIAttack();
+		}
+		else
+			shouldIAttack = shouldIAttack();
+		
+		
 		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
 		{
 			mover.setTarget(currentLocation);
 		}
-		else if (!shouldIAttack())
+		else if (!shouldIAttack)
 		{
 			setRetreatBack();
 			mover.setNavType(NavType.BUG);
@@ -133,7 +157,7 @@ public class MicroOld{
 		else
 		{
 			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && RC.getRobot().getID() % 6 == 0))
-				mover.setNavType(NavType.BUG_DIG_2);
+				mover.setNavType(NavType.BUG_HIGH_DIG);
 			else
 				mover.setNavType(NavType.BUG);
 			attackTarget(enemyTarget);
@@ -159,6 +183,11 @@ public class MicroOld{
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
+		if (timidity == 1)
+		{
+			
+			return true;
+		}
 		if (15*allyWeight > (15+timidity)*enemyWeight)
 		{
 			return true;
@@ -181,4 +210,5 @@ public class MicroOld{
 			mover.setTarget(RC.getLocation());
 		}
 	}
+	
 }
