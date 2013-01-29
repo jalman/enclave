@@ -59,7 +59,7 @@ public class ExpandSystem {
 	public void considerExpanding(int far) throws GameActionException {
 		boolean victoryExpand = expandNum > 0;
 		if(numSent*10 > Clock.getRoundNum() || far >= NC) return;
-		if(numSent >= parameters.greed + Clock.getRoundNum()/50) {
+		if(numSent >= parameters.greed) {
 			if(!victoryExpand) {
 				return;
 			}
