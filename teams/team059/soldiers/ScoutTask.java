@@ -89,13 +89,13 @@ public class ScoutTask extends TravelTask {
 		}
 		mover.execute();
 		
-		
-		if(RC.senseNearbyGameObjects(Robot.class, 14, ENEMY_TEAM).length > 0) {
-			seeEnemyWarn();
+		int nEnemies = RC.senseNearbyGameObjects(Robot.class, 14, ENEMY_TEAM).length;
+		if(nEnemies > 0) {
+			seeEnemyWarn(nEnemies);
 		}
 	}
 	
-	protected void seeEnemyWarn() {
+	protected void seeEnemyWarn(int n) {
 		return;
 	}
 	

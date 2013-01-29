@@ -78,13 +78,21 @@ public class HQBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		} else if(RC.isActive()) {
-			if(actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
+			if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
 				try {
 					built = buildSoldier();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else if(!built){
+			} 
+			if(!built){
+				if(fluxDiff*40 + actualFlux < 0) {
+					try {
+						messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 				try {
 					researchUpgrade(Upgrade.NUKE);
 				} catch (GameActionException e) {

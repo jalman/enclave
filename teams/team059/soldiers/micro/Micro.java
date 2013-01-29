@@ -5,6 +5,7 @@ import battlecode.common.*;
 import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
+import team059.soldiers.Mines;
 import static team059.utils.Utils.*;
 import static team059.soldiers.SoldierUtils.*;
 
@@ -24,9 +25,9 @@ public class Micro {
 	public Micro() {
 		enemyTarget = null;
 	}
-	public void run() throws GameActionException{
+	public void run(int timidity) throws GameActionException{
 		
-		timidity = strategy.parameters.timidity;
+		this.timidity = timidity;
 		if (enemyRobots.length == 0)
 		{
 			updateFarawayEnemyTarget(1);
@@ -46,6 +47,10 @@ public class Micro {
 		if (farawayEnemyTarget != null)
 		{
 			attackTarget(farawayEnemyTarget);
+		}
+		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 3 ==0 && RC.senseNearbyGameObjects(Robot.class, currentLocation, 37, ENEMY_TEAM).length == 0)
+		{		
+			Mines.tryDefuse(farawayEnemyTarget, true);
 		}
 		if(RC.isActive())
 		{
@@ -70,7 +75,7 @@ public class Micro {
 		setEnemyTarget(numberOfTargetsToCheck);
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
 		//cheap micro
-		if (timidity < -5)
+		if (timidity < -5 || RC.senseNearbyGameObjects(Robot.class, enemyTarget, 50, ALLY_TEAM).length > 7)
 		{
 			enemyWeight = -10000;
 			allyWeight = 100000;
@@ -105,16 +110,9 @@ public class Micro {
 		}
 		else if (!shouldIAttack())
 		{
-			if (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 81, ALLY_TEAM).length < 12)
-			{
-				setRetreatBack();
-				mover.setNavType(NavType.BUG);
-				mover.setTarget(retreatTarget);
-			}
-			else
-			{
-				mover.setTarget(currentLocation);
-			}
+			setRetreatBack();
+			mover.setNavType(NavType.BUG);
+			mover.setTarget(retreatTarget);
 		}
 		else
 		{
