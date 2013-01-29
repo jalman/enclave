@@ -103,6 +103,9 @@ public class HQBehavior extends RobotBehavior {
 	}
 
 	protected void expand() {
+//		checkForVictoryExpansion();
+		
+		
 		if(RC.senseCaptureCost() + 10 < RC.getTeamPower()) {
 			try {
 				expandSystem.considerExpanding();
@@ -111,6 +114,23 @@ public class HQBehavior extends RobotBehavior {
 			}
 		}
 	}
+	
+	final int VICTORY_LOOKBACK = 10;
+	int[] enemies = new int[VICTORY_LOOKBACK];
+	int victoryTurn = -100;
+	
+//	public void checkForVictoryExpansion() {
+//		enemies[Clock.getRoundNum() % VICTORY_LOOKBACK] = RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ENEMY_TEAM).length;
+//		if(Clock.getRoundNum() > 20) {
+//			if(enemies[Clock.getRoundNum() % VICTORY_LOOKBACK] + 15 < enemies[(Clock.getRoundNum() + 1) % VICTORY_LOOKBACK] &&
+//					RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ALLY_TEAM).length > 20 &&
+//					victoryTurn + 15 < Clock.getRoundNum()) {
+//				expandSystem.expand(2);
+//				victoryTurn = Clock.getRoundNum();
+//				System.out.println("VICTORY");
+//			}
+//		}
+//	}
 
 	private int ENCAMPMENTS_TO_CHECK = 6;
 	private void updateEncampmentCounts() { // throws GameActionException {
