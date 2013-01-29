@@ -81,8 +81,7 @@ public class ExpandTask extends AttackTask {
 		
 		if(buildType != null) return buildType;
 		
-		//TODO: do something better
-		return Clock.getRoundNum() % 2 == 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
+		return RC.senseAlliedEncampmentSquares().length > 7 ? RobotType.GENERATOR : RobotType.SUPPLIER;
 	}
 	
 	@Override
