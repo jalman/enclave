@@ -7,20 +7,19 @@ import static team059.utils.Utils.*;
 
 public class Mover {
 	private MapLocation dest, here;
-	private boolean defuseMoving;
+	//private boolean defuseMoving;
 	private NavAlg navAlg;
 	private final NavAlg beelineAlg = NavType.BEELINE.navAlg;
+	private NavType navType;
 	
 	public Mover() { 
 		this.dest = null;
-		this.navAlg = NavType.BUG_HIGH_DIG.navAlg;
-		this.defuseMoving = true;
+		setNavType(NavType.BUG_HIGH_DIG);
 	}
 	
 	public Mover(NavType navType) {
 		this.dest = null;
-		this.navAlg = navType.navAlg;
-		this.defuseMoving = true;		
+		setNavType(navType);
 	}
 	
 //	public Mover(RobotBehavior rb) { 
@@ -29,8 +28,9 @@ public class Mover {
 //		this.defuseMoving = true;
 //	}
 
-	public void setNavType(NavType navtype) {
-		this.navAlg = navtype.navAlg;
+	public void setNavType(NavType navType) {
+		this.navType = navType;
+		this.navAlg = navType.navAlg;
 	}
 	
 	public void setTarget(MapLocation dest) {
@@ -93,7 +93,7 @@ public class Mover {
 		//int bc = Clock.getBytecodesLeft();
 		//RC.setIndicatorString(1, "my x = " + Integer.toString(RC.getLocation().x) + ", my y = " + Integer.toString(RC.getLocation().y)
 		//		+ "x = " + Integer.toString(dest.x) + ", y = " + Integer.toString(dest.y)); 
-		//RC.setIndicatorString(1, dest + "");
+		RC.setIndicatorString(2, Clock.getRoundNum() + " | dest = " + dest + ", navtype = " + navType);
 		if(RC.isActive()) {
 			here = RC.getLocation();
 			if(dest == null || dest.equals(here)) {

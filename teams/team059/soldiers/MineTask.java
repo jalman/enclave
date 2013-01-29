@@ -15,26 +15,35 @@ public class MineTask extends TravelTask {
 	
 	private boolean sentMessageFlag = false;
 	private int waiting = 0;
-	private final int MAX_WAITING = 4;
+	private final int MAX_WAITING = 2;
 	
 	//public final double HIGH_DENSITY = 0.9;
-	public Team mineHere = null;
+	public Team mineAtDest = null;
 	
 	public MineTask(MapLocation target, int priority) {
 		super(target, priority, 0);
+		mineAtDest = RC.senseMine(destination);
+	}
+	
+	@Override 
+	public void update() {
+		super.update();
+		mineAtDest = RC.senseMine(destination);
 	}
 	
 	//should depend on the strategy and round number, and an evaluation of how many mines there are around the target
 	@Override
 	public int appeal() {
-//		if( mineHere != null) {
+//		if( mineAtDest != null) {
 //			return -10000;
 //		} else if(Clock.getRoundNum() < 100 && RC.getLocation().distanceSquaredTo(ALLY_HQ) < 16) {
 //			return 1000;
 //		} else return priority;
 		//else return (int) ((1.0 - density) * 10.0);
-		if(mineHere != null) {
-			return -1000+priority;
+		if(enemyRobots.length > 0) {
+			return priority - 5000;
+		} if(mineAtDest == ALLY_TEAM) {
+			return -1000;
 		}
 		return priority;
 	}
@@ -42,7 +51,6 @@ public class MineTask extends TravelTask {
 	@Override
 	public void execute() throws GameActionException {
 		//mines = RC.senseMineLocations(destination, 1, null);
-		mineHere = RC.senseMine(destination);
 		if(!sentMessageFlag) {
 			messagingSystem.writeLayingMineMessage(destination);
 			sentMessageFlag = true;
@@ -54,7 +62,8 @@ public class MineTask extends TravelTask {
 			} else {
 				
 			}	*/
-//			if(mineHere == null) {
+//			if(mineAtDest == null) {
+			if(!done())
 				RC.layMine();
 //			}
 		} else {
@@ -65,7 +74,6 @@ public class MineTask extends TravelTask {
 
 	@Override
 	public boolean done() {
-		mineHere = RC.senseMine(destination);
 		if(currentLocation.isAdjacentTo(destination)) {
 			try {
 				if(RC.senseObjectAtLocation(destination) != null) {
@@ -79,7 +87,7 @@ public class MineTask extends TravelTask {
 		}
 //		density = (double) mines.length / distance;
 //		return density > HIGH_DENSITY;
-		return mineHere == ALLY_TEAM;
+		return mineAtDest == ALLY_TEAM;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package team059.movement;
 
+import java.util.Arrays;
+
 import team059.*;
 import battlecode.common.*;
 import static team059.utils.Utils.*;
@@ -82,7 +84,12 @@ public class BugMoveFun extends NavAlg {
                 return tracing!=-1;
         }
         
+        StringBuilder DEBUG;
+        
         public Direction getNextDir() {
+
+            DEBUG = new StringBuilder();
+            
         	curLoc = RC.getLocation();
         	int hx = curLoc.x, hy = curLoc.y;
         	Direction dir;
@@ -91,19 +98,20 @@ public class BugMoveFun extends NavAlg {
             for(int i=0; i<8; i++) {
             	dir = directions[i];
                 TerrainTile tt = RC.senseTerrainTile(curLoc.add(dir));
-                if(bugTurnsBlocked < 3) {
-                	if(tt==null) movable[i] = canMoveNoMine(dir);
-                	else movable[i] = (tt == TerrainTile.LAND && !isEnemyMine(curLoc.add(dir))); 
-                } else {
+//                if(bugTurnsBlocked < 2) {
+//                	if(tt==null) movable[i] = canMoveNoMine(dir);
+//                	else movable[i] = (tt == TerrainTile.LAND && !isEnemyMine(curLoc.add(dir))); 
+//                } else {
                         movable[i] = canMoveNoMine(dir);
-                }
+//                }
             }
-            
+            DEBUG.append(" _ " + Arrays.toString(movable) + " | ");
             int[] toMove = computeMove(curLoc.x, curLoc.y, movable);
+            RC.setIndicatorString(0, Clock.getRoundNum() + DEBUG.toString());
             if(toMove==null) return Direction.NONE;
             Direction ret = directions[getDirTowards(toMove[0], toMove[1])];
-            if(!canMoveNoMine(ret)) bugTurnsBlocked++;
-            else bugTurnsBlocked=0;
+//            if(!canMoveNoMine(ret)) bugTurnsBlocked++;
+//            else bugTurnsBlocked=0;
             return ret;
         }
 
@@ -125,30 +133,37 @@ public class BugMoveFun extends NavAlg {
                         return new int[] {tx-sx, ty-sy};
                 }
                 
+                DEBUG.append("compute move : ");
                 double dist = (sx-tx)*(sx-tx)+(sy-ty)*(sy-ty);
                 if(tracing!=-1) {
+                	DEBUG.append("still tracing | ");
                         turnsTraced++;
                         if(dist<traceDistance) {
+                        	DEBUG.append("d<trD | ");
                                 tracing = -1;
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(turnsTraced>=traceThreshold) {
+                        	DEBUG.append("tTr>=trThr | ");
                                 tracing = -1;
                                 traceThreshold *= 2;
                             	//System.out.println("turnsTraced >= traceThreshold! New threshold: " + traceThreshold);
                                 defaultTraceDirection = 1-defaultTraceDirection;
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(!(sx==expectedsx && sy==expectedsy)) {
+                        	DEBUG.append("exp wrong | ");
                                 int i = getDirTowards(expectedsx-sx, expectedsy-sy);
                                 if(movableTerrain[i])
                                         return d[i];
                                 else
                                         wallDir = i;
                         } else if(movableTerrain[wallDir]) {
+                        	DEBUG.append("mov[wD] | ");
                                 // Tracing around phantom wall 
                                 //   (could happen if a wall was actually a moving unit)
                                 tracing = -1;
                                 hitEdgeInOtherTraceDirection = false;
                         } else if(!hitEdgeInOtherTraceDirection) {
+                        	DEBUG.append("!hEIOTD | ");
                                 int x = sx + d[wallDir][0];
                                 int y = sy + d[wallDir][1];
                                 if(x<edgeXMin || x>=edgeXMax || y<edgeYMin || y>=edgeYMax) {
@@ -159,20 +174,24 @@ public class BugMoveFun extends NavAlg {
                         }
                 }
                 if(tracing==-1) {
+                	DEBUG.append("not tracing. | ");
                         int dir = getDirTowards(tx-sx, ty-sy);
                         if(movableTerrain[dir]) return d[dir];
+                    	DEBUG.append("tracing again. | ");
                         tracing = defaultTraceDirection;
                         traceDistance = dist;
                         turnsTraced = 0;
                         wallDir = dir;
                 } 
                 if(tracing!=-1) {
+                	DEBUG.append("begin tracing. | ");
                         for(int ti=1; ti<8; ti++) {
                                 int dir = ((1-tracing*2)*ti + wallDir + 8) % 8;
                                 if(movableTerrain[dir]) {
                                         wallDir = (dir+6+5*tracing)/2%4*2; //magic formula
                                         expectedsx = sx + d[dir][0];
                                         expectedsy = sy + d[dir][1];
+                                    	DEBUG.append("wallDir = " + wallDir + ", expsx/sy = " + expectedsx + ", " + expectedsy + " | ");
                                         return d[dir];
                                 }
                         }

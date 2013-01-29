@@ -8,6 +8,7 @@ import static team059.utils.Utils.*;
 
 public class AttackTask extends TravelTask {
 
+	private boolean tryToDefuse = true;
 	private static final Mover mover = new Mover();
 	
 	private final int timidity;
@@ -15,6 +16,16 @@ public class AttackTask extends TravelTask {
 	public AttackTask(MapLocation target, int priority) {
 		super(mover, target, priority, 2);
 		this.timidity = parameters.timidity;
+	}
+	
+	public AttackTask(MapLocation target, int priority, int distance, int timidity) {
+		super(mover, target, priority, distance);
+		this.timidity = parameters.timidity;
+	}
+	
+	@Override
+	public void update() {
+		super.update();
 	}
 
 	public AttackTask(MapLocation target, int priority, int timidity) {

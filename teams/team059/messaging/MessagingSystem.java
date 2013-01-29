@@ -159,13 +159,13 @@ public class MessagingSystem {
 				//fix messages
 				for(int j = 0; j < i; j++) {
 					writeBlock(channels[j]+off, type, block);
-					System.out.println("Fixing message " + j);
+//					System.out.println("Fixing message " + j);
 				}
 
 				for(int j = i+1; j < COPIES; j++) {
 					if(!checkBlock(channels[j]+off, type)) {
 						writeBlock(channels[j]+off, type, block);
-						System.out.println("Fixing message " + j);
+//						System.out.println("Fixing message " + j);
 					}
 				}
 
@@ -285,7 +285,7 @@ public class MessagingSystem {
 		//read previous round's messages
 		if(!isFirstRound()) {
 			readMessages(handlers);
-			//printMessageBoard();
+//			printMessageBoard();
 		}
 
 		//set channels for new round
@@ -417,11 +417,26 @@ public class MessagingSystem {
 		writeMessage(MessageType.ANNOUNCE_UPGRADE.ordinal(), upgradeId);
 	}
 	
+	/**
+	 * Announce location of shield to a soldier.
+	 * @param loc: location of shield.
+	 * @throws GameActionException
+	 */
 	public void writeShieldLocationMessage(MapLocation loc) throws GameActionException {
 		writeMessage(MessageType.SHIELD_LOCATION.ordinal(), loc.x, loc.y);
 	}
 	
+	/**
+	 * Announce robot's sequential SOLDIER_ID. Only called by HQ.
+	 * @param soldierID: soldier ID to assign.
+	 * @throws GameActionException
+	 */
+	public void writeSoldierID(int soldierID) throws GameActionException {
+		writeMessage(MessageType.SOLDIER_ID.ordinal(), soldierID);
+	}
+	
 	public void printMessageBoard() {
+		System.out.println("MESSAGEBOARD:");
 		for(int i = 0; i < total_messages; i++) {
 			int off = i * BLOCK_SIZE;
 			for(int j = 0; j < BLOCK_SIZE; j++) {

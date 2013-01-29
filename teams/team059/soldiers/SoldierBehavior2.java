@@ -7,6 +7,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotType;
+import battlecode.common.Upgrade;
 import team059.Encampments;
 import team059.RobotBehavior;
 import team059.Strategy;
@@ -34,6 +35,9 @@ public class SoldierBehavior2 extends RobotBehavior {
 
 	public static Micro microSystem;
 	
+	public static int bornRound;
+	public static int soldierID = -1;
+	
 	public SoldierBehavior2() {
 		microSystem = new Micro();
 		patrolManager = new PatrolManager();
@@ -52,6 +56,8 @@ public class SoldierBehavior2 extends RobotBehavior {
 				{attackManager, mineManager, expandManager, takeEncampmentManager, dodgeMineManager};
 		rushTaskGivers = new TaskGiver[] 
 				{patrolManager, attackManager, expandManager, takeEncampmentManager, dodgeMineManager};
+		
+		bornRound = Clock.getRoundNum();
 	}
 
 	@Override
@@ -100,12 +106,14 @@ public class SoldierBehavior2 extends RobotBehavior {
 			if(t == null || t == currentTask) continue;
 			t.update();
 			int appeal = t.appeal();
+			//System.out.print("Task " + t + " has appeal " + appeal + " || ");
 			if(appeal > max_appeal) {
 				RC.setIndicatorString(0, "Task giver " + i);
 				currentTask = t;
 				max_appeal = appeal;
 			}
 		}
+		//System.out.println();
 		
 		if(currentTask != null && RC.isActive()) {
 			RC.setIndicatorString(1, Clock.getRoundNum() + ": " + currentTask.toString() + " with appeal " + currentTask.appeal());
@@ -166,6 +174,10 @@ public class SoldierBehavior2 extends RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				UPGRADES_RESEARCHED[message[0]] = true;
+				
+				if(message[0] == Upgrade.PICKAXE.ordinal()) {
+					mineManager.resetMineCenter();
+				}
 			}
 		};
 	}
@@ -179,4 +191,19 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};		
 	}
+
+	@Override
+	protected MessageHandler getSoldierIDHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				if(Clock.getRoundNum() - bornRound < 2) {
+					soldierID = message[0];
+					//System.out.println("I'm soldier " + soldierID + "!");
+					mineManager.setSoldierID(soldierID);
+				}
+			}
+		};
+	}
+	
 }

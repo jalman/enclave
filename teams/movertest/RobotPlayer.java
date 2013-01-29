@@ -33,6 +33,7 @@ public class RobotPlayer {
 			Mover mover = new Mover();
 			mover.setTarget(rc.senseEnemyHQLocation());
 			while (true) {
+				Utils.updateUtils();
 				try {
 					mover.execute();
 					rc.yield();

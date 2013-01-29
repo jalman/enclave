@@ -32,6 +32,10 @@ public class ArraySet<T> {
 		}
 	}
 	
+	public boolean isEmpty() {
+		return size == 0;
+	}
+	
 	public void debug() {
 		System.out.println(this.toString());
 	}
