@@ -26,17 +26,14 @@ public class RobotBehavior {
 		messageHandlers[MessageType.ANNOUNCE_UPGRADE.ordinal()] = getAnnounceUpgradeHandler();
 		messageHandlers[MessageType.TAKING_ENCAMPMENT.ordinal()] = getTakingEncampmentHandler();
 		messageHandlers[MessageType.SHIELD_LOCATION.ordinal()] = getShieldLocationHandler();
+		messageHandlers[MessageType.SOLDIER_ID.ordinal()] = getSoldierIDHandler();
 	}
 
 	/**
 	 * Called at the beginning of each round.
 	 */
 	public void beginRound() throws GameActionException {
-		try {
 			messagingSystem.beginRound(messageHandlers);
-		} catch (GameActionException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -85,7 +82,7 @@ public class RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				parameters.greed = message[0];
-				parameters.border = (double) message[1] / 1024;
+				parameters.border = ((double)message[1]) / 1024;
 				parameters.attack = message[2];
 			}
 		};
@@ -116,9 +113,11 @@ public class RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				Shields.insertShield(new MapLocation(message[0], message[1]));
-				System.out.println("Read shield message.");
+				//System.out.println("Read shield message.");
 			}
 		};
 	}
+
+	protected MessageHandler getSoldierIDHandler() { return new DefaultMessageHandler(); }
 
 }

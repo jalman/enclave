@@ -50,6 +50,10 @@ public class FastIterableLocSet {
         }
         return locs;
     }
+    
+    public MapLocation locAt(int i) {
+    	return new MapLocation(keys.charAt(i*3+1), keys.charAt(i*3+2));
+    }
 
     public void replace(String newSet) {
         keys.replace(0, keys.length(), newSet);

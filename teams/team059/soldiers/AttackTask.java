@@ -1,6 +1,5 @@
 package team059.soldiers;
 
-import team059.Strategy;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import team059.movement.Mover;
@@ -10,10 +9,24 @@ import static team059.utils.Utils.*;
 public class AttackTask extends TravelTask {
 
 	private static final Mover mover = new Mover();
+	
+	private final boolean defuse;
+	private final int timidity;
+	
 	public AttackTask(MapLocation target, int priority) {
-		super(mover, target, priority, 2);
+		this(target, priority, parameters.timidity, false);
+	}	
+	
+	public AttackTask(MapLocation target, int priority, boolean defuse) {
+		this(target, priority, parameters.timidity, defuse);
 	}
 
+	public AttackTask(MapLocation target, int priority, int timidity, boolean defuse) {
+		super(mover, target, priority, 2);
+		this.timidity = timidity;
+		this.defuse = defuse;
+	}
+	
 	@Override
 	public boolean done() {
 		if(enemyRobots.length > 0) return false;
@@ -23,9 +36,11 @@ public class AttackTask extends TravelTask {
 	@Override
 	public void execute() throws GameActionException {
 		if(farawayEnemyTarget != null) {
-			SoldierBehavior2.microSystem.run(strategy.parameters.timidity);
+			SoldierBehavior2.microSystem.run(timidity);
 		} else if(!Mines.tryDefuse(destination, true)) {
-			super.execute();
+			if(!(defuse && Mines.tryDefuse(destination, false))) {
+				super.execute();
+			}
 		}
 	}
 

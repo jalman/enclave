@@ -42,7 +42,7 @@ public class DodgeMineTask extends Task {
 			MapLocation loc = currentLocation.add(dir);
 			
 			if(!isEnemyMine(loc) && RC.canMove(dir)) {
-				System.out.println("Dodged mine!");
+//				System.out.println("Dodged mine!");
 				RC.move(dir);
 				break;
 			}

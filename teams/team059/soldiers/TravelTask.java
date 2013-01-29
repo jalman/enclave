@@ -52,12 +52,12 @@ public class TravelTask extends Task {
 		if(RC.canMove(currentLocation.directionTo(destination)) || !Mines.tryDefuse(destination, false)) {
 			mover.setTarget(destination);
 			mover.execute();
-		}
+		} 
 	}
 	
 	@Override
 	public boolean done() {
-		return eta <= 0;
+		return eta <= 0 || currentLocation.equals(destination);
 	}
 	
 	@Override

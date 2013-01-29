@@ -9,7 +9,7 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotType;
 import static team059.utils.Utils.*;
 
-public class ExpandTask extends AttackTask {
+public class ExpandTask extends TravelTask {
 	
 	private final RobotType buildType;
 	private final MapLocation badA, badB;
@@ -20,7 +20,7 @@ public class ExpandTask extends AttackTask {
 	}
 
 	public ExpandTask(MapLocation encampment, int priority, RobotType buildType) {
-		super(encampment, priority);
+		super(encampment, priority, 0);
 		this.buildType = buildType;
 		
 		Direction dirToEnemy = ALLY_HQ.directionTo(ENEMY_HQ);
@@ -74,7 +74,7 @@ public class ExpandTask extends AttackTask {
 	
 	private RobotType getCaptureType() {
 		//overrides build type
-		if(forward >= parameters.border - parameters.margin) {
+		if(!isSafe(currentLocation)) {
 			//TODO: make medbays?
 			return RobotType.ARTILLERY;
 		}

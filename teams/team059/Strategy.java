@@ -4,15 +4,16 @@ import static team059.utils.Utils.*;
 import team059.hq.BuildSoldier;
 import team059.hq.HQAction;
 import team059.hq.UpgradeAction;
+import battlecode.common.MapLocation;
 import battlecode.common.Team;
 import static battlecode.common.Upgrade.*;
-import static team059.utils.Utils.*;
 
 public enum Strategy {
 	NORMAL(30, -1.7, 0, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
-	NUCLEAR(5, -2.0, 0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
-	RUSH(0, 20, 20, -50, 1, new BuildSoldier(2), new UpgradeAction(DEFUSION)),
-	RUSH0(0, 20, 20, -50, 0, new BuildSoldier(2), new UpgradeAction(DEFUSION));
+
+	NUCLEAR(5, -4.0, 0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
+	RUSH(0, 20, 20, -50, 0, new BuildSoldier(2), new UpgradeAction(DEFUSION)),
+	RUSH0(0, 20, 20, -50, 1, new BuildSoldier(2), new UpgradeAction(DEFUSION));
 	/**
 	 * Default parameters for this strategy.
 	 */
@@ -41,17 +42,14 @@ public enum Strategy {
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
-		
 		MapLocation halfway = new MapLocation((ALLY_HQ.x + ENEMY_HQ.x)/2, (ALLY_HQ.y + ENEMY_HQ.y)/2);
-		int dx = halfway.x - ALLY_HQ.x;
-		int dy = halfway.y - ALLY_HQ.y;
+		int radius2 = halfway.distanceSquaredTo(ENEMY_HQ);
 		
-		int mines = RC.senseMineLocations(halfway, dx*dx + dy*dy, Team.NEUTRAL).length;
+		int mines = RC.senseMineLocations(halfway, radius2 / 2, Team.NEUTRAL).length;
 		
-		
-		if (distance > 50 && mines > dx*dx + dy*dy) {
+		if (distance > 50 && mines > 300) {
 			return NUCLEAR;
-		} else if (distance < 20) {
+		} else if (distance < 35) {
 			return RUSH;
 		} else {
 			return NORMAL;

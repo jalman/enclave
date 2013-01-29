@@ -15,7 +15,8 @@ public enum MessageType {
 	LAYING_MINE(2),
 	DEFUSING_MINE(3),
 	ANNOUNCE_UPGRADE(1),
-	SHIELD_LOCATION(2);
+	SHIELD_LOCATION(2),
+	SOLDIER_ID(1);
 
 	/**
 	 * Number of integers that comprise this message.

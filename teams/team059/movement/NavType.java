@@ -4,7 +4,8 @@ public enum NavType {
 	
 	ASTAR2(new AStar2()), // AStar with one-pass queue
 	ASTAR3(new AStar3()), // Local AStar with one-pass queue
-	BUG(new BugMoveFun()), // Normal bug, avoid defusing
+	BUG_FUN(new BugMoveFun()), // Normal bug (fun gamers version), avoid defusing
+	BUG(new BugMove()), // Normal bug, avoid defusing
 	STRAIGHT_DIG(new DigMove()), // Try to go straight, defusing along the way
 	TANGENT_BUG,  // Tangent bug
 	RANDOM, // Wiggle randomly? 
