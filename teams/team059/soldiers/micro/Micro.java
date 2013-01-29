@@ -45,15 +45,17 @@ public class Micro{
 		else
 			mover.setNavType(NavType.BUG);
 		int k = Clock.getBytecodeNum();
+		
+		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 4 ==0)
+		{		
+			Mines.tryDefuse(farawayEnemyTarget, false);
+		}
+		
 		if (farawayEnemyTarget != null)
 		{
 			attackTarget(farawayEnemyTarget);
 		}
-		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 4 ==0 && RC.senseNearbyGameObjects(Robot.class, currentLocation, 30, ENEMY_TEAM).length == 0)
-		{		
-			Mines.tryDefuse(farawayEnemyTarget, true);
-		}
-		
+				
 		if(RC.isActive())
 		{	
 			mover.execute();
@@ -132,8 +134,9 @@ public class Micro{
 		}
 		else
 		{
-			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && RC.getRobot().getID() % 6 == 0))
-				mover.setNavType(NavType.BUG_HIGH_DIG);
+			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && RC.getRobot().getID() % 6 == 0) || 
+					enemyTargetRobotInfo.type.equals(RobotType.ARTILLERY) && 1.2*allyWeight > enemyWeight)
+				Mines.tryDefuse(enemyTarget, false);
 			else
 				mover.setNavType(NavType.BUG);
 			attackTarget(enemyTarget);

@@ -58,6 +58,7 @@ public class SoldierUtils {
 		int priority = 0;
 		enemyWeight = 0;
 		enemyTarget = null;
+		enemyTargetRobotInfo = null;
 		for (Robot enemy : enemyRobots)
 		{
 			tempRobotInfo = RC.senseRobotInfo(enemy);
@@ -127,13 +128,16 @@ public class SoldierUtils {
 	public static MapLocation setEnemyTarget() throws GameActionException{
 		int priority = -10000;
 		enemyTarget = null;
+		enemyTargetRobotInfo = null;
 		for (Robot enemy : enemyRobots)
 		{
 			tempRobotInfo = RC.senseRobotInfo(enemy);
 			if(overallPriority(tempRobotInfo) > priority)
 			{
-				enemyTarget = tempRobotInfo.location;
+				enemyTargetRobotInfo = tempRobotInfo;
+				priority = overallPriority(tempRobotInfo);
 			}
+			enemyTarget = enemyTargetRobotInfo.location;
 		}
 		return enemyTarget;
 	}
@@ -193,7 +197,7 @@ public class SoldierUtils {
 		}
 		else if (r.type == RobotType.ARTILLERY)
 		{
-			return 60;
+			return 62;
 		}
 		if (r.type == RobotType.HQ)
 		{
