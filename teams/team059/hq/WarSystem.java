@@ -15,6 +15,8 @@ import battlecode.common.Upgrade;
  *
  */
 public class WarSystem {
+	final HQBehavior hq;
+	
 	private boolean enemyNukeHalfDone = false;
 	private int enemyNukeHalfRound;
 	private boolean nukePanic = false;
@@ -22,17 +24,17 @@ public class WarSystem {
 	private Robot[] allAlliedRobots, allEnemyRobots;
 	private double farthest;
 	
+	public WarSystem(HQBehavior hq) {
+		this.hq = hq;
+	}
+	
 	public void run() throws GameActionException {
+		sense();
 		
-		if(!enemyNukeHalfDone && Clock.getRoundNum() > Upgrade.NUKE.numRounds / 2) {
-			enemyNukeHalfDone = RC.senseEnemyNukeHalfDone();
-			enemyNukeHalfRound = Clock.getRoundNum();
-		}
-
 		//setBorder();
 		
 		if(nukePanic()) {
-			messagingSystem.writeAttackMessage(ENEMY_HQ, 100);
+			messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
 		}
 		int home = defendMainPriority();
 		if(home > 0) {
@@ -40,22 +42,22 @@ public class WarSystem {
 			messagingSystem.writeAttackMessage(ALLY_HQ, home);
 		}
 		
-		RC.setIndicatorString(0, "Border " + parameters.border);
 		messagingSystem.writeParameters(parameters);
 	}
 
-	private void sense() {
+	private void sense() throws GameActionException {
 		allAlliedRobots = RC.senseNearbyGameObjects(Robot.class, 10000, ALLY_TEAM);
 		allEnemyRobots = RC.senseNearbyGameObjects(Robot.class, 10000, ENEMY_TEAM);
 		
-		
+		if(!enemyNukeHalfDone && Clock.getRoundNum() > Upgrade.NUKE.numRounds / 2) {
+			enemyNukeHalfDone = RC.senseEnemyNukeHalfDone();
+			enemyNukeHalfRound = Clock.getRoundNum();
+		}
 	}
 	
-	private void advanceBorder() {
+	private void setBorder() throws GameActionException {
 		
-	}
-	
-	private void setBorder() throws GameActionException {		
+		
 		if(allEnemyRobots.length == 0) {
 			parameters.border += 0.003;
 		} else {

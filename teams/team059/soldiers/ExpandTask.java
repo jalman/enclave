@@ -1,6 +1,7 @@
 package team059.soldiers;
 
 import team059.Encampments;
+import team059.Strategy;
 import team059.utils.Shields;
 import battlecode.common.Clock;
 import battlecode.common.Direction;
@@ -75,7 +76,12 @@ public class ExpandTask extends TravelTask {
 	
 	private RobotType getCaptureType() {
 		
-		if(isBorder(currentLocation) && Shields.shieldLocations.isEmpty()) {
+		if(strategy == Strategy.NORMAL && isBorder(currentLocation) && Shields.shieldLocations.isEmpty()) {
+			try {
+				messagingSystem.writeShieldLocationMessage(currentLocation);
+			} catch (GameActionException e) {
+				e.printStackTrace();
+			}
 			return RobotType.SHIELDS;
 		}
 		

@@ -37,6 +37,7 @@ public class ArtilleryBehavior extends RobotBehavior {
 	
 	public ArtilleryBehavior() {
 		canAttackEnemyHQ = (currentLocation.distanceSquaredTo(ENEMY_HQ) < 64);
+		RC.setIndicatorString(0, String.valueOf(forward));
 	}
 
 	@Override
@@ -205,9 +206,9 @@ public class ArtilleryBehavior extends RobotBehavior {
 			if(attackX != 0 || attackY != 0) {
 				try {
 					RC.attackSquare(new MapLocation(me.x + attackX - 8, me.y + attackY - 8));
-					RC.setIndicatorString(0, weight[attackX - 1][attackY - 1] + " " + weight[attackX][attackY - 1] + " " + weight[attackX + 1][attackY - 1]);
-					RC.setIndicatorString(1, weight[attackX - 1][attackY] + " " + weight[attackX][attackY] + " " + weight[attackX + 1][attackY]);
-					RC.setIndicatorString(2, weight[attackX - 1][attackY + 1] + " " + weight[attackX][attackY + 1] + " " + weight[attackX + 1][attackY + 1]);
+					//RC.setIndicatorString(0, weight[attackX - 1][attackY - 1] + " " + weight[attackX][attackY - 1] + " " + weight[attackX + 1][attackY - 1]);
+					//RC.setIndicatorString(1, weight[attackX - 1][attackY] + " " + weight[attackX][attackY] + " " + weight[attackX + 1][attackY]);
+					//RC.setIndicatorString(2, weight[attackX - 1][attackY + 1] + " " + weight[attackX][attackY + 1] + " " + weight[attackX + 1][attackY + 1]);
 				} catch (GameActionException e) {
 					e.printStackTrace();
 				}
@@ -236,13 +237,8 @@ public class ArtilleryBehavior extends RobotBehavior {
 	}
 
 	@Override
-	public void beginRound() {
-	}
+	public void beginRound() {}
 
 	@Override
-	public void endRound() {
-	}
-
-
-
+	public void endRound() {}
 }

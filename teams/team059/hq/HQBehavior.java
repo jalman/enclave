@@ -15,7 +15,7 @@ public class HQBehavior extends RobotBehavior {
 	HQAction[] buildOrder;
 	int buildOrderProgress = 0;
 
-	int numBots;
+	int numBots, numEncampments, numSoldiers;
 	int soldierID = 0;
 
 	ArraySet<Robot> generators = new ArraySet<Robot>(500);
@@ -32,13 +32,15 @@ public class HQBehavior extends RobotBehavior {
 		Utils.parameters = strategy.parameters;
 		buildOrder = strategy.buildOrder;	
 		expandSystem = new ExpandSystem();
-		warSystem = new WarSystem();
+		warSystem = new WarSystem(this);
 	}
 
 	@Override
 	public void beginRound() throws GameActionException {
 		//RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
 		numBots = RC.senseNearbyGameObjects(Robot.class, currentLocation, MAP_WIDTH+MAP_HEIGHT, ALLY_TEAM).length;
+		numEncampments = RC.senseAlliedEncampmentSquares().length;
+		numSoldiers = numBots - numEncampments - 1;
 		actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
 		//thisFlux = RC.getTeamPower();
 		fluxDiff = actualFlux - lastFlux;
@@ -49,9 +51,11 @@ public class HQBehavior extends RobotBehavior {
 
 	@Override
 	public void run() throws GameActionException {
-		warSystem.run();
 		macro();
 		expand();
+		warSystem.run();
+		
+		RC.setIndicatorString(0, parameters.toString());
 	}
 
 	/**
@@ -79,7 +83,8 @@ public class HQBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		} else if(RC.isActive()) {
-			if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
+			//if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
+			if(numSoldiers*100 < strategy.soldierLimitPercentage*(40 + 10*generators.size) && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
 				try {
 					built = buildSoldier();
 				} catch (Exception e) {
@@ -87,7 +92,7 @@ public class HQBehavior extends RobotBehavior {
 				}
 			} 
 			if(!built){
-				if(fluxDiff*60 + actualFlux < 0) {
+				if(!strategy.equals(Strategy.NUCLEAR) && fluxDiff*60 + actualFlux < 0) {
 					try {
 						messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
 					} catch (Exception e) {
@@ -165,6 +170,7 @@ public class HQBehavior extends RobotBehavior {
 				supIndex++;
 			}
 		}
+		RC.setIndicatorString(2, "generators: " + generators.size + ", suppliers: " + suppliers.size + ", encampments: " + numEncampments + ", soldiers: " + numSoldiers);
 	}
 	
 	/**
@@ -201,7 +207,6 @@ public class HQBehavior extends RobotBehavior {
 	private boolean goodPlaceToMakeSoldier(Direction dir) {
 		return RC.canMove(dir) && !Utils.isEnemyMine(RC.getLocation().add(dir));
 	}
-
 
 	private void sendMessagesOnBuild() throws GameActionException {
 		messagingSystem.writeStrategy(strategy);

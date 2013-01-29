@@ -41,12 +41,42 @@ public class CenterScoutTask extends ScoutTask {
 		
 		//RC.setIndicatorString(2, waypoint[0] + " " + waypoint[1] + " " + waypoint[2]);
 	}
+	
+	boolean one = false;
+	boolean two = false;
+	boolean three = false;
 
 	@Override
 	protected void seeEnemyWarn(int n) {
+		
 		try {
-			parameters.greed = (int) (n > 2 ? 0 : n == 2 ? parameters.greed*0.2 : parameters.greed*0.5);
+			switch(n) {
+			case 1:
+				if(one || two) {
+					break;
+				}
+				one = true;
+				parameters.greed = (int) (0.7 * parameters.greed);
+				break;
+			case 2:
+				if(two) {
+					break;
+				}
+				two = true;
+				parameters.greed = (int) (0.4 * parameters.greed / (one ? 0.7 : 1));
+				break;
+			default:
+				if(three) {
+					break;
+				}
+				three = true;
+				parameters.greed = 0;
+				
+			}
 			messagingSystem.writeParameters(parameters);
+			
+//			parameters.greed = (int) (n > 2 ? 0 : n == 2 ? parameters.greed*0.2 : parameters.greed*0.5);
+//			messagingSystem.writeParameters(parameters);
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}

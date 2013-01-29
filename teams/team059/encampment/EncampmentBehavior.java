@@ -13,6 +13,10 @@ public class EncampmentBehavior extends RobotBehavior {
 	public static final int SAFETY_THRESHOLD = 1;
 	private boolean firstTurn = true;
 	
+	public EncampmentBehavior() {
+		RC.setIndicatorString(0, String.valueOf(forward));
+	}
+	
 	@Override
 	public void run() {
 		try {

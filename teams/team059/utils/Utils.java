@@ -43,6 +43,7 @@ public class Utils {
 	public static int MAP_WIDTH, MAP_HEIGHT;
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
+	public static int HQ_DX, HQ_DY;
 	public static int HQ_DIST;
 	public static Random random;
 	public static int birthRound;
@@ -94,6 +95,8 @@ public class Utils {
 		ALLY_HQ = rc.senseHQLocation();
 		ENEMY_HQ = rc.senseEnemyHQLocation();
 
+		HQ_DX = ALLY_HQ.x - ENEMY_HQ.x;
+		HQ_DY = ALLY_HQ.y - ENEMY_HQ.y;
 		HQ_DIST = naiveDistance(ALLY_HQ,ENEMY_HQ);
 
 		birthRound = Clock.getRoundNum();
@@ -116,7 +119,7 @@ public class Utils {
 		curX = currentLocation.x;
 		curY = currentLocation.y;
 		alliedEncampments = null;
-		forward = Math.log((double)currentLocation.distanceSquaredTo(ALLY_HQ) / currentLocation.distanceSquaredTo(ENEMY_HQ));
+		forward = evaluate(currentLocation);
 		enemyRobots = RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
 		siteRange2 = TYPE.sensorRadiusSquared + (RC.hasUpgrade(Upgrade.VISION) ? GameConstants.VISION_UPGRADE_BONUS : 0);
 		mineRange2 = RC.hasUpgrade(Upgrade.DEFUSION) ? siteRange2 : 2;
@@ -237,9 +240,11 @@ public class Utils {
 		}
 	}
 	
-	
 	public static double evaluate(MapLocation loc) {
-		return Math.log((double)loc.distanceSquaredTo(ENEMY_HQ) / loc.distanceSquaredTo(ALLY_HQ));
+		int dot1 = (loc.x - ALLY_HQ.x) * HQ_DX + (loc.y - ALLY_HQ.y) * HQ_DY;
+		int dot2 = (ENEMY_HQ.x - loc.x) * HQ_DX + (ENEMY_HQ.y - loc.y) * HQ_DY;
+		
+		return Math.log(Math.abs((double)dot1 / dot2));
 	}
 	
 	public static boolean isSafe(MapLocation loc) {

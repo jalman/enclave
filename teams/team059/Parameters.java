@@ -38,4 +38,8 @@ public class Parameters {
 		this.mine = mine;
 		this.timidity = timidity;
 	}
+	
+	public String toString() {
+		return "greed " + greed + ", border " + border + ", mine " + mine + ", tim " + timidity;
+	}
 }

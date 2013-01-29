@@ -10,19 +10,22 @@ import static battlecode.common.Upgrade.*;
 
 public enum Strategy {
 
-	NORMAL(30, -1.7, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
-	NUCLEAR(5, -4.0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(7)), //, new UpgradeAction(NUKE)),
-	RUSH(1, 20, -50, 1, new BuildSoldier(2), new UpgradeAction(DEFUSION)),
-	RUSH0(1, 20, -50, 0, new BuildSoldier(2), new UpgradeAction(DEFUSION));
+	NORMAL(30, -1.7, 0, 0, 80, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
+	NUCLEAR(5, -4.0, 5000, 0, 30, new UpgradeAction(PICKAXE), new BuildSoldier(7)), //, new UpgradeAction(NUKE)),
+	RUSH(1, 1.5, -100, 1, 90, new BuildSoldier(2), new UpgradeAction(DEFUSION));
+	
 	/**
 	 * Default parameters for this strategy.
 	 */
 	public final Parameters parameters;
 	
+	public final int soldierLimitPercentage; // out of 100
+	
 	public final HQAction[] buildOrder;
 	
-	private Strategy(int greed, double border, int mine, int timidity, HQAction... buildOrder) {
+	private Strategy(int greed, double border, int mine, int timidity, int soldierLimitPercentage, HQAction... buildOrder) {
 		parameters = new Parameters(greed, border, mine, timidity);
+		this.soldierLimitPercentage = soldierLimitPercentage;
 		this.buildOrder = buildOrder;
 	}
 	
@@ -31,11 +34,14 @@ public enum Strategy {
 	 * @return The decided-upon strategy.
 	 */
 	public static Strategy decide() {
-		if (ALLY_TEAM.equals(Team.A))
-			return RUSH;
-		return RUSH0;
 		//ADD SOMETHING THEREABOUT (THERE=NUKE)
+
+		if(ALLY_TEAM.equals(Team.A))
+			return NUCLEAR;
+
+		 return NORMAL;
 		/*
+
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
 		MapLocation halfway = new MapLocation((ALLY_HQ.x + ENEMY_HQ.x)/2, (ALLY_HQ.y + ENEMY_HQ.y)/2);
