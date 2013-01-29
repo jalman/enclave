@@ -45,6 +45,7 @@ public class Utils {
 	public static int MAP_WIDTH, MAP_HEIGHT;
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
+	public static int HQ_DIST;
 	public static Random random;
 	public static int birthRound;
 	
@@ -94,6 +95,8 @@ public class Utils {
 		ENEMY_TEAM = (ALLY_TEAM == Team.A) ? Team.B : Team.A;
 		ALLY_HQ = rc.senseHQLocation();
 		ENEMY_HQ = rc.senseEnemyHQLocation();
+		
+		HQ_DIST = naiveDistance(ALLY_HQ,ENEMY_HQ);
 		
 		birthRound = Clock.getRoundNum();
 		
