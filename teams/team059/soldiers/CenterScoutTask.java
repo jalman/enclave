@@ -43,7 +43,7 @@ public class CenterScoutTask extends ScoutTask {
 	@Override
 	protected void seeEnemyWarn(int n) {
 		try {
-			parameters.greed = n > 2 ? 0 : n == 2 ? 10 : 5;
+			parameters.greed = (int) (n > 2 ? 0 : n == 2 ? parameters.greed*0.2 : parameters.greed*0.5);
 			messagingSystem.writeParameters(parameters);
 		} catch (GameActionException e) {
 			e.printStackTrace();
