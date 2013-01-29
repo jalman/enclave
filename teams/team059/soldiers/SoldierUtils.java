@@ -2,8 +2,6 @@ package team059.soldiers;
 
 import static team059.utils.Utils.*;
 import team059.*;
-import team059.soldiers.micro.Micro;
-import team059.utils.Utils;
 import battlecode.common.*;
 
 public class SoldierUtils {
@@ -13,7 +11,7 @@ public class SoldierUtils {
 	public final static int MAX_HQ_ENERGON = 500;
 	
 	public final static int sensorRadius = ENEMY_RADIUS2;
-	public final static int closeEnoughToGoToBattleSquared = 144;
+	public static int closeEnoughToGoToBattleSquared = 100;
 	public static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
 	public static final int maxNumberOfEnemiesToCheckToFindATarget = 9;
 
@@ -34,8 +32,18 @@ public class SoldierUtils {
 	 * @throws GameActionException
 	 */
 	public static void updateSoldierUtils() throws GameActionException{
-		if ((Clock.getRoundNum() + RC.getRobot().getID())%2 == 0)
-		getFarAwayEnemyTarget();
+		if (Clock.getRoundNum() <=2)
+		{
+			if (strategy.parameters.timidity == 1)
+			{
+				closeEnoughToGoToBattleSquared = 81;
+			}
+			else
+				closeEnoughToGoToBattleSquared=121;
+		}
+		
+		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 2 == 0)
+			getFarAwayEnemyTarget();
 	}
 	public static void getFarAwayEnemyTarget() throws GameActionException{
 		detectenemiesFarAway();
@@ -74,7 +82,8 @@ public class SoldierUtils {
 		if (r.type == RobotType.SOLDIER)
 		{
 			//Full health soldier returns 16.
-			return Math.max(0, 10 - (int)(1.5*r.roundsUntilMovementIdle) + (int)(robotHealthPercent(r)*10)-Utils.naiveDistance(currentLocation, r.location));
+			return Math.max(0, 10 - (int)(1.5*r.roundsUntilMovementIdle) + 
+					(int)(robotHealthPercent(r)*10)-naiveDistance(currentLocation, r.location));
 		}
 		else if (r.type == RobotType.ARTILLERY)
 		{
@@ -95,7 +104,7 @@ public class SoldierUtils {
 	{	
 		if (r.type == RobotType.SOLDIER)
 		{
-			return Math.max(0, 10 - (int)(1.5*r.roundsUntilAttackIdle) + (int)(robotHealthPercent(r)*10) - Utils.naiveDistance(currentLocation, r.location));
+			return Math.max(0, 10 - (int)(1.5*r.roundsUntilAttackIdle) + (int)(robotHealthPercent(r)*10) - naiveDistance(currentLocation, r.location));
 		}
 		else if (r.type == RobotType.ARTILLERY)
 		{

@@ -1,8 +1,8 @@
 package team059.soldiers.micro;
 
 
-import team059.utils.Utils;
 import battlecode.common.*;
+import team059.Strategy;
 import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
@@ -10,62 +10,40 @@ import team059.soldiers.Mines;
 import static team059.utils.Utils.*;
 import static team059.soldiers.SoldierUtils.*;
 
-public class MicroOld {
-	
+public class MicroOld{
 	MapLocation retreatTarget = null;
 	public int goIn = 0;
 	public static final Mover mover = new Mover();
 	int numberOfTargetsToCheck = 5;
-	int lastTurnMicroRanOn = 0;
 	
 	/**
-	 * Indicates the turn number that three soldiers were seen on.
+	 * Timidity
 	 */
-	int sawTwoSoldiersOnTurnNumberEtc = Clock.getRoundNum();
-	
-	/**
-	 * Timidity. Rush  = timidity 1, else = timidity 0.
-	 */
-	
 	public int timidity = 0;
 	
 	public MicroOld() {
 		enemyTarget = null;
 	}
 	public void run(int timidness) throws GameActionException{
-		timidity = strategy.parameters.timidity;
-		//this.timidity = timidity;
-		if (timidity == 1)
-		{
-			if (RC.senseNearbyGameObjects(Robot.class, currentLocation, 25, ENEMY_TEAM).length > 0)
-				lastTurnMicroRanOn=Clock.getRoundNum();
-			setRushVariables();
-		}
-		
+			timidity = timidness;
 		if (enemyRobots.length == 0)
 		{
 			updateFarawayEnemyTarget(1);
 			rushToBattle();
-			RC.setIndicatorString(2, "CHARGING " +  Clock.getRoundNum() + " Saw enemies on " + sawTwoSoldiersOnTurnNumberEtc +  " Target: " + mover.getTarget() + farawayEnemyTarget + shouldIAttack() + currentLocation); 
-
 		}
 		else{
 			setMicroVariables();
 			farawayEnemyTarget = enemyTarget;
 			micro();
-			RC.setIndicatorString(2, "MICRO " +  Clock.getRoundNum() + " Saw enemies on " + sawTwoSoldiersOnTurnNumberEtc +  " Target: " + mover.getTarget() + farawayEnemyTarget + shouldIAttack() + currentLocation); 
 		}
 	}
-	
-	public void setRushVariables() throws GameActionException{
-		if (Clock.getRoundNum() - lastTurnMicroRanOn > 3)
-		{
-			sawTwoSoldiersOnTurnNumberEtc = Clock.getRoundNum();
-		}
-	}
+
 	public void rushToBattle() throws GameActionException{
 		//farawayEnemyTarget should be already set if micro mode is entered
-		mover.setNavType(NavType.BUG);
+		if (RC.getRobot().getID() % 7 == 0)
+			mover.setNavType(NavType.BUG_DIG_2);
+		else
+			mover.setNavType(NavType.BUG);
 		int k = Clock.getBytecodeNum();
 		if (farawayEnemyTarget != null)
 		{
@@ -75,11 +53,13 @@ public class MicroOld {
 		{		
 			Mines.tryDefuse(farawayEnemyTarget, true);
 		}
+		
 		if(RC.isActive())
 		{	
 			mover.execute();
+			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget() + " Bytecode used " + (Clock.getBytecodeNum()-k));
+
 		}
-		//RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget() + " Bytecode used " + (Clock.getBytecodeNum()-k));
 	}
 	
 	public void micro() throws GameActionException{
@@ -88,26 +68,40 @@ public class MicroOld {
 		}	
 		if(RC.isActive())
 		{
-			//RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget());
 			mover.execute();
+			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget() + enemyTarget);
 		}
 	}
 
 	public void setMicroVariables() throws GameActionException{
 //		setEnemyTargetAndWeight();
-		setEnemyTarget(numberOfTargetsToCheck);
+		if (naiveDistance(currentLocation, ENEMY_HQ) <= 3)
+		{
+			enemyTarget = ENEMY_HQ;
+			attackTarget(enemyTarget);
+		}
+		else
+			setEnemyTarget();
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
 		//cheap micro
-		if (timidity < -5 || RC.senseNearbyGameObjects(Robot.class, enemyTarget, 50, ALLY_TEAM).length > 7)
+		if (timidity < -5 || (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 45, ALLY_TEAM).length >= 6))
 		{
 			enemyWeight = 2;
 			allyWeight = 100000;
 		}
 		else
 		{
-			MapLocation m = enemyTarget;
-			setEnemyWeight(m, sensorRadius);
-			setAllyWeight(m, sensorRadius);
+			if (timidity != 1)
+			{
+				MapLocation m = averageMapLocation(currentLocation, enemyTarget, 0.25);
+				setEnemyWeight(m, sensorRadius);
+				setAllyWeight(m, sensorRadius);
+			}
+			else
+			{
+				setEnemyWeight(enemyTarget, sensorRadius);
+				setAllyWeight(enemyTarget, sensorRadius);
+			}
 		}
 	}
 	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)
@@ -126,7 +120,7 @@ public class MicroOld {
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
 		//TODO: Account for robot types!!!
-		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2 && timidity != 1)
+		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
 		{
 			mover.setTarget(currentLocation);
 		}
@@ -138,10 +132,11 @@ public class MicroOld {
 		}
 		else
 		{
-			if (enemyWeight < 0 || currentLocation.distanceSquaredTo(ENEMY_HQ) <= 8 || (RC.getRobot().getID() % 9 == 0))
+			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && RC.getRobot().getID() % 6 == 0))
 				mover.setNavType(NavType.BUG_DIG_2);
 			else
-				attackTarget(enemyTarget);
+				mover.setNavType(NavType.BUG);
+			attackTarget(enemyTarget);
 		}
 	}
 
@@ -164,23 +159,11 @@ public class MicroOld {
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if (timidity == 1)
+		if (15*allyWeight > (15+timidity)*enemyWeight)
 		{
-			if (farawayEnemyTarget.distanceSquaredTo(currentLocation) <= 13 && 
-				(Clock.getRoundNum() - sawTwoSoldiersOnTurnNumberEtc <= 1 || allyWeight <= enemyWeight))
-					if (ENEMY_HQ.distanceSquaredTo(currentLocation) >= 20)
-						return false;
 			return true;
-		}
-		else
-		{
-			if(15*allyWeight > (15+timidity)*enemyWeight)
-			{
-				return true;
-			}		
-		}
+		}		
 		return false;
-
 	}
 		
 	public void attackTarget(MapLocation m) throws GameActionException
@@ -191,6 +174,10 @@ public class MicroOld {
 		}
 		else
 		{
+			if (naiveDistance(currentLocation, ENEMY_HQ) < 3 && m.x == ENEMY_HQ.x && m.y == ENEMY_HQ.y)
+			{
+				System.out.println(currentLocation + " " + m);
+			}
 			mover.setTarget(RC.getLocation());
 		}
 	}
