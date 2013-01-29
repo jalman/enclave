@@ -11,7 +11,6 @@ public class ClothingManager extends Utils {
 		try {
 			RC.wearHat();
 		} catch (GameActionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

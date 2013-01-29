@@ -33,7 +33,7 @@ public enum Strategy {
 		
 		if(HQ_DIST < 35)
 			return RUSH;
-		
+
 		return NORMAL;
 		//ADD SOMETHING THEREABOUT (THERE=NUKE)
 		
