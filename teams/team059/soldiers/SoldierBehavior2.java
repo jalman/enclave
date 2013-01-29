@@ -21,7 +21,6 @@ public class SoldierBehavior2 extends RobotBehavior {
 	private ExpandManager expandManager;
 	private MineManager mineManager;
 	private ScoutManager scoutManager;
-	private DefuseManager defuseManager;
 	
 	private SingleTaskManager<AttackTask> attackManager;
 	private SingleTaskManager<ExpandTask> takeEncampmentManager;
@@ -206,4 +205,13 @@ public class SoldierBehavior2 extends RobotBehavior {
 		};
 	}
 	
+	protected MessageHandler getShieldLocationHandler() {
+		return new MessageHandler() {
+			@Override
+			public void handleMessage(int[] message) {
+				Shields.insertShield(new MapLocation(message[0], message[1]));
+			}
+		};
+	}
+
 }

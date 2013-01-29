@@ -21,11 +21,6 @@ public class Parameters {
 	 * Half the "width" of the border.
 	 */
 	public final double margin = 0.5;
-
-	/**
-	 * Priority for attacking enemy HQ.
-	 */
-	public int attack;
 	
 	/**
 	 * Priority for laying mines.
@@ -37,10 +32,9 @@ public class Parameters {
 	 */
 	public int timidity;
 	
-	public Parameters(int greed, double border, int attack, int mine, int timidity) {
+	public Parameters(int greed, double border, int mine, int timidity) {
 		this.greed = greed;
 		this.border = border;
-		this.attack = attack;
 		this.mine = mine;
 		this.timidity = timidity;
 	}
