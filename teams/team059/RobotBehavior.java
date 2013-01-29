@@ -83,7 +83,6 @@ public class RobotBehavior {
 			public void handleMessage(int[] message) {
 				parameters.greed = message[0];
 				parameters.border = ((double)message[1]) / 1024;
-				parameters.attack = message[2];
 			}
 		};
 	}
@@ -108,15 +107,7 @@ public class RobotBehavior {
 
 	protected MessageHandler getTakingEncampmentHandler() {return new DefaultMessageHandler();}
 	
-	protected MessageHandler getShieldLocationHandler() {
-		return new MessageHandler() {
-			@Override
-			public void handleMessage(int[] message) {
-				Shields.insertShield(new MapLocation(message[0], message[1]));
-				//System.out.println("Read shield message.");
-			}
-		};
-	}
+	protected MessageHandler getShieldLocationHandler() {return new DefaultMessageHandler();}
 
 	protected MessageHandler getSoldierIDHandler() { return new DefaultMessageHandler(); }
 
