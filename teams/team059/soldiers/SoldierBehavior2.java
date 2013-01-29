@@ -7,6 +7,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotType;
+import team059.Encampments;
 import team059.RobotBehavior;
 import team059.Strategy;
 import team059.messaging.MessageHandler;
@@ -130,19 +131,13 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};
 	}
+	
 	@Override
 	protected MessageHandler getTakingEncampmentHandler() {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				MapLocation loc = new MapLocation(message[0], message[1]);
-				int appeal = message[2];
-				
-				ExpandTask task = takeEncampmentManager.getTask();
-				if(task != null && loc.equals(task.destination) && appeal > task.appeal()) {
-					takeEncampmentManager.clearTask();
-					//System.out.println("Decided against taking encampment.");
-				}
+				Encampments.claim(message[0], message[1], message[2]);
 			}
 		};
 	}
@@ -165,20 +160,6 @@ public class SoldierBehavior2 extends RobotBehavior {
 		};
 	}
 	
-	/*
-	@Override
-
-	protected MessageHandler getDefusingMineHandler() {
-		return new MessageHandler() {
-			@Override
-			public void handleMessage(int[] message) {
-				if(message[2] != ID) {
-					mineManager.receiveMineMessage(new MapLocation(message[0], message[1]));
-				}
-			}
-		};
-	}	*/
-	
 	@Override
 	protected MessageHandler getAnnounceUpgradeHandler() {
 		return new MessageHandler() {
@@ -198,5 +179,4 @@ public class SoldierBehavior2 extends RobotBehavior {
 			}
 		};		
 	}
-
 }
