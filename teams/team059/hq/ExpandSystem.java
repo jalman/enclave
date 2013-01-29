@@ -59,7 +59,7 @@ public class ExpandSystem {
 	public void considerExpanding(int far) throws GameActionException {
 		boolean victoryExpand = expandNum > 0;
 		if(numSent*10 > Clock.getRoundNum() || far >= NC) return;
-		if(numSent >= parameters.greed) {
+		if(numSent >= parameters.greed + Clock.getRoundNum()/50) {
 			if(!victoryExpand) {
 				return;
 			}
@@ -81,7 +81,7 @@ public class ExpandSystem {
 		for(int i = 0; i < encampments[far].length; i++) {
 			MapLocation loc = encampments[far][i];
 			if((!taken[far][i] || numLost > 0) && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
-				if(suppliers < 9 || generators > suppliers-9) {
+				if(suppliers < 9 || generators > 3*(suppliers-8)) {
 					messagingSystem.writeTakeEncampmentMessage(loc, victoryExpand ? 3000 : 3000, RobotType.SUPPLIER);
 					suppliers++;
 				} else {

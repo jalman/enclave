@@ -248,7 +248,7 @@ public class Utils {
 	}
 	
 	public static boolean isSafe(MapLocation loc) {
-		return forward < parameters.border - parameters.margin;
+		return forward < parameters.border - parameters.margin || naiveDistance(currentLocation, ENEMY_HQ) + naiveDistance(currentLocation, ALLY_HQ) > HQ_DIST*1.3;
 	}
 
 	public static boolean isDangerous(MapLocation loc) {

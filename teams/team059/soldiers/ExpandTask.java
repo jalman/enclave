@@ -94,7 +94,7 @@ public class ExpandTask extends TravelTask {
 		if(buildType != null) return buildType;
 		
 		//TODO: do something better
-		return RC.senseAlliedEncampmentSquares().length >= 8 && Clock.getRoundNum() % 2 == 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
+		return RC.senseAlliedEncampmentSquares().length > 8 && Clock.getRoundNum() % 4 != 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
 	}
 	
 	@Override
