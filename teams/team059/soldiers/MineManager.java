@@ -22,7 +22,7 @@ public class MineManager extends TaskGiver {
 	//SoldierBehavior2 sb;
 	//private FastIterableLocSet currentlyMining = new FastIterableLocSet();
 	
-	public int miningEncampmentPriority = 0, miningPriority = 0;
+	public int miningEncampmentPriority = 0, miningHQPriority = 0, miningArtilleryPriority = 0, miningPriority = 0;
 	
 	public int[][] mineLocs;
 	int Ax, Ay; // ally hq (x,y)
@@ -58,9 +58,12 @@ public class MineManager extends TaskGiver {
 	public static final int DONE_MINE_TARGET = -100; // if a target is "finished" mining around
 //	boolean biased = false;
 	
-	public static final int NUCLEAR_ENCAMPMENT_MINING_PRIORITY = 200;
+	public static final int NUCLEAR_ENCAMPMENT_MINING_PRIORITY = 20;
 	public static final int NORMAL_ENCAMPMENT_MINING_PRIORITY = 0;
 	public static final int RUSH_ENCAMPMENT_MINING_PRIORITY = -500;
+	public static final int NUCLEAR_ARTILLERY_MINING_PRIORITY = 200;
+	public static final int NORMAL_ARTILLERY_MINING_PRIORITY = 0;
+	public static final int RUSH_ARTILLERY_MINING_PRIORITY = -300;
 	public static final int NUCLEAR_HQ_MINING_PRIORITY = 5000;
 	public static final int NORMAL_HQ_MINING_PRIORITY = 0;
 	public static final int RUSH_HQ_MINING_PRIORITY = -500;
@@ -96,6 +99,14 @@ public class MineManager extends TaskGiver {
 		return center;
 	}
 	
+	public void setGoodMineCenter() {
+		if(mineLocs[ALLY_HQ.x][ALLY_HQ.y] != DONE_MINE_TARGET) {
+			setMineCenter(ALLY_HQ, RobotType.HQ);
+		} else {
+			setMineCenter(currentLocation, RobotType.SOLDIER);
+		}
+	}
+	
 	public void setSoldierID(int id) {
 		this.soldierID = id;
 		findNewCol();
@@ -106,6 +117,8 @@ public class MineManager extends TaskGiver {
 //		System.out.println("Strategy is " + strategy);
 			switch(strategy) {
 			case NUCLEAR:
+				miningHQPriority = NUCLEAR_HQ_MINING_PRIORITY;
+				miningArtilleryPriority = NUCLEAR_ARTILLERY_MINING_PRIORITY;
 				miningEncampmentPriority = NUCLEAR_ENCAMPMENT_MINING_PRIORITY;
 				hqMFLeft = 3; hqMFRight = 3; hqMFForward = 3; hqMFBackward = 1;
 				artMFLeft = 1; artMFRight = 1; artMFForward = 2; artMFBackward = 1;
@@ -115,6 +128,8 @@ public class MineManager extends TaskGiver {
 	//			efficientMining = true;
 				break;
 			case NORMAL:
+				miningHQPriority = NORMAL_HQ_MINING_PRIORITY;
+				miningArtilleryPriority = NORMAL_ARTILLERY_MINING_PRIORITY;
 				miningEncampmentPriority = NORMAL_ENCAMPMENT_MINING_PRIORITY;
 				hqMFLeft = 2; hqMFRight = 2; hqMFForward = 2; hqMFBackward = 2;
 				artMFLeft = 1; artMFRight = 1; artMFForward = 2; artMFBackward = 1;
@@ -124,6 +139,8 @@ public class MineManager extends TaskGiver {
 	//			efficientMining = false;
 				break;
 			case RUSH:
+				miningHQPriority = RUSH_HQ_MINING_PRIORITY;
+				miningArtilleryPriority = RUSH_ARTILLERY_MINING_PRIORITY;
 				miningEncampmentPriority = RUSH_ENCAMPMENT_MINING_PRIORITY;
 				hqMFLeft = 0; hqMFRight = 0; hqMFForward = 0; hqMFBackward = 0;
 				artMFLeft = 0; artMFRight = 0; artMFForward = 0; artMFBackward = 0;
@@ -140,15 +157,31 @@ public class MineManager extends TaskGiver {
 	
 	@Override
 	public void compute() throws GameActionException {
+		int bc = Clock.getBytecodeNum();
 //		System.out.println(strategy + " ; " + task);
 		
 		decideStrategy();
 		
+		int priority = miningPriority;
+		switch(centerType) {
+		case HQ:
+			priority += miningHQPriority;
+			break;
+		case ARTILLERY:
+			priority += miningArtilleryPriority;
+			break;
+		case SOLDIER:
+			break;
+		default:
+			priority += miningEncampmentPriority;			
+		}
+		
 		if(task == null) {
+			setGoodMineCenter();
 //			if(efficientMining) {
 				MapLocation l = findNextInLine();
 				if(l != null) {
-					task = new MineTask(l, miningPriority);
+					task = new MineTask(l, priority);
 				} else {
 					task = null;
 				}
@@ -162,12 +195,14 @@ public class MineManager extends TaskGiver {
 				if(mineLocs[center.x][center.y] == DONE_MINE_TARGET) {
 					task = null;
 				} else if(l != null) {
-					task = new MineTask(l, miningPriority);
+					task = new MineTask(l, priority);
 				}
 //			} else {
 //				task = null;
 //			}
 		}
+		int bc2 = Clock.getBytecodeNum();
+		System.out.println("MineManager.compute() used " + (bc2-bc) + " bytecodes.");
 	}
 	
 	private MapLocation findNextInLine() {
@@ -178,7 +213,7 @@ public class MineManager extends TaskGiver {
 			nextX += (v1x + v2x);
 			nextY += (v1y + v2y);
 			//if(nextX == colEnd.x && nextY == colEnd.y) break;
-			if(nextX < 0 || nextX >= MAP_WIDTH || nextY < 0 || nextY >= MAP_HEIGHT) break;
+			if(nextX < 0 || nextX >= MAP_WIDTH || nextY < 0 || nextY >= MAP_HEIGHT || isDangerous(currentLocation)) break;
 			if(mineLocs[nextX][nextY] == 0) {
 				MapLocation loc = new MapLocation(nextX, nextY);
 				if(RC.senseMine(loc) == ALLY_TEAM) {
