@@ -37,7 +37,7 @@ public class CenterScoutTask extends ScoutTask {
 		Direction dir = Direction.values()[getDirTowards(-thirdy,-thirdx)];
 		
 		waypoint[2] = center.add(dir).add(dir);
-		MAX_SCOUT_TURNS = 4*naiveDistance(ALLY_HQ, center);
+		MAX_SCOUT_TURNS = 5*naiveDistance(ALLY_HQ, center);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class CenterScoutTask extends ScoutTask {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Center SCOUTING TO " + super.mover.getTarget();
