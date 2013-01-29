@@ -48,7 +48,7 @@ public class Micro {
 		{
 			attackTarget(farawayEnemyTarget);
 		}
-		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 5 ==0)
+		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 3 ==0 && RC.senseNearbyGameObjects(Robot.class, currentLocation, 37, ENEMY_TEAM).length == 0)
 		{		
 			Mines.tryDefuse(farawayEnemyTarget, true);
 		}
@@ -75,7 +75,7 @@ public class Micro {
 		setEnemyTarget(numberOfTargetsToCheck);
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
 		//cheap micro
-		if (timidity < -5 || RC.senseNearbyGameObjects(Robot.class, enemyTarget, 50, ALLY_TEAM).length > 8)
+		if (timidity < -5 || RC.senseNearbyGameObjects(Robot.class, enemyTarget, 50, ALLY_TEAM).length > 7)
 		{
 			enemyWeight = -10000;
 			allyWeight = 100000;
