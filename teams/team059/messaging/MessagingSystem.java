@@ -356,7 +356,7 @@ public class MessagingSystem {
 	 * @throws GameActionException
 	 */
 	public void writeParameters(Parameters parameters) throws GameActionException {
-		writeMessage(MessageType.PARAMETERS.ordinal(), parameters.greed, (int)(parameters.border * 1024), parameters.attack);
+		writeMessage(MessageType.PARAMETERS.ordinal(), parameters.greed, (int)(parameters.border * 1024));
 	}
 
 	/**

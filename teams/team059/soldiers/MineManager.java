@@ -126,6 +126,16 @@ public class MineManager extends TaskGiver {
 	//			minCoordSum = 0;
 	//			efficientMining = false;
 				break;
+
+			case RUSH0:
+				miningPriority = -100;
+				hqMFLeft = 0; hqMFRight = 0; hqMFForward = 0; hqMFBackward = 0;
+				artMFLeft = 0; artMFRight = 0; artMFForward = 0; artMFBackward = 0;
+				encMFLeft = 0; encMFRight = 0; encMFForward = 0; encMFBackward = 0;
+	//			maxCoordSum = 0;
+	//			minCoordSum = 0;
+	//			efficientMining = false;
+				break;
 			default:
 				return;
 			}

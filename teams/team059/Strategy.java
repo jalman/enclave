@@ -9,11 +9,11 @@ import battlecode.common.Team;
 import static battlecode.common.Upgrade.*;
 
 public enum Strategy {
-	NORMAL(30, -1.7, 0, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
 
-	NUCLEAR(5, -4.0, 0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
-	RUSH(0, 20, 20, -50, 1, new BuildSoldier(2), new UpgradeAction(DEFUSION)),
-	RUSH0(0, 20, 20, -50, 1, new BuildSoldier(2), new UpgradeAction(DEFUSION));
+	NORMAL(30, -1.7, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
+	NUCLEAR(5, -4.0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(7)), //, new UpgradeAction(NUKE)),
+	RUSH(1, 20, -50, 1, new BuildSoldier(2), new UpgradeAction(DEFUSION)),
+	RUSH0(1, 20, -50, 0, new BuildSoldier(2), new UpgradeAction(DEFUSION));
 	/**
 	 * Default parameters for this strategy.
 	 */
@@ -21,8 +21,8 @@ public enum Strategy {
 	
 	public final HQAction[] buildOrder;
 	
-	private Strategy(int greed, double border, int attack, int mine, int timidity, HQAction... buildOrder) {
-		parameters = new Parameters(greed, border, attack, mine, timidity);
+	private Strategy(int greed, double border, int mine, int timidity, HQAction... buildOrder) {
+		parameters = new Parameters(greed, border, mine, timidity);
 		this.buildOrder = buildOrder;
 	}
 	
@@ -31,13 +31,10 @@ public enum Strategy {
 	 * @return The decided-upon strategy.
 	 */
 	public static Strategy decide() {
-		if(ALLY_TEAM == Team.A)
+		if(HQ_DIST < 35)
 			return RUSH;
-		return RUSH0;
-//		if(HQ_DIST < 35)
-//			return RUSH;
-//
-//		return NORMAL;
+
+		return NORMAL;
 		//ADD SOMETHING THEREABOUT (THERE=NUKE)
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
