@@ -1,12 +1,16 @@
 package team059.soldiers;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
+import team059.utils.ArraySet;
 import team059.utils.FastIterableLocSet;
 //import team059.utils.FastLocSet;
 
+import battlecode.common.Clock;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
+import battlecode.common.GameConstants;
 import battlecode.common.MapLocation;
 import battlecode.common.Upgrade;
 import static team059.utils.Utils.*;
@@ -22,6 +26,7 @@ public class MineManager extends TaskGiver {
 	int Ax, Ay; // ally hq (x,y)
 	int Ox, Oy; // "origin" (x,y) for lattice
 	int v1x, v1y, v2x, v2y; // basis vectors of lattice
+	int det; // determinant
 	int coordSum = 0; // is c1 + c2, corresponding to the square (c1*(v1x, v1y) + c2*(v2x, v2y))
 	
 	/**
@@ -49,6 +54,7 @@ public class MineManager extends TaskGiver {
 	public static final int DONE_MINE_TARGET = -100; // if a target is "finished" mining around
 //	boolean biased = false;
 	
+	public static final int NUCLEAR_MINING_PRIORITY = 1000;
 	
 	MapLocation center;
 	
@@ -71,16 +77,13 @@ public class MineManager extends TaskGiver {
 		return center;
 	}
 
-	@Override
-	public void compute() throws GameActionException {
-//		System.out.println(strategy + " ; " + task);
+	public void decideStrategy() {
 		switch(strategy) {
 		case NUCLEAR:
-			miningPriority = 10000;
+			miningPriority = NUCLEAR_MINING_PRIORITY;
 			maxCoordSum = 4;
 			minCoordSum = -1;
 			efficientMining = true;
-			setMineCenter(ALLY_HQ);
 			break;
 		case NORMAL:
 			miningPriority = 0;
@@ -89,7 +92,7 @@ public class MineManager extends TaskGiver {
 			efficientMining = false;
 			break;
 		case RUSH:
-			miningPriority = -1000;
+			miningPriority = -100;
 			maxCoordSum = 0;
 			minCoordSum = 0;
 			efficientMining = false;
@@ -97,10 +100,19 @@ public class MineManager extends TaskGiver {
 		default:
 			return;
 		}
+	}
+	
+	@Override
+	public void compute() throws GameActionException {
+//		System.out.println(strategy + " ; " + task);
+		
+		if(Clock.getRoundNum() % 10 == 5) {
+			decideStrategy();
+		}
 		
 		if(task == null) {
 			if(efficientMining) {
-				MapLocation l = findNextInLattice();
+				MapLocation l = findClosestInLattice();
 				if(l != null) {
 					task = new MineTask(l, miningPriority);
 				} else {
@@ -112,16 +124,88 @@ public class MineManager extends TaskGiver {
 		} else 	if(task.done()) {
 			receiveMineMessage(task.destination.x, task.destination.y);
 			if(efficientMining) {
-				MapLocation l = findNextInLattice();
-				if(l != null) {
-					task = new MineTask(l, miningPriority);
-				} else {
+				MapLocation l = findClosestInLattice();
+				if(mineLocs[center.x][center.y] == DONE_MINE_TARGET) {
 					task = null;
+				} else if(l != null) {
+					task = new MineTask(l, miningPriority);
 				}
 			} else {
 				task = null;
 			}
 		}
+	}
+	
+	private MapLocation findClosestInLattice() {
+		int dx = curX - Ox, dy = curY - Oy;
+		int i = (v1x*dx - v1y*dy) / det, j = (-v2x*dx + v2y*dy) / det;
+		
+		int mx = Ox + i*v1x + j*v2x, my = Oy + i*v1y + j*v2y;
+
+		RC.setIndicatorString(2, "curX, curY = " + curX + ", " + curY + ". mx, my = " + mx + ", " + my);
+
+		/**
+		 * these MapLocations are just int pairs that I'm too lazy to deal with, not actual MapLocations!
+		 */
+		LinkedList<MapLocation> checkSquares = new LinkedList<MapLocation>();
+		checkSquares.add(new MapLocation(0,0)); 
+		
+		int index = 0;
+		int offset = GameConstants.MAP_MAX_WIDTH;
+		boolean[][] alreadyChecked = new boolean[2*offset][2*offset];
+		
+		int bc = Clock.getBytecodeNum();
+		while(!checkSquares.isEmpty()) {
+			if(index > 200) {
+				System.out.println("index > 200; used about " + (Clock.getBytecodeNum() - bc - 30) + " bytecodes.");
+				return null;
+			}
+			try {
+			MapLocation checking = checkSquares.pop();
+//			if(checking == null) return null;
+			int tempx = checking.x + offset, tempy = checking.y + offset;
+			alreadyChecked[tempx][tempy] = true; 
+			int thisx = Ox + v1x*checking.x + v2x*checking.y, thisy = Oy + v1y*checking.x + v2y*checking.y;
+			 // NOT ANYMORE checking.x corresponds to v1, .y = v2
+			
+			
+			if(thisx >= 0 && thisx < MAP_WIDTH && thisy >= 0 && thisy < MAP_HEIGHT) {
+				if(mineLocs[thisx][thisy] == 0) {
+					MapLocation thisLoc = new MapLocation(thisx, thisy);
+					if(RC.senseMine(thisLoc) == ALLY_TEAM) {
+						mineLocs[thisx][thisy] = HAS_ALLIED_MINE;
+					} else {
+						return thisLoc;
+					}
+				}
+				if(!alreadyChecked[tempx+1][tempy]) {
+					checkSquares.add(new MapLocation(checking.x + 1, checking.y));
+				}
+
+				if(!alreadyChecked[tempx][tempy+1]) {
+					checkSquares.add(new MapLocation(checking.x, checking.y + 1));
+				}
+				
+				if(!alreadyChecked[tempx-1][tempy]) {
+					checkSquares.add(new MapLocation(checking.x - 1, checking.y));
+				}
+
+				if(!alreadyChecked[tempx][tempy-1]) {
+					checkSquares.add(new MapLocation(checking.x, checking.y - 1));
+				}
+			}
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("index = " + index);
+				for(int zi=0; zi<alreadyChecked.length; zi++) {
+					for(int zj=0; zj<alreadyChecked[zi].length; zj++) {
+						System.out.print(" " + (alreadyChecked[zi][zj] ? 1 : 0));
+					}
+					System.out.println();
+				}
+			}
+		}
+		return null;
 	}
 	
 	private MapLocation findNextInLattice() {
@@ -206,6 +290,8 @@ public class MineManager extends TaskGiver {
 			Oy = Ay;
 			v1x = 1; v1y = 0; v2x = 0; v2y = 1;
 		}
+		//System.out.println("v1 = " + v1x + ", " + v1y + "; v2 = " + v2x + ", " +v2y);
+		det = v1x*v2y - v1y-v2x;
 	}
 		
 /*
@@ -281,6 +367,8 @@ public class MineManager extends TaskGiver {
 */
 	
 	public void receiveMineMessage(int x, int y) {
+		try {
+			System.out.println("received mine message");
 		if(mineLocs[x][y] != CENTER_MINE) {
 			mineLocs[x][y] = CENTER_MINE;
 			if(UPGRADES_RESEARCHED[Upgrade.PICKAXE.ordinal()]) {
@@ -289,6 +377,10 @@ public class MineManager extends TaskGiver {
 				mineLocInsert(x,y-1,HAS_ALLIED_MINE);
 				mineLocInsert(x,y+1,HAS_ALLIED_MINE);
 			}
+		}
+		} catch (Exception e) {
+			System.out.println("x = " + x + ", y = " + y);
+			e.printStackTrace();
 		}
 	}
 	

@@ -61,8 +61,9 @@ public class MineLayer {
 				rc.layMine();
 			}
 		}
-		else
-			rc.setIndicatorString(0, "ERROR");
+		else {
+			//rc.setIndicatorString(0, "ERROR");
+		}
 	}
 	
 	/**

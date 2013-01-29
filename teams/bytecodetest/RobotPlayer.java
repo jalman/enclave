@@ -1,19 +1,61 @@
 package bytecodetest;
 
+import static bytecodetest.Utils.*;
 import battlecode.common.Clock;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
+import battlecode.common.Upgrade;
 
 public class RobotPlayer {
 	public static void run(RobotController rc) {
-		//Utils.initUtils(rc);
+		initUtils(rc);
 		//testTryCatch();
 		//testInstantiation();
 		//testArrayAccess();
 		//testIf();
-		testArrayInit();
+		//testArrayInit();
+		//compareUpgradeTests(rc);
+		arrayAssignment();
 	}
 	
+	public static void arrayAssignment() {
+		int a[] = {1,2,3,4,5,6};
+		int b[] = {5,2,1,5,1,6,4,2,1,236,115,352};
+		int c[];
+		
+		int bc, bc2;
+		
+		bc = Clock.getBytecodeNum();
+		c = a;
+		bc2 = Clock.getBytecodeNum();
+		System.out.println("c = a: bc2-bc = " + (bc2-bc));
+
+
+		bc = Clock.getBytecodeNum();
+		c = new int[100];
+		bc2 = Clock.getBytecodeNum();
+		System.out.println("c = new int[100]: bc2-bc = " + (bc2-bc));
+		
+		bc = Clock.getBytecodeNum();
+		c = b;
+		bc2 = Clock.getBytecodeNum();
+		System.out.println("c = b: bc2-bc = " + (bc2-bc));
+	}
+	public static void compareUpgradeTests(RobotController rc) {
+		int bc = Clock.getBytecodeNum();
+		bc = Clock.getBytecodeNum();
+		if(UPGRADES_RESEARCHED[Upgrade.PICKAXE.ordinal()]) {
+			
+		}
+		int bc2 = Clock.getBytecodeNum();
+		System.out.println("bc2-bc = " + (bc2-bc));
+		bc = Clock.getBytecodeNum();
+		if(rc.hasUpgrade(Upgrade.PICKAXE)) {
+			
+		}
+		bc2 = Clock.getBytecodeNum();
+		System.out.println("bc2-bc = " + (bc2-bc));
+	}
 	public static void testArrayInit() { // Initializing non-empty array takes 5 + 4*array.length bytecodes
 		int bc = Clock.getBytecodeNum();
 		final int[] SQUARES_IN_RANGE_98 = 
@@ -115,11 +157,11 @@ public class RobotPlayer {
 		
 		System.out.println(Clock.getBytecodeNum());
 		
-		loc = Utils.mapLocation(x, y);
+//		loc = Utils.mapLocation(x, y);
 		
 		System.out.println(Clock.getBytecodeNum());
 
-		loc = Utils.mapLocation(x, y);
+//		loc = Utils.mapLocation(x, y);
 		
 		System.out.println(Clock.getBytecodeNum());
 		

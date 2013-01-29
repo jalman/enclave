@@ -15,6 +15,8 @@ import battlecode.common.Upgrade;
  */
 public class RobotPlayer {
 	public static void run(RobotController rc) {
+		Team ALLY = rc.getTeam();
+		Team ENEMY = ALLY.opponent();
 		while (true) {
 			MapLocation here = rc.getLocation();
 			try {
@@ -40,7 +42,7 @@ public class RobotPlayer {
 					if (rc.isActive()) {
 							Direction dir = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
 							Team mine = rc.senseMine(rc.getLocation().add(dir));
-							if(mine == Team.NEUTRAL) {
+							if(mine == Team.NEUTRAL || mine == ENEMY) {
 								rc.defuseMine(rc.getLocation().add(dir));
 							}
 							else if(rc.canMove(dir)) {

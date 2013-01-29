@@ -7,7 +7,7 @@ import battlecode.common.Team;
 import battlecode.common.Upgrade;
 import static team059.utils.Utils.*;
 
-public class MineTask extends TravelTask {
+public class MineTask extends AttackTask {
 
 	private MapLocation[] mines;
 	
@@ -15,13 +15,13 @@ public class MineTask extends TravelTask {
 	
 	private boolean sentMessageFlag = false;
 	private int waiting = 0;
-	private final int MAX_WAITING = 4;
+	private final int MAX_WAITING = 2;
 	
 	//public final double HIGH_DENSITY = 0.9;
 	public Team mineHere = null;
 	
 	public MineTask(MapLocation target, int priority) {
-		super(target, priority, 0);
+		super(target, priority);
 	}
 	
 	//should depend on the strategy and round number, and an evaluation of how many mines there are around the target
