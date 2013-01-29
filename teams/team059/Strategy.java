@@ -29,7 +29,7 @@ public enum Strategy {
 	 * Decides what strategy to use at the beginning of the game.
 	 * @return The decided-upon strategy.
 	 */
-	public static Strategy decide() {		
+	public static Strategy decide() {
 //		if(HQ_DIST < 35)
 //			return RUSH;
 //		else if(HQ_DIST > 60) 
