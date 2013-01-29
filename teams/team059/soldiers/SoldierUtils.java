@@ -10,8 +10,8 @@ public class SoldierUtils {
 	public final static int MAX_ENCAMPMENT_ENERGON = 100;
 	public final static int MAX_HQ_ENERGON = 500;
 	
-	public final static int sensorRadius = ENEMY_RADIUS2;
-	public static int closeEnoughToGoToBattleSquared = 100;
+	public static int sensorRadius = ENEMY_RADIUS2;
+	public static int closeEnoughToGoToBattleSquared = 121;
 	public static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
 	public static final int maxNumberOfEnemiesToCheckToFindATarget = 9;
 
@@ -32,15 +32,14 @@ public class SoldierUtils {
 	 * @throws GameActionException
 	 */
 	public static void updateSoldierUtils() throws GameActionException{
-		if (Clock.getRoundNum() <=2)
+		if (strategy.parameters.timidity == 1)
 		{
-			if (strategy.parameters.timidity == 1)
-			{
-				closeEnoughToGoToBattleSquared = 60;
-			}
-			else
-				closeEnoughToGoToBattleSquared=121;
+			sensorRadius = 14;
+			closeEnoughToGoToBattleSquared = 60;
 		}
+		else
+			closeEnoughToGoToBattleSquared=121;
+	
 		
 		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 2 == 0)
 			getFarAwayEnemyTarget();

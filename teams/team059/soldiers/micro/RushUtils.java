@@ -8,11 +8,11 @@ import battlecode.common.*;
 
 public class RushUtils {
 	
-	public static int locRetreatedFromTooFarSquared = 50;
+	public static int locRetreatedFromTooFarSquared = 25;
 	public static MapLocation locRetreatedFrom;
 	public static int turnRetreated;
 	public static Robot[] allyRobots;
-	
+	public static int turnSinceRetreat; // - Clock.getRoundNum()-turnRetreated();
 	public RushUtils(){
 
 	}
@@ -25,11 +25,12 @@ public class RushUtils {
 			locRetreatedFrom = farawayEnemyTarget;
 		}
 	}
-
+	
 	public static boolean shouldIUpdateTurnRetreated() throws GameActionException
 	{
-		if (locRetreatedFrom == null ||
-					Clock.getRoundNum() - turnRetreated >= 9
+		if (locRetreatedFrom == null 
+//				|| ((enemyWeight > 40 && 1.1*enemyWeight > allyWeight) && enemyRobots.length != 0 && Clock.getRoundNum() - turnRetreated >= 6)
+				|| Clock.getRoundNum() - turnRetreated >= 11
 				|| currentLocation.distanceSquaredTo(locRetreatedFrom) > locRetreatedFromTooFarSquared)
 		{
 			return true;
@@ -39,10 +40,10 @@ public class RushUtils {
 	}
 	public static boolean shouldIAttack() throws GameActionException
 	{		
-		if (naiveDistance(currentLocation, ALLY_HQ) <= 4)
+		if (naiveDistance(currentLocation, ALLY_HQ) <= 4 || currentLocation.distanceSquaredTo(enemyTarget) > 16)
 			return true;
-		else if ((enemyWeight < 13 || Clock.getRoundNum() - turnRetreated >= 3) && 
-				((setAllyWeight(currentLocation, 14) >25 && enemyWeight > allyWeight) || Clock.getRoundNum() - turnRetreated >= 5 ) )
+		else if (Clock.getRoundNum() - turnRetreated >= 7 || 
+				(allyWeight > 52 && 2*allyWeight > enemyWeight))
 			return true;
 		return false;
 	}
