@@ -157,7 +157,7 @@ public class MineManager extends TaskGiver {
 	
 	@Override
 	public void compute() throws GameActionException {
-		int bc = Clock.getBytecodeNum();
+//		int bc = Clock.getBytecodeNum();
 //		System.out.println(strategy + " ; " + task);
 		
 		decideStrategy();
@@ -201,8 +201,8 @@ public class MineManager extends TaskGiver {
 //				task = null;
 //			}
 		}
-		int bc2 = Clock.getBytecodeNum();
-		System.out.println("MineManager.compute() used " + (bc2-bc) + " bytecodes.");
+//		int bc2 = Clock.getBytecodeNum();
+//		System.out.println("MineManager.compute() used " + (bc2-bc) + " bytecodes.");
 	}
 	
 	private MapLocation findNextInLine() {
