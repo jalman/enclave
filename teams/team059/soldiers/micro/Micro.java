@@ -41,7 +41,7 @@ public class Micro {
 
 	public void rushToBattle() throws GameActionException{
 		//farawayEnemyTarget should be already set if micro mode is entered
-		mover.setNavType(NavType.BUG_DIG_2);
+		mover.setNavType(NavType.BUG);
 
 		if (farawayEnemyTarget != null)
 		{
@@ -69,9 +69,18 @@ public class Micro {
 //		setEnemyTargetAndWeight();
 		setEnemyTarget(numberOfTargetsToCheck);
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
-		MapLocation m = enemyTarget;
-		setEnemyWeight(m, sensorRadius);
-		setAllyWeight(m, sensorRadius);
+		//cheap micro
+		if (timidity < -5)
+		{
+			enemyWeight = -10000;
+			allyWeight = 100000;
+		}
+		else
+		{
+			MapLocation m = enemyTarget;
+			setEnemyWeight(m, sensorRadius);
+			setAllyWeight(m, sensorRadius);
+		}
 	}
 	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)
 	{
@@ -89,15 +98,23 @@ public class Micro {
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
 		//TODO: Account for robot types!!!
-		if (allyWeight > (int)(0.7*enemyWeight) && enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
+		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2 || naiveDistance(ALLY_HQ, currentLocation) <= 6 && 
+				(naiveDistance(ALLY_HQ, currentLocation) > naiveDistance(ALLY_HQ, ENEMY_HQ)/3))
 		{
-			mover.setTarget(RC.getLocation());
+			mover.setTarget(currentLocation);
 		}
 		else if (!shouldIAttack())
 		{
-			setRetreatBack();
-			mover.setNavType(NavType.BUG);
-			mover.setTarget(retreatTarget);
+			if (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 81, ALLY_TEAM).length < 12)
+			{
+				setRetreatBack();
+				mover.setNavType(NavType.BUG);
+				mover.setTarget(retreatTarget);
+			}
+			else
+			{
+				mover.setTarget(currentLocation);
+			}
 		}
 		else
 		{

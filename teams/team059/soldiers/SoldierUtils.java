@@ -12,8 +12,8 @@ public class SoldierUtils {
 	public final static int MAX_ENCAMPMENT_ENERGON = 100;
 	public final static int MAX_HQ_ENERGON = 500;
 	
-	public final static int sensorRadius = 16;
-	public final static int closeEnoughToGoToBattleSquared = 121;
+	public final static int sensorRadius = ENEMY_RADIUS2;
+	public final static int closeEnoughToGoToBattleSquared = 144;
 	private static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
 	public static final int maxNumberOfEnemiesToCheckToFindATarget = 9;
 
