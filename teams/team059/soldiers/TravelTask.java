@@ -49,15 +49,16 @@ public class TravelTask extends Task {
 
 	@Override
 	public void execute() throws GameActionException {
-		if(RC.canMove(currentLocation.directionTo(destination)) || !Mines.tryDefuse(destination, false)) {
+		//RC.canMove(currentLocation.directionTo(destination)) || 
+		if(!Mines.tryDefuse(destination, false)) {
 			mover.setTarget(destination);
 			mover.execute();
-		}
+		} 
 	}
 	
 	@Override
 	public boolean done() {
-		return eta <= 0;
+		return eta <= 0 || currentLocation.equals(destination);
 	}
 	
 	@Override

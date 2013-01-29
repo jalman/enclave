@@ -9,9 +9,19 @@ import static team059.utils.Utils.*;
 
 public class AttackTask extends TravelTask {
 
+	private boolean tryToDefuse = true;
 	private static final Mover mover = new Mover();
 	public AttackTask(MapLocation target, int priority) {
 		super(mover, target, priority, 2);
+	}
+	
+	public AttackTask(MapLocation target, int priority, int distance) {
+		super(mover, target, priority, distance);
+	}
+	
+	@Override
+	public void update() {
+		super.update();
 	}
 
 	@Override
