@@ -98,8 +98,8 @@ public class Micro {
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
 		//TODO: Account for robot types!!!
-		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2 || naiveDistance(ALLY_HQ, currentLocation) <= 6 && 
-				(naiveDistance(ALLY_HQ, currentLocation) > naiveDistance(ALLY_HQ, ENEMY_HQ)/3))
+		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2 || ((naiveDistance(ALLY_HQ, currentLocation) <= 6) && 
+				(naiveDistance(ALLY_HQ, currentLocation) > naiveDistance(ALLY_HQ, ENEMY_HQ)/3)))
 		{
 			mover.setTarget(currentLocation);
 		}
