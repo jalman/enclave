@@ -89,11 +89,11 @@ public class ExpandTask extends TravelTask {
 		//overrides build type
 		if(!isSafe(currentLocation)) {
 			//TODO: make medbays?
-			if (ALLY_TEAM == Team.A)
+//			if (ALLY_TEAM == Team.A)
 				return RobotType.ARTILLERY;
-			if (random.nextDouble() * 4 < 1)
-				return RobotType.GENERATOR;
-			return RobotType.SUPPLIER;
+//			if (random.nextDouble() * 4 < 1)
+//				return RobotType.GENERATOR;
+//			return RobotType.SUPPLIER;
 		}
 		
 		if(buildType != null) return buildType;

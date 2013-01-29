@@ -31,7 +31,7 @@ public class WarSystem {
 	public void run() throws GameActionException {
 		sense();
 		
-		//setBorder();
+		setBorder();
 		
 		if(nukePanic()) {
 			messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
@@ -56,25 +56,19 @@ public class WarSystem {
 	}
 	
 	private void setBorder() throws GameActionException {
-		
-		
 		if(allEnemyRobots.length == 0) {
-			parameters.border += 0.003;
+			if(strategy != Strategy.NUCLEAR) {
+				parameters.border += 0.05;
+			}
 		} else {
-			int min_distance = Integer.MAX_VALUE;
-			MapLocation closest = null;
-			
 			for(Robot robot : allEnemyRobots) {
 				RobotInfo info = RC.senseRobotInfo(robot);
-				MapLocation loc = info.location;
-				int d = loc.distanceSquaredTo(ALLY_HQ);
-				if(d < min_distance) {
-					closest = loc;
-					min_distance = d;
+				double position = evaluate(info.location);
+				if(evaluate(info.location) < parameters.border + parameters.margin) {
+					parameters.border = position - parameters.margin;
+					break;
 				}
 			}
-			
-			
 		}
 	}
 

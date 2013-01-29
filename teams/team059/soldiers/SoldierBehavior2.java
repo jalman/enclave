@@ -52,7 +52,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 				{patrolManager, attackManager, scoutManager,
 				mineManager, expandManager, takeEncampmentManager, dodgeMineManager};
 		nuclearTaskGivers = new TaskGiver[] 
-				{attackManager, mineManager, expandManager, takeEncampmentManager, dodgeMineManager};
+				{attackManager, patrolManager, mineManager, expandManager, takeEncampmentManager, dodgeMineManager};
 		rushTaskGivers = new TaskGiver[] 
 				{patrolManager, attackManager, expandManager, takeEncampmentManager, dodgeMineManager};
 		
@@ -124,7 +124,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				attackManager.considerTask(new AttackTask(new MapLocation(message[0], message[1]), message[2]));
+				attackManager.considerTask(new AttackTask(new MapLocation(message[0], message[1]), message[2], true));
 			}
 		};
 	}
