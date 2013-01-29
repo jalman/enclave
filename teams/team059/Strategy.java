@@ -9,9 +9,15 @@ import battlecode.common.Team;
 import static battlecode.common.Upgrade.*;
 
 public enum Strategy {
+<<<<<<< HEAD
 	NORMAL(30, -1.7, 0, 0, 80, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
 	NUCLEAR(5, -4.0, 5000, 0, 30, new UpgradeAction(PICKAXE), new BuildSoldier(7)), //, new UpgradeAction(NUKE)),
 	RUSH(1, 1.5, -100, 0, 90, new BuildSoldier(2), new UpgradeAction(DEFUSION));
+=======
+	NORMAL(30, -0.5, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
+	NUCLEAR(5, -4.0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(7)), //, new UpgradeAction(NUKE)),
+	RUSH(1, 1.5, -50, 0, new BuildSoldier(2), new UpgradeAction(DEFUSION));
+>>>>>>> 509f0ffa5ec458e8ef04a030ba4f1319263c59d2
 	
 	/**
 	 * Default parameters for this strategy.
