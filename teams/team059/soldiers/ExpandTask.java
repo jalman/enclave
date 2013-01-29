@@ -29,7 +29,6 @@ public class ExpandTask extends TravelTask {
 		Direction dirToEnemy = ALLY_HQ.directionTo(ENEMY_HQ);
 		badA = ALLY_HQ.add(dirToEnemy);
 		badB = badA.add(dirToEnemy);
-		
 	}
 	
 	@Override
