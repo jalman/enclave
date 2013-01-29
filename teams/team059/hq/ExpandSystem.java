@@ -28,6 +28,7 @@ public class ExpandSystem {
 	int generators = 0;
 	
 	private int numLost = 0;
+	private int expandNum = 0;
 	
 	public ExpandSystem() {
 		try {
@@ -40,7 +41,7 @@ public class ExpandSystem {
 	}
 	
 	public void initializeDelimiters() throws GameActionException {
-		delimit = Math.max(MAP_HEIGHT, MAP_WIDTH) / (2 * NC);
+		delimit = Math.max(MAP_HEIGHT, MAP_WIDTH) / (NC);
 	}
 	
 	public void findEncampments() throws GameActionException {
@@ -56,11 +57,21 @@ public class ExpandSystem {
 	
 
 	public void considerExpanding(int far) throws GameActionException {
-		if(far >= NC) return;
-		if(numSent*10 > Clock.getRoundNum()) return;
-		if(numSent >= parameters.greed) return;
+		boolean victoryExpand = expandNum > 0;
+		if(numSent*10 > Clock.getRoundNum() || far >= NC) return;
+		if(numSent >= parameters.greed) {
+			if(!victoryExpand) {
+				return;
+			}
+		}
+		
 		///CHANGE THE 4 INTO SOMETHING ELSE?!
-		if(RC.senseAlliedEncampmentSquares().length*3 + numSent > RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ALLY_TEAM).length) return;
+		if(RC.senseAlliedEncampmentSquares().length*3 + numSent > RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ALLY_TEAM).length) {
+			if(!victoryExpand) {
+				return;
+			}
+		}
+		
 		//System.out.println(numSent + " " + parameters.greed);
 		
 		while((finished[far] && numLost == 0) || encampments[far] == null) {
@@ -71,10 +82,10 @@ public class ExpandSystem {
 			MapLocation loc = encampments[far][i];
 			if((!taken[far][i] || numLost > 0) && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
 				if(suppliers < 9 || generators > suppliers-9) {
-					messagingSystem.writeTakeEncampmentMessage(loc, 200, RobotType.SUPPLIER);
+					messagingSystem.writeTakeEncampmentMessage(loc, victoryExpand ? 1000000 : 200, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
-					messagingSystem.writeTakeEncampmentMessage(loc, 200, RobotType.GENERATOR);
+					messagingSystem.writeTakeEncampmentMessage(loc, victoryExpand ? 1000000 : 200, RobotType.GENERATOR);
 					generators++;
 				}
 				if(taken[far][i]) {
@@ -83,6 +94,11 @@ public class ExpandSystem {
 					taken[far][i] = true;
 				}
 				numSent++;
+				if(victoryExpand) {
+					expandNum--;
+					
+					System.out.println("ASDFFDSA" + expandNum);
+				}
 				return;
 			}
 		}
@@ -92,6 +108,10 @@ public class ExpandSystem {
 	
 	public void lost() {
 		numLost++;
+	}
+	
+	public void expand(int num) {
+		expandNum += num;
 	}
 	
 }
