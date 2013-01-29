@@ -29,18 +29,19 @@ public enum Strategy {
 	 * Decides what strategy to use at the beginning of the game.
 	 * @return The decided-upon strategy.
 	 */
-	public static Strategy decide() {
-		
-//		if(HQ_DIST < 35)
-//			return RUSH;
-//
-//		return NORMAL;
+	public static Strategy decide() {		
+		if(HQ_DIST < 35)
+			return RUSH;
+		else if(HQ_DIST > 60) 
+			return NUCLEAR;
+
+		return NORMAL;
 		//ADD SOMETHING THEREABOUT (THERE=NUKE)
 		
-		if(RC.getTeam() == Team.A) {
-			return NUCLEAR;
-		}
-		return NORMAL;
+//		if(RC.getTeam() == Team.A) {
+//			return NUCLEAR;
+//		}
+//		return NORMAL;
 		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
