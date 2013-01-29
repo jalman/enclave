@@ -5,3 +5,5 @@ bin
 .classpath
 /submit_bots
 *.log
+/teams/movertest
+/teams/bytecodetest
