@@ -15,6 +15,9 @@ import battlecode.common.Upgrade;
  *
  */
 public class WarSystem {
+	static final int NORMAL_ADVANCE_THRESHOLD = -10;
+	static final int PANIC_ADVANCE_THRESHOLD = -20;
+	
 	final HQBehavior hq;
 	
 	private boolean enemyNukeHalfDone = false;
@@ -22,7 +25,6 @@ public class WarSystem {
 	private boolean nukePanic = false;
 	
 	private Robot[] allAlliedRobots, allEnemyRobots;
-	private double farthest;
 	
 	public WarSystem(HQBehavior hq) {
 		this.hq = hq;
@@ -57,8 +59,10 @@ public class WarSystem {
 	
 	private void setBorder() throws GameActionException {
 		if(allEnemyRobots.length == 0) {
-			if(strategy != Strategy.NUCLEAR) {
-				parameters.border += 0.05;
+			if(strategy != Strategy.NUCLEAR && hq.numAboveSoldierCap() >= -10) {
+				parameters.border += 0.1;
+			} else {
+				parameters.border = strategy.parameters.border;
 			}
 		} else {
 			for(Robot robot : allEnemyRobots) {
