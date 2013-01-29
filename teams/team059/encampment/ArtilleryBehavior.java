@@ -37,6 +37,7 @@ public class ArtilleryBehavior extends RobotBehavior {
 	
 	public ArtilleryBehavior() {
 		canAttackEnemyHQ = (currentLocation.distanceSquaredTo(ENEMY_HQ) < 64);
+		RC.setIndicatorString(0, String.valueOf(forward));
 	}
 
 	@Override
