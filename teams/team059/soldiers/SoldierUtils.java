@@ -14,7 +14,7 @@ public class SoldierUtils {
 	
 	public final static int sensorRadius = ENEMY_RADIUS2;
 	public final static int closeEnoughToGoToBattleSquared = 144;
-	private static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
+	public static Robot[] enemiesFarAway; // enemies within closeEnoughToGoToBattle of a soldier. Only used to find farawayEnemyTarget
 	public static final int maxNumberOfEnemiesToCheckToFindATarget = 9;
 
 	static RobotInfo tempRobotInfo;	
@@ -191,7 +191,7 @@ public class SoldierUtils {
 		}
 		if (r.type == RobotType.HQ)
 		{
-			return 50;
+			return 70;
 		}
 		else if (r.type == RobotType.HQ)
 		{
