@@ -10,11 +10,7 @@ import static team059.utils.Utils.*;
 
 public enum Strategy {
 	NORMAL(30, -1.7, 0, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
-<<<<<<< Updated upstream
 	NUCLEAR(5, -2.0, 0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
-=======
-	NUCLEAR(5, -3.0, 0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
->>>>>>> Stashed changes
 	RUSH(1, 1.5, 20, -50, 0, new BuildSoldier(2), new UpgradeAction(DEFUSION));
 	
 	/**
@@ -33,11 +29,7 @@ public enum Strategy {
 	 * Decides what strategy to use at the beginning of the game.
 	 * @return The decided-upon strategy.
 	 */
-<<<<<<< Updated upstream
-	public static Strategy decide() {
-=======
 	public static Strategy decide() {		
->>>>>>> Stashed changes
 		if(HQ_DIST < 35)
 			return RUSH;
 
