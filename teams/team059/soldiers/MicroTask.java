@@ -16,7 +16,7 @@ public class MicroTask extends Task {
 	
 	@Override
 	public void execute() throws GameActionException {
-		SoldierBehavior2.microSystem.run();
+		SoldierBehavior2.microSystem.run(0);
 	}
 
 	@Override
