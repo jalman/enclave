@@ -60,7 +60,7 @@ public class Utils {
 	public static int curX, curY;
 	private static MapLocation[] alliedEncampments;
 	public static final int ENEMY_RADIUS = 4;
-	public static final int ENEMY_RADIUS2 = 20; //ENEMY_RADIUS * ENEMY_RADIUS;
+	public static final int ENEMY_RADIUS2 = 16; //ENEMY_RADIUS * ENEMY_RADIUS;
 	public static Robot[] enemyRobots = new Robot[0];
 	public static double forward;
 	public static Team currentMine;
