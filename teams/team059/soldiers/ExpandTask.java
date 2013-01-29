@@ -76,6 +76,11 @@ public class ExpandTask extends TravelTask {
 	private RobotType getCaptureType() {
 		
 		if(isBorder(currentLocation) && Shields.shieldLocations.isEmpty()) {
+			try {
+				messagingSystem.writeShieldLocationMessage(currentLocation);
+			} catch (GameActionException e) {
+				e.printStackTrace();
+			}
 			return RobotType.SHIELDS;
 		}
 		
