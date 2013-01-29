@@ -11,7 +11,7 @@ public class AttackTask extends TravelTask {
 
 	private static final Mover mover = new Mover();
 	public AttackTask(MapLocation target, int priority) {
-		super(mover, target, priority, 0);
+		super(mover, target, priority, 2);
 	}
 
 	@Override
