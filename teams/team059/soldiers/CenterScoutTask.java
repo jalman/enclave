@@ -34,7 +34,7 @@ public class CenterScoutTask extends ScoutTask {
 				clamp(center.y + (int) 1.4*thirdy, 0, MAP_HEIGHT)
 		);
 		
-		Direction dir = Direction.values()[getDirTowards(thirdy,thirdx)];
+		Direction dir = Direction.values()[getDirTowards(-thirdy,-thirdx)];
 		
 		waypoint[2] = center.add(dir).add(dir);
 		MAX_SCOUT_TURNS = 4*naiveDistance(ALLY_HQ, center);
