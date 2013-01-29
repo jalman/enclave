@@ -455,7 +455,7 @@ public class MessagingSystem {
 	
 	public void scramble(int start, int end) {
 		start = start < 0 ? 0 : start;
-		end = end > 9999 ? 9999 : end;
+		end = end >= GameConstants.BROADCAST_MAX_CHANNELS ? GameConstants.BROADCAST_MAX_CHANNELS : end;
 		for(int i = start; i < end; i++) {
 			if(!isAChannel(i)) {
 				try {
