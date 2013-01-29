@@ -4,7 +4,7 @@ public enum MessageType {
 
 	HEADER(1), 
 	STRATEGY(1),
-	PARAMETERS(3),
+	PARAMETERS(2),
 	ATTACK_LOCATION(3), 
 	CHECKPOINT_NUMBER(1), 
 	TASK_TAKEN(3),  
