@@ -2,6 +2,7 @@ package team059.soldiers;
 
 import team059.Strategy;
 import team059.movement.Mover;
+import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
@@ -12,9 +13,9 @@ public class ScoutTask extends TravelTask {
 	public static Mover mover = new Mover();
 	public static final int SCOUT_PRIORITY = 10000;
 	public boolean scoutRight; // false: Left, true: Right
-	private MapLocation[] waypoint;
-	private int waypointIndex;
-	private final int MAX_SCOUT_TURNS;
+	protected MapLocation[] waypoint;
+	protected int waypointIndex;
+	protected int MAX_SCOUT_TURNS;
 	
 	private MapLocation firstMine = null;
 	private MapLocation firstSuppGen = null;
@@ -24,7 +25,7 @@ public class ScoutTask extends TravelTask {
 	
 	public ScoutTask() {
 		super(mover, ENEMY_HQ, SCOUT_PRIORITY, 1);
-		this.scoutRight = (random.nextInt() % 2 == 0);
+		this.scoutRight = Clock.getRoundNum() < 5;
 		waypoint = new MapLocation[3];
 		waypointIndex = 0;
 
@@ -87,6 +88,15 @@ public class ScoutTask extends TravelTask {
 			
 		}
 		mover.execute();
+		
+		
+		if(RC.senseNearbyGameObjects(Robot.class, 14, ENEMY_TEAM).length > 0) {
+			seeEnemyWarn();
+		}
+	}
+	
+	protected void seeEnemyWarn() {
+		return;
 	}
 	
 	@Override

@@ -60,7 +60,7 @@ public class ExpandSystem {
 		if(numSent*10 > Clock.getRoundNum()) return;
 		if(numSent >= parameters.greed) return;
 		///CHANGE THE 4 INTO SOMETHING ELSE?!
-		if(RC.senseAlliedEncampmentSquares().length*4 > RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ALLY_TEAM).length) return;
+		if(RC.senseAlliedEncampmentSquares().length*3 + numSent > RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ALLY_TEAM).length) return;
 		//System.out.println(numSent + " " + parameters.greed);
 		
 		while((finished[far] && numLost == 0) || encampments[far] == null) {
@@ -71,10 +71,10 @@ public class ExpandSystem {
 			MapLocation loc = encampments[far][i];
 			if((!taken[far][i] || numLost > 0) && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
 				if(Clock.getRoundNum() < 200 || generators > suppliers) {
-					messagingSystem.writeTakeEncampmentMessage(loc, 1000, RobotType.SUPPLIER);
+					messagingSystem.writeTakeEncampmentMessage(loc, 200, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
-					messagingSystem.writeTakeEncampmentMessage(loc, 1000, RobotType.GENERATOR);
+					messagingSystem.writeTakeEncampmentMessage(loc, 200, RobotType.GENERATOR);
 					generators++;
 				}
 				if(taken[far][i]) {
