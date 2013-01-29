@@ -32,7 +32,7 @@ public class HQBehavior extends RobotBehavior {
 		Utils.parameters = strategy.parameters;
 		buildOrder = strategy.buildOrder;	
 		expandSystem = new ExpandSystem();
-		warSystem = new WarSystem();
+		warSystem = new WarSystem(this);
 	}
 
 	@Override
@@ -49,9 +49,11 @@ public class HQBehavior extends RobotBehavior {
 
 	@Override
 	public void run() throws GameActionException {
-		warSystem.run();
 		macro();
 		expand();
+		warSystem.run();
+		
+		RC.setIndicatorString(0, parameters.toString());
 	}
 
 	/**
@@ -201,7 +203,6 @@ public class HQBehavior extends RobotBehavior {
 	private boolean goodPlaceToMakeSoldier(Direction dir) {
 		return RC.canMove(dir) && !Utils.isEnemyMine(RC.getLocation().add(dir));
 	}
-
 
 	private void sendMessagesOnBuild() throws GameActionException {
 		messagingSystem.writeStrategy(strategy);
