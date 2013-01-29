@@ -152,7 +152,7 @@ public class AntinukeSoldierBehavior extends SoldierBehavior2 {
 	private void runKiller() throws GameActionException {
 		if (farawayEnemyTarget != null)
 		{
-			microSystem.run();
+			microSystem.run(0);
 		}
 		else
 		{	

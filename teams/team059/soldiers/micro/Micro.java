@@ -25,9 +25,9 @@ public class Micro {
 	public Micro() {
 		enemyTarget = null;
 	}
-	public void run() throws GameActionException{
+	public void run(int timidity) throws GameActionException{
 		
-		timidity = strategy.parameters.timidity;
+		this.timidity = timidity;
 		if (enemyRobots.length == 0)
 		{
 			updateFarawayEnemyTarget(1);
