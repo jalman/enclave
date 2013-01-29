@@ -124,7 +124,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(int[] message) {
-				attackManager.considerTask(new AttackTask(new MapLocation(message[0], message[1]), message[2]));
+				attackManager.considerTask(new AttackTask(new MapLocation(message[0], message[1]), message[2], true));
 			}
 		};
 	}

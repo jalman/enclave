@@ -36,12 +36,12 @@ public class AttackTask extends TravelTask {
 
 	@Override
 	public void execute() throws GameActionException {
+		if(Mines.tryDefuse(destination, true)) return;
+		
 		if(farawayEnemyTarget != null) {
 			SoldierBehavior2.microSystem.run(timidity);
-		} else if(!Mines.tryDefuse(destination, true)) {
-			if(!(defuse && Mines.tryDefuse(destination, false))) {
-				super.execute();
-			}
+		} else if(!(defuse && Mines.tryDefuse(destination, false))) {
+			super.execute();
 		}
 	}
 
