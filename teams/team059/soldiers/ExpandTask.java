@@ -9,6 +9,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.GameObject;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotType;
+import battlecode.common.Team;
 import static team059.utils.Utils.*;
 
 public class ExpandTask extends TravelTask {
@@ -88,7 +89,11 @@ public class ExpandTask extends TravelTask {
 		//overrides build type
 		if(!isSafe(currentLocation)) {
 			//TODO: make medbays?
-			return RobotType.ARTILLERY;
+//			if (ALLY_TEAM == Team.A)
+				return RobotType.ARTILLERY;
+//			if (random.nextDouble() * 4 < 1)
+//				return RobotType.GENERATOR;
+//			return RobotType.SUPPLIER;
 		}
 		
 		if(buildType != null) return buildType;

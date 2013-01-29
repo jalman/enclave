@@ -40,7 +40,7 @@ public class HQBehavior extends RobotBehavior {
 		//RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
 		numBots = RC.senseNearbyGameObjects(Robot.class, currentLocation, MAP_WIDTH+MAP_HEIGHT, ALLY_TEAM).length;
 		numEncampments = RC.senseAlliedEncampmentSquares().length;
-		numSoldiers = numBots - numEncampments - 1;
+		numSoldiers = numBots - numEncampments;
 		actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
 		//thisFlux = RC.getTeamPower();
 		fluxDiff = actualFlux - lastFlux;
