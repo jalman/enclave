@@ -241,7 +241,6 @@ public class Utils {
 	public static double evaluate(MapLocation loc) {
 		return Math.log((double)loc.distanceSquaredTo(ENEMY_HQ) / loc.distanceSquaredTo(ALLY_HQ));
 	}
-
 	
 	public static boolean isSafe(MapLocation loc) {
 		return forward < parameters.border - parameters.margin;
@@ -249,5 +248,9 @@ public class Utils {
 
 	public static boolean isDangerous(MapLocation loc) {
 		return forward > parameters.border + parameters.margin;
+	}
+	
+	public static boolean isBorder(MapLocation loc) {
+		return Math.abs(forward - parameters.border) <= parameters.margin;
 	}
 }
