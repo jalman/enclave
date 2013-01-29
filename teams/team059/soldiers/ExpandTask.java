@@ -74,9 +74,9 @@ public class ExpandTask extends TravelTask {
 	
 	private RobotType getCaptureType() {
 		//overrides build type
-		if(forward >= parameters.border - parameters.margin) {
+		if(!isSafe(currentLocation)) {
 			//TODO: make medbays?
-			//return RobotType.ARTILLERY;
+			return RobotType.ARTILLERY;
 		}
 		
 		if(buildType != null) return buildType;

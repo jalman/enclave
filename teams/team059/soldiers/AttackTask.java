@@ -10,16 +10,21 @@ public class AttackTask extends TravelTask {
 
 	private static final Mover mover = new Mover();
 	
+	private final boolean defuse;
 	private final int timidity;
 	
 	public AttackTask(MapLocation target, int priority) {
-		super(mover, target, priority, 2);
-		this.timidity = parameters.timidity;
+		this(target, priority, parameters.timidity, false);
+	}	
+	
+	public AttackTask(MapLocation target, int priority, boolean defuse) {
+		this(target, priority, parameters.timidity, defuse);
 	}
 
-	public AttackTask(MapLocation target, int priority, int timidity) {
+	public AttackTask(MapLocation target, int priority, int timidity, boolean defuse) {
 		super(mover, target, priority, 2);
 		this.timidity = timidity;
+		this.defuse = defuse;
 	}
 	
 	@Override
@@ -32,8 +37,10 @@ public class AttackTask extends TravelTask {
 	public void execute() throws GameActionException {
 		if(farawayEnemyTarget != null) {
 			SoldierBehavior2.microSystem.run(timidity);
-		} else if(!Mines.tryDefuse(destination, false)) {
-			super.execute();
+		} else if(!Mines.tryDefuse(destination, true)) {
+			if(!(defuse && Mines.tryDefuse(destination, false))) {
+				super.execute();
+			}
 		}
 	}
 

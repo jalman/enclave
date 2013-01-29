@@ -48,9 +48,9 @@ public class HQBehavior extends RobotBehavior {
 
 	@Override
 	public void run() throws GameActionException {
+		warSystem.run();
 		macro();
 		expand();
-		warSystem.run();
 	}
 
 	/**

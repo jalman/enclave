@@ -85,7 +85,7 @@ public class RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				parameters.greed = message[0];
-				parameters.border = (double) message[1] / 1024;
+				parameters.border = ((double)message[1]) / 1024;
 				parameters.attack = message[2];
 			}
 		};
@@ -116,7 +116,7 @@ public class RobotBehavior {
 			@Override
 			public void handleMessage(int[] message) {
 				Shields.insertShield(new MapLocation(message[0], message[1]));
-				System.out.println("Read shield message.");
+				//System.out.println("Read shield message.");
 			}
 		};
 	}

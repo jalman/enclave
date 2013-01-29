@@ -20,40 +20,44 @@ public class WarSystem {
 	private boolean nukePanic = false;
 	
 	private Robot[] allAlliedRobots, allEnemyRobots;
+	private double farthest;
 	
 	public void run() throws GameActionException {
-		allAlliedRobots = RC.senseNearbyGameObjects(Robot.class, 10000, ALLY_TEAM);
-		allEnemyRobots = RC.senseNearbyGameObjects(Robot.class, 10000, ENEMY_TEAM);
 		
 		if(!enemyNukeHalfDone && Clock.getRoundNum() > Upgrade.NUKE.numRounds / 2) {
 			enemyNukeHalfDone = RC.senseEnemyNukeHalfDone();
 			enemyNukeHalfRound = Clock.getRoundNum();
 		}
 
-		setBorder();
+		//setBorder();
 		
 		if(nukePanic()) {
-			parameters.border = 2.0;
 			messagingSystem.writeAttackMessage(ENEMY_HQ, 100);
-		}		
+		}
 		int home = defendMainPriority();
 		if(home > 0) {
 			parameters.border = -2.0;
 			messagingSystem.writeAttackMessage(ALLY_HQ, home);
 		}
 		
+		RC.setIndicatorString(0, "Border " + parameters.border);
 		messagingSystem.writeParameters(parameters);
 	}
 
-	private void setBorder() throws GameActionException {
-		if(strategy == Strategy.NUCLEAR) {
-			return;
-		}
+	private void sense() {
+		allAlliedRobots = RC.senseNearbyGameObjects(Robot.class, 10000, ALLY_TEAM);
+		allEnemyRobots = RC.senseNearbyGameObjects(Robot.class, 10000, ENEMY_TEAM);
 		
+		
+	}
+	
+	private void advanceBorder() {
+		
+	}
+	
+	private void setBorder() throws GameActionException {		
 		if(allEnemyRobots.length == 0) {
-			if(parameters.border < 0) {
-				parameters.border += 0.003;
-			}
+			parameters.border += 0.003;
 		} else {
 			int min_distance = Integer.MAX_VALUE;
 			MapLocation closest = null;

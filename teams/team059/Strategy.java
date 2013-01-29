@@ -4,18 +4,14 @@ import static team059.utils.Utils.*;
 import team059.hq.BuildSoldier;
 import team059.hq.HQAction;
 import team059.hq.UpgradeAction;
+import battlecode.common.MapLocation;
 import battlecode.common.Team;
 import static battlecode.common.Upgrade.*;
-import static team059.utils.Utils.*;
 
 public enum Strategy {
-	NORMAL(30, -1.7, 0, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
-<<<<<<< Updated upstream
+	NORMAL(30, -1.0, 0, 0, 0, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
 	NUCLEAR(5, -2.0, 0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
-=======
-	NUCLEAR(5, -3.0, 0, 50, 0, new UpgradeAction(PICKAXE), new BuildSoldier(4), new UpgradeAction(NUKE)),
->>>>>>> Stashed changes
-	RUSH(1, 1.5, 20, -50, 0, new BuildSoldier(2), new UpgradeAction(DEFUSION));
+	RUSH(1, 2.0, 20, -50, 0, new BuildSoldier(2), new UpgradeAction(DEFUSION));
 	
 	/**
 	 * Default parameters for this strategy.
@@ -33,39 +29,20 @@ public enum Strategy {
 	 * Decides what strategy to use at the beginning of the game.
 	 * @return The decided-upon strategy.
 	 */
-<<<<<<< Updated upstream
 	public static Strategy decide() {
-=======
-	public static Strategy decide() {		
->>>>>>> Stashed changes
-		if(HQ_DIST < 35)
-			return RUSH;
-
-		return NORMAL;
-		//ADD SOMETHING THEREABOUT (THERE=NUKE)
-		
-//		if(RC.getTeam() == Team.A) {
-//			return NORMAL1;
-//		}
-//		return NORMAL1;
-		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
-		
 		MapLocation halfway = new MapLocation((ALLY_HQ.x + ENEMY_HQ.x)/2, (ALLY_HQ.y + ENEMY_HQ.y)/2);
-		int dx = halfway.x - ALLY_HQ.x;
-		int dy = halfway.y - ALLY_HQ.y;
+		int radius2 = halfway.distanceSquaredTo(ENEMY_HQ);
 		
-		int mines = RC.senseMineLocations(halfway, dx*dx + dy*dy, Team.NEUTRAL).length;
+		int mines = RC.senseMineLocations(halfway, radius2 / 2, Team.NEUTRAL).length;
 		
-		
-		if (distance > 50 && mines > dx*dx + dy*dy) {
+		if (distance > 50 && mines > 300) {
 			return NUCLEAR;
-		} else if (distance < 20) {
+		} else if (distance < 35) {
 			return RUSH;
 		} else {
 			return NORMAL;
 		}
-		*/
 	}
 }
