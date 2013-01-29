@@ -1,6 +1,6 @@
 package team059.soldiers;
 
-import preSprintBot.Strategy;
+import team059.Strategy;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import team059.movement.Mover;
