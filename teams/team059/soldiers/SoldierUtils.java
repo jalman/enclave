@@ -110,7 +110,7 @@ public class SoldierUtils {
 		{
 			return 25;
 		}
-		return 8;
+		return 25;
 	}
 	/**
 	 * Finds enemy target within the micro radius with highest priority. 
@@ -119,15 +119,13 @@ public class SoldierUtils {
 	public static MapLocation setEnemyTarget() throws GameActionException{
 		int priority = -10000;
 		enemyTarget = null;
-		for (int i = 0; i < enemyRobots.length; i++)
+		for (Robot enemy : enemyRobots)
 		{
-			tempRobotInfo = RC.senseRobotInfo(enemyRobots[i]);
+			tempRobotInfo = RC.senseRobotInfo(enemy);
 			if(overallPriority(tempRobotInfo) > priority)
 			{
-				enemyTargetRobotInfo = tempRobotInfo;
-				priority = overallPriority(tempRobotInfo);
+				enemyTarget = tempRobotInfo.location;
 			}
-			enemyTarget = enemyTargetRobotInfo.location;
 		}
 		return enemyTarget;
 	}
@@ -139,8 +137,9 @@ public class SoldierUtils {
 	 * @throws GameActionException
 	 */
 	public static void setEnemyTarget(int numberOfTargetsToCheck) throws GameActionException{
-		int priority = 0;
+		int priority = -10000;
 		enemyTarget = null;
+		enemyTargetRobotInfo = null;
 		for (int i = 0; i < enemyRobots.length && i < numberOfTargetsToCheck; i++)
 		{
 			tempRobotInfo = RC.senseRobotInfo(enemyRobots[i]);
@@ -150,7 +149,6 @@ public class SoldierUtils {
 				priority = overallPriority(tempRobotInfo);
 			}
 			enemyTarget = enemyTargetRobotInfo.location;
-
 		}	
 	}
 	
@@ -176,7 +174,7 @@ public class SoldierUtils {
 		{
 			roundsUntilActive = r.roundsUntilAttackIdle;
 		}
-		return (200-(int)(healthPercent*22)-naiveDistance*15+priority+(int)(1.5*roundsUntilActive));
+		return (200-(int)(healthPercent*22)-naiveDistance*18+priority+(int)(1.5*roundsUntilActive));
 	}
 	
 	//Helper methods for overallPriority

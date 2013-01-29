@@ -2,6 +2,7 @@ package team059.soldiers.micro;
 
 
 import battlecode.common.*;
+import team059.Strategy;
 import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
@@ -10,13 +11,10 @@ import static team059.utils.Utils.*;
 import static team059.soldiers.SoldierUtils.*;
 
 public class Micro{
-	
 	MapLocation retreatTarget = null;
 	public int goIn = 0;
 	public static final Mover mover = new Mover();
 	int numberOfTargetsToCheck = 5;
-	
-	int sawThreeSoldiersOnTurnNumberEtc = 0;
 	
 	/**
 	 * Timidity
@@ -27,8 +25,8 @@ public class Micro{
 		enemyTarget = null;
 	}
 	public void run(int timidness) throws GameActionException{
-		this.timidity = strategy.parameters.timidity;
-		//this.timidity = timidity;
+		timidity = timidness;
+		
 		if (enemyRobots.length == 0)
 		{
 			updateFarawayEnemyTarget(1);
@@ -43,7 +41,10 @@ public class Micro{
 
 	public void rushToBattle() throws GameActionException{
 		//farawayEnemyTarget should be already set if micro mode is entered
-		mover.setNavType(NavType.BUG);
+		if (RC.getRobot().getID() % 7 == 0)
+			mover.setNavType(NavType.BUG_DIG_2);
+		else
+			mover.setNavType(NavType.BUG);
 		int k = Clock.getBytecodeNum();
 		if (farawayEnemyTarget != null)
 		{
@@ -53,6 +54,7 @@ public class Micro{
 		{		
 			Mines.tryDefuse(farawayEnemyTarget, true);
 		}
+		
 		if(RC.isActive())
 		{	
 			mover.execute();
@@ -68,25 +70,39 @@ public class Micro{
 		if(RC.isActive())
 		{
 			mover.execute();
-			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget());
+			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget() + enemyTarget);
 		}
 	}
 
 	public void setMicroVariables() throws GameActionException{
 //		setEnemyTargetAndWeight();
-		setEnemyTarget(numberOfTargetsToCheck);
+		if (naiveDistance(currentLocation, ENEMY_HQ) <= 3)
+		{
+			enemyTarget = ENEMY_HQ;
+			attackTarget(enemyTarget);
+		}
+		else
+			setEnemyTarget();
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
 		//cheap micro
-		if (timidity < -5 || RC.senseNearbyGameObjects(Robot.class, enemyTarget, 50, ALLY_TEAM).length > 10)
+		if (timidity < -5 || (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 50, ALLY_TEAM).length >= 7))
 		{
 			enemyWeight = 2;
 			allyWeight = 100000;
 		}
 		else
 		{
-			MapLocation m = enemyTarget;
-			setEnemyWeight(m, sensorRadius);
-			setAllyWeight(m, sensorRadius);
+			if (timidity != 1)
+			{
+				MapLocation m = averageMapLocation(currentLocation, enemyTarget, 0.25);
+				setEnemyWeight(m, sensorRadius);
+				setAllyWeight(m, sensorRadius);
+			}
+			else
+			{
+				setEnemyWeight(enemyTarget, sensorRadius);
+				setAllyWeight(enemyTarget, sensorRadius);
+			}
 		}
 	}
 	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)
@@ -105,7 +121,7 @@ public class Micro{
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
 		//TODO: Account for robot types!!!
-		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2 && timidity != 1)
+		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
 		{
 			mover.setTarget(currentLocation);
 		}
@@ -117,10 +133,11 @@ public class Micro{
 		}
 		else
 		{
-			if (enemyWeight < 0 || currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13)
+			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && RC.getRobot().getID() % 6 == 0))
 				mover.setNavType(NavType.BUG_DIG_2);
 			else
-				attackTarget(enemyTarget);
+				mover.setNavType(NavType.BUG);
+			attackTarget(enemyTarget);
 		}
 	}
 
@@ -143,7 +160,7 @@ public class Micro{
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(15*allyWeight > (15+timidity)*enemyWeight)
+		if (15*allyWeight > (15+timidity)*enemyWeight)
 		{
 			return true;
 		}		
@@ -158,6 +175,10 @@ public class Micro{
 		}
 		else
 		{
+			if (naiveDistance(currentLocation, ENEMY_HQ) < 3 && m.x == ENEMY_HQ.x && m.y == ENEMY_HQ.y)
+			{
+				System.out.println(currentLocation + " " + m);
+			}
 			mover.setTarget(RC.getLocation());
 		}
 	}

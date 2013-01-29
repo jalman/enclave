@@ -57,7 +57,6 @@ public class ScoutTask extends TravelTask {
 	public int appeal() {
 		//return Clock.getRoundNum() < MAX_SCOUT_TURNS ? SCOUT_PRIORITY : 0;
 		if(Clock.getRoundNum() > 3 * HQ_DIST /* not a magic number */ || strategy.equals(Strategy.NUCLEAR)) {
-			System.out.println("NUCLEAR NO SCOUT");
 			return - Clock.getRoundNum();
 		}
 		return SCOUT_PRIORITY;
