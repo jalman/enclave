@@ -1,40 +1,96 @@
 package bytecodetest;
 
+import java.util.Arrays;
+import java.util.Random;
+
+import battlecode.common.Clock;
+import battlecode.common.Direction;
 import battlecode.common.MapLocation;
+import battlecode.common.Robot;
 import battlecode.common.RobotController;
+import battlecode.common.RobotType;
 import battlecode.common.Team;
+import battlecode.common.Upgrade;
 
 public class Utils {
+	
+	//Game constants
+	public final static int MAX_SOLDIER_ENERGON = 40;
+	public final static int MAX_ENCAMPMENT_ENERGON = 100;
+	public final static int MAX_HQ_ENERGON = 500;
+	public static final RobotType[] ROBOT_TYPE = RobotType.values();
+	
 	//actual constants
 	public static int[] DX = {-1, -1, -1, 0, 0, 1, 1, 1};
 	public static int[] DY = {-1, 0, 1, -1, 1, -1, 0, 1};
+	public static Direction[] DIRECTIONS = Direction.values();
+	
+	// Mining constants
+	public static final int CHECK_MINE_RADIUS_SQUARED = 13; // make sure this matches CHECK_MINE_RADIUS!!!
+	public static final int CHECK_MINE_RADIUS = 4;
 
+	
 	
 	//these are set from the beginning of the game
 	public static RobotController RC;
 	public static int MAP_WIDTH, MAP_HEIGHT;
-	private static MapLocation[][] map;
 	public static Team ALLY_TEAM, ENEMY_TEAM;
 	public static MapLocation ALLY_HQ, ENEMY_HQ;
+	public static Random random;
+	public static int birthRound;
+	
+	//this is for messaging
+//	public static MessagingSystem messagingSystem;
+	public static int ID;
 	
 	//these might be set at the beginning of the round
-	//public static Strategy strategy;
+//	public static Strategy strategy = Strategy.NORMAL;
 	
 	public static MapLocation currentLocation;
+	public static int curX, curY;
 	private static MapLocation[] alliedEncampments;
+	public static final int ENEMY_RADIUS = 4;
+	public static final int ENEMY_RADIUS2 = ENEMY_RADIUS * ENEMY_RADIUS;
+	public static Robot[] enemyRobots = new Robot[0];
+	public static double forward;
 	
+	public static boolean[] UPGRADES_RESEARCHED = new boolean[Upgrade.values().length];
+	
+	public static final int[] SQUARES_IN_RANGE = 
+		{1, 5, 9, 9, 13, 21, 21, 21, 25, 29, 
+		37, 37, 37, 45, 45, 45, 49, 57, 61, 61, 
+		69, 69, 69, 69, 69, 81, 89, 89, 89, 97, 
+		97, 97, 101, 101, 109, 109, 113, 121, 121, 121, 
+		129, 137, 137, 137, 137, 145, 145, 145, 145, 149, 
+		161, 161, 169, 177, 177, 177, 177, 177, 185, 185, 
+		185, 193, 193, 193, 197, 213, 213, 213, 221, 221, 
+		221, 221, 225, 233, 241, 241, 241, 241, 241, 241, 
+		249, 253, 261, 261, 261, 277, 277, 277, 277, 285, 
+		293, 293, 293, 293, 293, 293, 293, 301, 305, 305, 
+		317};
 	
 	public static void initUtils(RobotController rc) {
 		RC = rc;
+		ID = RC.getRobot().getID();
 		
 		MAP_WIDTH = rc.getMapWidth();
 		MAP_HEIGHT = rc.getMapHeight();
-		map = new MapLocation[MAP_WIDTH][MAP_HEIGHT];
 		
 		ALLY_TEAM = rc.getTeam();
 		ENEMY_TEAM = (ALLY_TEAM == Team.A) ? Team.B : Team.A;
 		ALLY_HQ = rc.senseHQLocation();
 		ENEMY_HQ = rc.senseEnemyHQLocation();
+		
+		birthRound = Clock.getRoundNum();
+		
+		random = new Random(((long)ID<< 32) ^ Clock.getRoundNum());
+
+//		messagingSystem = new MessagingSystem();
+		
+		for(Upgrade upgrade : Upgrade.values()) {
+			UPGRADES_RESEARCHED[upgrade.ordinal()] = RC.hasUpgrade(upgrade);
+		}
+		updateUtils();
 	}
 	
 	/**
@@ -42,12 +98,11 @@ public class Utils {
 	 */
 	public static void updateUtils() {
 		currentLocation = RC.getLocation();
+		curX = currentLocation.x;
+		curY = currentLocation.y;
 		alliedEncampments = null;
-	}
-	
-	public static MapLocation mapLocation(int x, int y) {
-		MapLocation loc = map[x][y];
-		return loc != null ? loc : (map[x][y] = new MapLocation(x, y));
+		forward = Math.log((double)naiveDistance(currentLocation, ALLY_HQ) / naiveDistance(currentLocation, ENEMY_HQ));
+		enemyRobots = RC.senseNearbyGameObjects(Robot.class, currentLocation, ENEMY_RADIUS2, ENEMY_TEAM);
 	}
 	
 	public static boolean isEnemyMine(Team team) {
@@ -58,23 +113,42 @@ public class Utils {
 		return isEnemyMine(RC.senseMine(loc));
 	}
 	
-	public static int naiveDistance(MapLocation loc0, MapLocation loc1) {
-		return Math.max(Math.abs(loc0.x-loc1.x), Math.abs(loc0.y-loc1.y));
+	private static int dx, dy;
+	
+	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { 
+		// call takes 33 bytecodes
+//		dx = loc0.x > loc1.x ? loc0.x - loc1.x : loc1.x - loc0.x;
+//		dy = loc0.y > loc1.y ? loc0.y - loc1.y : loc1.y - loc0.y;
+//		int c = dx > dy ? dx : dy;
+//		int bc = Clock.getBytecodeNum();
+		dx = loc0.x - loc1.x; // call takes 31 bytecodes
+		dy = loc0.y - loc1.y;
+		dx = dx*dx > dy*dy ? dx : dy;
+		return dx > 0? dx : -dx;
+//		int c = dx > 0 ? dx : -dx;
+//		int c = Math.max(Math.max(dx, dy), Math.max(-dx, -dy));
+		//return naiveDistance(loc0.x, loc0.y, loc1.x, loc1.y);
+//		System.out.println("bc used by naiveDistance: " + (Clock.getBytecodeNum()-bc));
+//		return c;
 	}
-
+	
+//	public static int naiveDistance(MapLocation loc0, MapLocation loc1) { // call takes 36 bytecodes
+//		return Math.max(Math.abs(loc0.x-loc1.x), Math.abs(loc0.y-loc1.y));
+//	}
+	
 	public static int naiveDistance(int x1, int y1, int x2, int y2) {
-		return Math.max(Math.abs(x1-x2), Math.abs(y1-y2));
+		dx = x1 > x2 ? x1-x2 : x2-x1;
+		dy = y1 > y2 ? y1-y2 : y2-y1;
+		return dx > dy ? dx : dy;
+//		dx = x1 - x2;
+//		dy = y1 - y2;
+//		dx = dx*dx > dy*dy ? dx : dy;
+//		return dx > 0 ? dx : -dx;
+		//return Math.max(Math.abs(x1-x2), Math.abs(y1-y2));
 	}
 	
-	
-	public static int mapLocationToInt(MapLocation loc) {
-		return (loc.x << 16) ^ loc.y;
-	}
-
-	public static final int YMASK = (1 << 16) - 1;
-	
-	public static MapLocation intToMapLocation(int loc) {
-		return new MapLocation(loc >> 16, loc & YMASK);
+	public static boolean isFirstRound() {
+		return Clock.getRoundNum() == birthRound;
 	}
 	
 	/**
@@ -104,4 +178,16 @@ public class Utils {
 		}
 		return alliedEncampments;
 	}
+	
+	public static int clamp(int i, int min, int max) {
+		if(i < min) return min;
+		if(i > max) return max;
+		return i;
+	}
+	
+	public static <T> T[] newArray(int length, T... array) {
+		return Arrays.copyOf(array, length);
+	}
+	
+	
 }

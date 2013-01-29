@@ -16,6 +16,7 @@ public class HQBehavior extends RobotBehavior {
 	int buildOrderProgress = 0;
 
 	int numBots;
+	int soldierID = 0;
 
 	ArraySet<Robot> generators = new ArraySet<Robot>(500);
 	ArraySet<Robot> suppliers =  new ArraySet<Robot>(500);
@@ -86,7 +87,7 @@ public class HQBehavior extends RobotBehavior {
 				}
 			} 
 			if(!built){
-				if(fluxDiff*40 + actualFlux < 0) {
+				if(fluxDiff*60 + actualFlux < 0) {
 					try {
 						messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
 					} catch (Exception e) {
@@ -204,6 +205,7 @@ public class HQBehavior extends RobotBehavior {
 
 	private void sendMessagesOnBuild() throws GameActionException {
 		messagingSystem.writeStrategy(strategy);
+		messagingSystem.writeSoldierID(soldierID++);
 		for(int i = 0; i < Shields.shieldLocations.size; i++) {
 			messagingSystem.writeShieldLocationMessage(Shields.shieldLocations.get(i));
 		}

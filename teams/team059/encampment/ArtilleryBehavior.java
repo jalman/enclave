@@ -32,6 +32,7 @@ public class ArtilleryBehavior extends RobotBehavior {
 	};
 	
 	private final boolean canAttackEnemyHQ;
+	private boolean firstTurn = false;
 	private boolean attackDelay = false;
 	
 	public ArtilleryBehavior() {
@@ -40,6 +41,20 @@ public class ArtilleryBehavior extends RobotBehavior {
 
 	@Override
 	public void run() {
+
+		try {
+			if(firstTurn) {
+				firstTurn = false;
+				//System.out.println("born!");
+				messagingSystem.writeBirthMessage(currentLocation, ID, RC.getType().ordinal());
+				if(RC.getType() == RobotType.SHIELDS) {
+					messagingSystem.writeShieldLocationMessage(currentLocation);
+				}
+			}
+		} catch (GameActionException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		if(RC.isActive()){
 			
