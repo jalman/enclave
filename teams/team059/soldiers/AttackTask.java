@@ -36,9 +36,10 @@ public class AttackTask extends TravelTask {
 
 	@Override
 	public void execute() throws GameActionException {
-		if(farawayEnemyTarget != null) {
-			SoldierBehavior2.microSystem.run(timidity);
+		if(farawayEnemyTarget != null && turnsMicroedFor < 22 && turnsMicroedFor >= 0) {
+				runMicro();
 		} else if(!Mines.tryDefuse(destination, true)) {
+			returnToPreMicroLocation();
 			if(!(defuse && Mines.tryDefuse(destination, false))) {
 				super.execute();
 			}
@@ -48,5 +49,16 @@ public class AttackTask extends TravelTask {
 	@Override
 	public String toString() {
 		return "ATTACKING TOWARD " + destination;
+	}
+	
+	private void runMicro() throws GameActionException{
+		SoldierBehavior2.microSystem.run(timidity);
+		turnsMicroedFor++;
+	}
+	private void returnToPreMicroLocation(){
+		if (turnsMicroedFor >= 22)
+			turnsMicroedFor = -1;
+		else if (currentLocation.distanceSquaredTo(destination) <= 85)
+			turnsMicroedFor = 0;
 	}
 }
