@@ -192,7 +192,11 @@ public class MessagingSystem {
 		for(int i = total_messages; i < new_messages; i++) {
 			int type = readMessage(i, buffer);
 			if(type != -1) {
-				handlers[type].handleMessage(buffer);
+				try {
+					handlers[type].handleMessage(buffer);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 			} else {
 				System.out.println("Cannot read message at index " + i);
 			}

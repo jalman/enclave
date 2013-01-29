@@ -50,7 +50,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		nuclearTaskGivers = new TaskGiver[] 
 				{attackManager, mineManager, expandManager, takeEncampmentManager, dodgeMineManager};
 		rushTaskGivers = new TaskGiver[] 
-				{attackManager, expandManager, takeEncampmentManager, dodgeMineManager};
+				{patrolManager, attackManager, expandManager, takeEncampmentManager, dodgeMineManager};
 	}
 
 	@Override
