@@ -93,7 +93,7 @@ public class Mover {
 		//int bc = Clock.getBytecodesLeft();
 		//RC.setIndicatorString(1, "my x = " + Integer.toString(RC.getLocation().x) + ", my y = " + Integer.toString(RC.getLocation().y)
 		//		+ "x = " + Integer.toString(dest.x) + ", y = " + Integer.toString(dest.y)); 
-		RC.setIndicatorString(2, Clock.getRoundNum() + " | dest = " + dest + ", navtype = " + navType);
+//		RC.setIndicatorString(2, Clock.getRoundNum() + " | dest = " + dest + ", navtype = " + navType);
 		if(RC.isActive()) {
 			here = RC.getLocation();
 			if(dest == null || dest.equals(here)) {
@@ -104,9 +104,9 @@ public class Mover {
 				d = beelineAlg.getNextDir();
 				if(d != null && d != Direction.NONE && d != Direction.OMNI) {
 					try {
-						//if(RC.canMove(d)) {
+						if(RC.canMove(d)) {
 							RC.move(d);
-						//}
+						}
 					} catch (Exception e) {
 						System.out.println("ERROR: Can't move in direction " + d);
 					}

@@ -1,112 +1,202 @@
 package team059.soldiers.micro;
 
+
+import battlecode.common.*;
+import team059.Strategy;
 import team059.messaging.MessagingSystem;
 import team059.movement.Mover;
 import team059.movement.NavType;
-import team059.soldiers.SoldierBehavior2;
-import team059.utils.Utils;
+import team059.soldiers.Mines;
 import static team059.utils.Utils.*;
-import battlecode.common.*;
 import static team059.soldiers.SoldierUtils.*;
+import team059.soldiers.micro.RushUtils;
 
-public class MicroOld {
-	
+public class MicroOld{
 	MapLocation retreatTarget = null;
 	public int goIn = 0;
-	private static final int maxNumberOfEnemiesToCheckToFindATarget = 5;
 	public static final Mover mover = new Mover();
-	public SoldierBehavior2 sb;
-	int count = 0;
+	int numberOfTargetsToCheck = 5;
+	public boolean shouldIAttack;
+	/**
+	 * Timidity is 1 during a rush.
+	 */
+	public int timidity = 0;
 	
-	public MapLocation battleSpot;
-	public int battleSpotAge;
-
-	public final static int sensorRadius = 25;
-	public final static int closeEnoughToGoToBattle = 11;
-	public final static int microMessageAgeThreshold = 3;
-	public final static int microThreshold = ENEMY_RADIUS;
+	/**
+	 * Rush variables
+	 */
+	MapLocation locationRetreatedFrom;
+	int turnRetreated; // the turn that locationRetreatedFrom was retreated from. 
 	
-	public MicroOld(SoldierBehavior2 sb) {		
+	public MicroOld() {
 		enemyTarget = null;
-		this.sb = sb;
+	}
+	public void run(int timidness) throws GameActionException{
+		timidity = timidness;
+		//Rush code
+		if (timidity == 1)
+		{
+			RushUtils.updateRushUtils();
+			RC.setIndicatorString(2, "Round " + Clock.getRoundNum() + " " + " Last time retreated " + RushUtils.turnRetreated + " "
+			+ RushUtils.locRetreatedFrom + " Target is " + mover.getTarget() + " Attacking? " + shouldIAttack);
+		}
+		
+		
+		if (enemyRobots.length == 0)
+		{
+			updateFarawayEnemyTarget(1);
+			rushToBattle();
+		}
+		else{
+			setMicroVariables();
+			farawayEnemyTarget = enemyTarget;
+			micro();
+		}
+	}
+
+	public void rushToBattle() throws GameActionException{
+		//farawayEnemyTarget should be already set if micro mode is entered
+		if (naiveDistance(currentLocation, farawayEnemyTarget) >= 5 && RC.getRobot().getID() % 2 == 0)
+			mover.setNavType(NavType.BUG_HIGH_DIG);
+		else
+			mover.setNavType(NavType.BUG);
+		int k = Clock.getBytecodeNum();
+		if (farawayEnemyTarget != null)
+		{
+			attackTarget(farawayEnemyTarget);
+		}
+		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 4 ==0 && RC.senseNearbyGameObjects(Robot.class, currentLocation, 30, ENEMY_TEAM).length == 0)
+		{		
+			Mines.tryDefuse(farawayEnemyTarget, true);
+		}
+		
+		if(RC.isActive())
+		{
+			//RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
+			mover.execute();
+			//RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget() + " Bytecode used " + (Clock.getBytecodeNum()-k));
+
+		}
 	}
 	
-	public void run() throws GameActionException{
-		setVariables();
-		if((enemyTarget != null && battleSpotAge >= 4) || (battleSpot != null && battleSpot.distanceSquaredTo(enemyTarget) > 36))
-		{
-			messagingSystem.writeMicroMessage(currentLocation, goIn);
-			battleSpotAge = 0;
-		}
+	public void micro() throws GameActionException{
 		if(enemyTarget != null) {		
 			attackOrRetreat();
-		}
+		}	
 		if(RC.isActive())
+		{
 			mover.execute();
-		count++;
+//			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget() + enemyTarget);
+		}
 	}
-	
-	public void setVariables() throws GameActionException{
-		setEnemyTargetAndWeight();
-		setAllyWeight(enemyTarget, sensorRadius);
+
+	public void setMicroVariables() throws GameActionException{
+//		setEnemyTargetAndWeight();
+		if (naiveDistance(currentLocation, ENEMY_HQ) <= 3)
+		{
+			enemyTarget = ENEMY_HQ;
+			attackTarget(enemyTarget);
+		}
+		else
+			setEnemyTarget();
+//		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
+		//cheap micro
+		if (timidity < -5 || (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 45, ALLY_TEAM).length >= 6))
+		{
+			enemyWeight = 2;
+			allyWeight = 100000;
+		}
+		else
+		{
+			if (timidity != 1)
+			{
+				MapLocation m = averageMapLocation(currentLocation, enemyTarget, 0.25);
+				setEnemyWeight(m, sensorRadius);
+				setAllyWeight(m, sensorRadius);
+			}
+			else
+			{
+				setEnemyWeight(enemyTarget, sensorRadius);
+				setAllyWeight(enemyTarget, sensorRadius);
+			}
+		}
+	}
+	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)
+	{
+		return new MapLocation((int)((k*m1.x+(1-k)*m2.x)), (int)(k*m1.y+(1-k)*m2.y));
 	}
 	
 	/**
-	 * Retreats during micro if there are no adjacent enemies and enough allies nearby.
+	 * Determines whether a soldier should attack or retreat
+	 * If: adjacent enemies: stay put. 
+	 * Else if: there aren't enough allies nearby to engage: retreat
+	 * Else: attack
 	 * @throws GameActionException
 	 */
 	
 	public void attackOrRetreat() throws GameActionException{
 		setRetreatBack();
-		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2)
+		//TODO: Account for robot types!!!
+		if (timidity == 1)
 		{
-			mover.setTarget(RC.getLocation());
+			shouldIAttack = RushUtils.shouldIAttack();
 		}
-		else if (!shouldIAttack())
+		else
+			shouldIAttack = shouldIAttack();
+		
+		
+		if (enemyTarget.distanceSquaredTo(RC.getLocation())<= 2 && timidity != 1)
+		{
+			mover.setTarget(currentLocation);
+		}
+		else if (!shouldIAttack)
 		{
 			setRetreatBack();
+			if (timidity == 1)
+			{
+				retreatTarget = ALLY_HQ;
+			}
+			mover.setNavType(NavType.BUG);
 			mover.setTarget(retreatTarget);
 		}
 		else
-		{	
+		{
+			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && RC.getRobot().getID() % 6 == 0))
+				mover.setNavType(NavType.BUG_HIGH_DIG);
+			else
+				mover.setNavType(NavType.BUG);
 			attackTarget(enemyTarget);
 		}
 	}
-	
-	/**
-	 * Writes a message when enemies are nearby
-	 * @throws GameActionException
-	 */
 
-	
 	/**
-	 * Sets the destinations to retreat to.
+	 * Sets the retreat target.
 	 * @throws GameActionException
 	 */
 	public void setRetreatBack() throws GameActionException
 	{
 		if (enemyTarget != null)
 		{
-			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite());
+			retreatTarget = currentLocation.add(RC.getLocation().directionTo(enemyTarget).opposite(), 2);
 		}
 		else
 		{
 			retreatTarget = ALLY_HQ;
 		}
 	}
-	/**
-	 * Methods for detecting Allies and Enemies within a certain radius
-	 */
 	
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if(allyWeight > enemyWeight && allyWeight > 1)
+		if (timidity == 1)
 		{
-			mover.setNavType(NavType.BUG_DIG_2);
+			
+			return true;
+		}
+		if (15*allyWeight > (15+timidity)*enemyWeight)
+		{
 			return true;
 		}		
-		mover.setNavType(NavType.BUG);
 		return false;
 	}
 		
@@ -118,24 +208,12 @@ public class MicroOld {
 		}
 		else
 		{
+			if (naiveDistance(currentLocation, ENEMY_HQ) < 3 && m.x == ENEMY_HQ.x && m.y == ENEMY_HQ.y)
+			{
+				System.out.println(currentLocation + " " + m);
+			}
 			mover.setTarget(RC.getLocation());
 		}
 	}
-	/**
-	 * 
-	 */
-	public void goToBattle(int mapLocX, int mapLocY){
-		MapLocation tempBattleSpot = new MapLocation(mapLocX, mapLocY);
-		if (battleSpot == null || naiveDistance(tempBattleSpot, currentLocation) < naiveDistance(battleSpot, currentLocation) 
-				||  battleSpotAge >= 4)
-		{
-			battleSpot = tempBattleSpot;
-			battleSpotAge = 0;
-		}
-		int distance = Utils.naiveDistance(battleSpot, Utils.currentLocation);
-		if(distance < 11 && distance > 3)
-		{
-			mover.setTarget(battleSpot);
-		}
-	}	
+	
 }
