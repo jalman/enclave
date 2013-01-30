@@ -48,6 +48,9 @@ public class HQBehavior extends RobotBehavior {
             
             if(Clock.getRoundNum() % 50 == 0) {
                 parameters.greed++;
+                if(numSoldiers > 15) {
+                	expandSystem.expand(1);
+                }
             }
 
             messagingSystem.beginRoundHQ(messageHandlers);
@@ -95,9 +98,6 @@ public class HQBehavior extends RobotBehavior {
 					built = buildSoldier();
 				} 
 				if(!built){
-					if(!strategy.equals(Strategy.NUCLEAR) && fluxDiff*60 + actualFlux < 0) {
-						messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
-					}
 					researchUpgrade(Upgrade.NUKE);
 				}
 			} catch (Exception e) {
