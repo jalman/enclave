@@ -57,7 +57,6 @@ public class ExpandSystem {
 	
 
 	public void considerExpanding(int far) throws GameActionException {
-		System.out.println(encampments[0][0]);
 		boolean victoryExpand = expandNum > 0;
 		if(numSent*10 > Clock.getRoundNum() || far >= NC) return;
 		if(numSent >= parameters.greed) {
