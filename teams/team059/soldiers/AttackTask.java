@@ -13,11 +13,6 @@ public class AttackTask extends TravelTask {
 	
 	private final boolean defuse;
 	private final int timidity;
-	private int turnsMicroedForAwayFromDestination;
-	final int turnsIShouldMicroFor = 12;
-	private final int farawayThreshold = 4;
-	private int turnsSpentGoingBack = 0;
-	int turnsToWaitUntilMicroIsAllowedAgain = 13;
 	
 	public AttackTask(MapLocation target, int priority) {
 		this(target, priority, parameters.timidity, false);
@@ -43,12 +38,9 @@ public class AttackTask extends TravelTask {
 	public void execute() throws GameActionException {
 		if(Mines.tryDefuse(destination, true)) return;
 		
-		if(farawayEnemyTarget != null && turnsMicroedForAwayFromDestination < turnsIShouldMicroFor 
-				&& turnsMicroedForAwayFromDestination >= 0) {
-			turnsSpentGoingBack = 0;
-			runMicro();
+		if(farawayEnemyTarget != null) {
+			SoldierBehavior2.microSystem.run(timidity);
 		} else {
-			returnToPreMicroLocation();
 			//if(!(defuse && Mines.tryDefuse(destination, false))) {
 				super.execute();
 			//}
@@ -59,25 +51,5 @@ public class AttackTask extends TravelTask {
 	@Override
 	public String toString() {
 		return "ATTACKING TOWARD " + destination;
-	}
-	
-	private void runMicro() throws GameActionException {
-		SoldierBehavior2.microSystem.run(timidity);
-		turnsSpentGoingBack = 0;
-		if (naiveDistance(currentLocation, destination) > farawayThreshold)
-			turnsMicroedForAwayFromDestination++;
-	}
-	
-	private void returnToPreMicroLocation() {
-		turnsToWaitUntilMicroIsAllowedAgain = Math.min(13, naiveDistance(destination, currentLocation));
-		if (turnsMicroedForAwayFromDestination >= turnsIShouldMicroFor || turnsMicroedForAwayFromDestination == -1) {
-			turnsMicroedForAwayFromDestination = -1;
-			turnsSpentGoingBack ++;
-		}		
-		if (naiveDistance(currentLocation, destination) <= (0.5 * farawayThreshold) || turnsSpentGoingBack > turnsToWaitUntilMicroIsAllowedAgain)
-		{
-			turnsMicroedForAwayFromDestination = 0;
-			turnsSpentGoingBack = 0;
-		}
 	}
 }

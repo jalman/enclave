@@ -22,7 +22,6 @@ public class Micro{
 	public int timidity = 0;
 	
 	public Micro() {
-//		System.out.println(HQ_DIST);
 		enemyTarget = null;
 	}
 	public void run(int timidness) throws GameActionException{
@@ -140,7 +139,7 @@ public class Micro{
 		{
 			mover.setNavType(NavType.BUG);
 			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && ID % 6 == 0) || 
-					enemyTargetRobotInfo.type.equals(RobotType.ARTILLERY))
+					(enemyTargetRobotInfo != null && enemyTargetRobotInfo.type.equals(RobotType.ARTILLERY)))
 				Mines.tryDefuse(enemyTarget, false);
 			else
 				mover.setNavType(NavType.BUG);

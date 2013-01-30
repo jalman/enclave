@@ -438,7 +438,7 @@ public class MessagingSystem {
 	}
 	
 	public void printMessageBoard() {
-		System.out.println("MESSAGEBOARD:");
+//		System.out.println("MESSAGEBOARD:");
 		for(int i = 0; i < total_messages; i++) {
 			int off = i * BLOCK_SIZE;
 			for(int j = 0; j < BLOCK_SIZE; j++) {
