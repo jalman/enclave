@@ -96,7 +96,6 @@ public class ExpandSystem {
 				numSent++;
 				if(victoryExpand) {
 					expandNum--;
-					System.out.println("EXPAND! " + loc);
 				}
 				return;
 			}
