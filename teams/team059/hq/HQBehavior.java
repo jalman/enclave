@@ -97,7 +97,7 @@ public class HQBehavior extends RobotBehavior {
 				} else if(numAboveSoldierCap() < 0 && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
 					built = buildSoldier();
 				} 
-				if(!built){
+				if(!built) {
 					researchUpgrade(Upgrade.NUKE);
 				}
 			} catch (Exception e) {
