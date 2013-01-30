@@ -33,8 +33,6 @@ public class Utils {
 	public static final int CHECK_MINE_RADIUS_SQUARED = 13; // make sure this matches CHECK_MINE_RADIUS!!!
 	public static final int CHECK_MINE_RADIUS = 4;
 
-
-
 	//these are set from the beginning of the game
 	public static RobotController RC;
 	public static Robot ROBOT;
@@ -244,8 +242,8 @@ public class Utils {
 		int dot1 = (loc.x - ALLY_HQ.x) * HQ_DX + (loc.y - ALLY_HQ.y) * HQ_DY;
 		int dot2 = (ENEMY_HQ.x - loc.x) * HQ_DX + (ENEMY_HQ.y - loc.y) * HQ_DY;
 		
-		if(dot1 < 0) return -10;
-		if(dot2 < 0) return 10;
+		if(dot1 < 0) return -5.0;
+		if(dot2 < 0) return 5.0;
 		
 		return Math.log((double)dot1 / dot2);
 	}

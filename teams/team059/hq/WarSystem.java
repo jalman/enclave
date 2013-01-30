@@ -43,7 +43,7 @@ public class WarSystem {
 		
 		int home = defendMainPriority();
 		if(home > 0) {
-			parameters.border = -2.0;
+			//parameters.border = -2.0;
 			messagingSystem.writeAttackMessage(ALLY_HQ, home);
 		}
 		
@@ -61,25 +61,23 @@ public class WarSystem {
 	}
 	
 	private void setBorder() throws GameActionException {
-		if(strategy != Strategy.NUCLEAR && hq.numAboveSoldierCap() >= advanceThreshold) {
-			parameters.border += 0.1;
-		} else {
-			parameters.border = Math.max(strategy.parameters.border, parameters.border - 0.1);
-		}
 		
-		/*
 		if(allEnemyRobots.length == 0) {
+			if(strategy != Strategy.NUCLEAR && hq.numAboveSoldierCap() >= advanceThreshold) {
+				parameters.border += 0.1;
+			} else {
+				parameters.border = Math.max(strategy.parameters.border, parameters.border - 0.1);
+			}
 		} else {
 			for(Robot robot : allEnemyRobots) {
 				RobotInfo info = RC.senseRobotInfo(robot);
 				double position = evaluate(info.location);
-				if(evaluate(info.location) < parameters.border + parameters.margin) {
+				if(evaluate(info.location) < parameters.border) {
 					parameters.border = position;
 					break;
 				}
 			}
 		}
-		*/
 	}
 
 	/**

@@ -10,7 +10,7 @@ import static battlecode.common.Upgrade.*;
 
 public enum Strategy {
 	NORMAL(30, -0.5, -5, 0, 80, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
-	NUCLEAR(5, -4.0, 5, 0, 30, new UpgradeAction(PICKAXE), new BuildSoldier(7)), //, new UpgradeAction(NUKE)),
+	NUCLEAR(5, -2.0, 5, 0, 30, new UpgradeAction(PICKAXE), new BuildSoldier(7)), //, new UpgradeAction(NUKE)),
 	RUSH(1, 1.5, -1000, 1, 90, new BuildSoldier(2), new UpgradeAction(DEFUSION));
 	
 	/**

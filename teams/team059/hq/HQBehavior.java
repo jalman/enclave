@@ -95,9 +95,6 @@ public class HQBehavior extends RobotBehavior {
 					built = buildSoldier();
 				} 
 				if(!built){
-					if(!strategy.equals(Strategy.NUCLEAR) && fluxDiff*60 + actualFlux < 0) {
-						messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
-					}
 					researchUpgrade(Upgrade.NUKE);
 				}
 			} catch (Exception e) {
