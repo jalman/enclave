@@ -46,10 +46,10 @@ public class Micro{
 			mover.setNavType(NavType.BUG);
 		int k = Clock.getBytecodeNum();
 		
-		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 4 ==0)
-		{		
-			Mines.tryDefuse(farawayEnemyTarget, false);
-		}
+//		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 4 ==0)
+//		{		
+//			Mines.tryDefuse(farawayEnemyTarget, false);
+//		}
 		
 		if (farawayEnemyTarget != null)
 		{
@@ -134,11 +134,7 @@ public class Micro{
 		}
 		else
 		{
-			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && RC.getRobot().getID() % 6 == 0) || 
-					enemyTargetRobotInfo.type.equals(RobotType.ARTILLERY) && 1.2*allyWeight > enemyWeight)
-				Mines.tryDefuse(enemyTarget, false);
-			else
-				mover.setNavType(NavType.BUG);
+			mover.setNavType(NavType.BUG);
 			attackTarget(enemyTarget);
 		}
 	}
