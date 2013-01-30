@@ -3,6 +3,7 @@ package team059.soldiers;
 import static team059.utils.Utils.*;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
+import battlecode.common.GameActionExceptionType;
 import battlecode.common.GameConstants;
 import battlecode.common.MapLocation;
 import battlecode.common.Team;
@@ -43,6 +44,12 @@ public class Mines {
 		if(best != null) {
 			messagingSystem.writeDefusingMineMessage(best, 0);
 			RC.defuseMine(best);
+
+//			if(enemy == false) {
+//				throw new GameActionException(GameActionExceptionType.CANT_DO_THAT_BRO, "enemy = false");
+//				//System.out.println("enemy = false!");
+//			}
+			
 			return true;
 		} else {
 			return false;

@@ -161,7 +161,7 @@ public class MicroOld{
 		}
 		else
 		{
-			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && RC.getRobot().getID() % 6 == 0))
+			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && ID % 6 == 0))
 				mover.setNavType(NavType.BUG_HIGH_DIG);
 			else
 				mover.setNavType(NavType.BUG);
