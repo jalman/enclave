@@ -26,6 +26,8 @@ public class WarSystem {
 	
 	private Robot[] allAlliedRobots, allEnemyRobots;
 	
+	private int advanceThreshold = NORMAL_ADVANCE_THRESHOLD;
+	
 	public WarSystem(HQBehavior hq) {
 		this.hq = hq;
 	}
@@ -33,11 +35,12 @@ public class WarSystem {
 	public void run() throws GameActionException {
 		sense();
 		
+		if(nukePanic()) {
+			advanceThreshold = PANIC_ADVANCE_THRESHOLD;
+		}
+		
 		setBorder();
 		
-		if(nukePanic()) {
-			messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
-		}
 		int home = defendMainPriority();
 		if(home > 0) {
 			parameters.border = -2.0;
@@ -58,22 +61,25 @@ public class WarSystem {
 	}
 	
 	private void setBorder() throws GameActionException {
+		if(strategy != Strategy.NUCLEAR && hq.numAboveSoldierCap() >= advanceThreshold) {
+			parameters.border += 0.1;
+		} else {
+			parameters.border = Math.max(strategy.parameters.border, parameters.border - 0.1);
+		}
+		
+		/*
 		if(allEnemyRobots.length == 0) {
-			if(strategy != Strategy.NUCLEAR && hq.numAboveSoldierCap() >= -10) {
-				parameters.border += 0.1;
-			} else {
-				parameters.border = strategy.parameters.border;
-			}
 		} else {
 			for(Robot robot : allEnemyRobots) {
 				RobotInfo info = RC.senseRobotInfo(robot);
 				double position = evaluate(info.location);
 				if(evaluate(info.location) < parameters.border + parameters.margin) {
-					parameters.border = position - parameters.margin;
+					parameters.border = position;
 					break;
 				}
 			}
 		}
+		*/
 	}
 
 	/**
