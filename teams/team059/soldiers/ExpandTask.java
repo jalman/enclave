@@ -86,7 +86,7 @@ public class ExpandTask extends TravelTask {
 			return RobotType.SHIELDS;
 		}
 		
-		if(!isSafe(currentLocation)) {
+		if((!isSafe(currentLocation) && Clock.getRoundNum() % 3 == 0) || currentLocation.distanceSquaredTo(ALLY_HQ) < 25) {
 //			if (ALLY_TEAM.equals(Team.A))
 //			{
 //				if (random.nextDouble()*2 < 1)
