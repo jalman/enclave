@@ -9,10 +9,9 @@ import battlecode.common.Team;
 import static battlecode.common.Upgrade.*;
 
 public enum Strategy {
-	NORMAL(30, -0.5, -5, 0, 80, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
+	NORMAL(30, -0.5, -5, 0, 70, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
 	NUCLEAR(5, -2.0, 5, 0, 30, new UpgradeAction(PICKAXE), new BuildSoldier(7)), //, new UpgradeAction(NUKE)),
-	RUSH(1, 1.5, -1000, 1, 90, new BuildSoldier(2), new UpgradeAction(DEFUSION)),
-	RUSHDEFEND(1, -0.5, -1000, 2, 90, new BuildSoldier(2));
+	RUSH(1, 1.5, -1000, 1, 90, new BuildSoldier(2), new UpgradeAction(DEFUSION));
 	
 	/**
 	 * Default parameters for this strategy.
@@ -34,6 +33,18 @@ public enum Strategy {
 	 * @return The decided-upon strategy.
 	 */
 	public static Strategy decide() {
+//		if(ALLY_TEAM.equals(Team.A))
+//			return NORMAL;
+//		else if(ALLY_TEAM.equals(Team.B))
+//		  return NORMAL;
+//		//ADD SOMETHING THEREABOUT (THERE=NUKE)
+//
+//		if(ALLY_TEAM.equals(Team.A))
+//			return NUCLEAR;
+//
+//		 return NORMAL;
+
+		
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
 		MapLocation halfway = new MapLocation((ALLY_HQ.x + ENEMY_HQ.x)/2, (ALLY_HQ.y + ENEMY_HQ.y)/2);
@@ -41,33 +52,12 @@ public enum Strategy {
 		
 		int mines = RC.senseMineLocations(halfway, radius2 / 2, Team.NEUTRAL).length;
 		
-		System.out.println("Distance: " + distance + " Mines : " + mines);
-		
-//		if(ALLY_TEAM.equals(Team.A))
-//			return NORMAL;
-//		else if(ALLY_TEAM.equals(Team.B))
-//		  return NORMAL;
-//		//ADD SOMETHING THEREABOUT (THERE=NUKE)
-//
-//		if (HQ_DIST < 30)
-//			return RUSH;
-//		else if (HQ_DIST > 53)
-//			return NUCLEAR;
-//		return NORMAL;
-		if(ALLY_TEAM.equals(Team.A))
+		if (distance > 55 && mines > 400) {
+			return NUCLEAR;
+		} else if (distance < 32) {
+			return RUSH;
+		} else {
 			return NORMAL;
-		 return NUCLEAR;
-
-		
-		/*
-//		if (distance > 55 && mines > 400) {
-//			return NUCLEAR;
-//		} else if (distance < 32) {
-//			return RUSH;
-//		} else {
-			return NORMAL;
-<<<<<<< HEAD
 		}
-		*/
 	}
 }
