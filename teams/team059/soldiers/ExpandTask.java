@@ -86,7 +86,9 @@ public class ExpandTask extends TravelTask {
 			return RobotType.SHIELDS;
 		}
 		
-		if((!isSafe(currentLocation) && Clock.getRoundNum() % 3 == 0) || currentLocation.distanceSquaredTo(ALLY_HQ) < 25) {
+		int nEncs = RC.senseAlliedEncampmentSquares().length;
+		
+		if(Clock.getRoundNum() % 3 == 0 && (!isSafe(currentLocation)) || (currentLocation.distanceSquaredTo(ALLY_HQ) < 25 && nEncs == 0)) {
 //			if (ALLY_TEAM.equals(Team.A))
 //			{
 //				if (random.nextDouble()*2 < 1)
@@ -99,7 +101,7 @@ public class ExpandTask extends TravelTask {
 		if(buildType != null) return buildType;
 		
 		//TODO: do something better
-		return RC.senseAlliedEncampmentSquares().length > 12 && random.nextInt() % 4 != 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
+		return nEncs > 12 && random.nextInt() % 4 != 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
 	}
 	
 	@Override
