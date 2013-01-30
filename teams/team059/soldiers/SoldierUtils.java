@@ -35,7 +35,7 @@ public class SoldierUtils {
 		if (strategy.parameters.timidity == 1)
 		{
 			sensorRadius = 14;
-			closeEnoughToGoToBattleSquared = 60;
+			closeEnoughToGoToBattleSquared = 90;
 		}
 		else
 			closeEnoughToGoToBattleSquared=121;

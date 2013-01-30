@@ -11,7 +11,8 @@ import static battlecode.common.Upgrade.*;
 public enum Strategy {
 	NORMAL(30, -0.5, -5, 0, 80, new BuildSoldier(2), new UpgradeAction(FUSION), new BuildSoldier(12), new UpgradeAction(DEFUSION)),
 	NUCLEAR(5, -2.0, 5, 0, 30, new UpgradeAction(PICKAXE), new BuildSoldier(7)), //, new UpgradeAction(NUKE)),
-	RUSH(1, 1.5, -1000, 1, 90, new BuildSoldier(2), new UpgradeAction(DEFUSION));
+	RUSH(1, 1.5, -1000, 1, 90, new BuildSoldier(2), new UpgradeAction(DEFUSION)),
+	RUSHDEFEND(1, -0.5, -1000, 2, 90, new BuildSoldier(2));
 	
 	/**
 	 * Default parameters for this strategy.
@@ -54,8 +55,8 @@ public enum Strategy {
 //			return NUCLEAR;
 //		return NORMAL;
 		if(ALLY_TEAM.equals(Team.A))
-			return RUSH;
-		 return NORMAL;
+			return NORMAL;
+		 return NUCLEAR;
 
 		
 		/*

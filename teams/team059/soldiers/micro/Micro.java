@@ -44,12 +44,11 @@ public class Micro{
 			mover.setNavType(NavType.BUG_HIGH_DIG);
 		else
 			mover.setNavType(NavType.BUG);
-		int k = Clock.getBytecodeNum();
 		
-//		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 4 ==0)
-//		{		
-//			Mines.tryDefuse(farawayEnemyTarget, false);
-//		}
+		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 3 ==0)
+		{		
+			Mines.tryDefuse(farawayEnemyTarget, true);
+		}
 		
 		if (farawayEnemyTarget != null)
 		{
@@ -59,7 +58,7 @@ public class Micro{
 		if(RC.isActive())
 		{	
 			mover.execute();
-			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget() + " Bytecode used " + (Clock.getBytecodeNum()-k));
+			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
 
 		}
 	}
@@ -86,12 +85,9 @@ public class Micro{
 			setEnemyTarget();
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
 		//cheap micro
-		if (timidity < -5 || (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 45, ALLY_TEAM).length >= 6) ||
-				(Clock.getRoundNum() > 400 
-						&& RC.senseNearbyGameObjects(Robot.class, currentLocation, 10000, ALLY_TEAM).length -
-						RC.senseAlliedEncampmentSquares().length > (0.6 * HQ_DIST + 8)))
+		if (timidity < -5 || (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 38, ALLY_TEAM).length >= 5))
 		{
-			enemyWeight = 2;
+			enemyWeight = -2;
 			allyWeight = 100000;
 		}
 		else
@@ -108,6 +104,10 @@ public class Micro{
 				setAllyWeight(enemyTarget, sensorRadius);
 			}
 		}
+		
+		if (enemyWeight < 0)
+			enemyWeight = 0;
+		
 	}
 	private MapLocation averageMapLocation(MapLocation m1, MapLocation m2, double k)
 	{
@@ -138,11 +138,11 @@ public class Micro{
 		else
 		{
 			mover.setNavType(NavType.BUG);
-			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && ID % 6 == 0) || 
+			if ((currentLocation.distanceSquaredTo(ENEMY_HQ) <= 16 && ID % 4 == 0) || 
 					(enemyTargetRobotInfo != null && enemyTargetRobotInfo.type.equals(RobotType.ARTILLERY)))
-				Mines.tryDefuse(enemyTarget, false);
-			else
-				mover.setNavType(NavType.BUG);
+			{
+				mover.setNavType(NavType.BUG_HIGH_DIG);
+			}
 			attackTarget(enemyTarget);
 		}
 	}
@@ -166,7 +166,7 @@ public class Micro{
 	// Determines whether there are enough allies nearby to engage
 	public boolean shouldIAttack() throws GameActionException
 	{
-		if (15*allyWeight > (15+timidity)*enemyWeight)
+		if (30*allyWeight > (30+timidity)*enemyWeight)
 		{
 			return true;
 		}		

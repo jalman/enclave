@@ -45,7 +45,7 @@ public class HQBehavior extends RobotBehavior {
             //thisFlux = RC.getTeamPower();
             fluxDiff = actualFlux - lastFlux;
             lastFlux = actualFlux;
-            if (parameters.timidity == 1)
+            if (parameters.timidity == 1 || parameters.timidity == 2)
             {
             	if (Clock.getRoundNum() % 100 == 0 && Clock.getRoundNum() > 1)
             		parameters.greed++;
@@ -66,6 +66,10 @@ public class HQBehavior extends RobotBehavior {
             
             RC.setIndicatorString(0, parameters.toString());
             if (parameters.timidity == 1)
+            {
+            	messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
+            }
+            else if (parameters.timidity == 2 && Clock.getRoundNum() > 300)
             {
             	messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
             }
