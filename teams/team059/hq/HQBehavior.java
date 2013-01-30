@@ -12,28 +12,28 @@ import battlecode.common.*;
 
 public class HQBehavior extends RobotBehavior {
 
-        HQAction[] buildOrder;
-        int buildOrderProgress = 0;
+	HQAction[] buildOrder;
+	int buildOrderProgress = 0;
 
-        int numBots, numEncampments, numSoldiers;
-        int soldierID = 0;
+	int numBots, numEncampments, numSoldiers;
+	int soldierID = 0;
 
-        ArraySet<Robot> generators = new ArraySet<Robot>(500);
-        ArraySet<Robot> suppliers =  new ArraySet<Robot>(500);
-        int genIndex = 0, supIndex = 0;
+	ArraySet<Robot> generators = new ArraySet<Robot>(500);
+	ArraySet<Robot> suppliers =  new ArraySet<Robot>(500);
+	int genIndex = 0, supIndex = 0;
 
-        double lastFlux = 0, thisFlux = 0, fluxDiff = 0, actualFlux = 0;
+	double lastFlux = 0, thisFlux = 0, fluxDiff = 0, actualFlux = 0;
 
-        ExpandSystem expandSystem;
-        WarSystem warSystem;
+	ExpandSystem expandSystem;
+	WarSystem warSystem;
 
-        public HQBehavior(Strategy strategy) {
-            Utils.strategy = strategy;
-            Utils.parameters = strategy.parameters;
-            buildOrder = strategy.buildOrder;	
-            expandSystem = new ExpandSystem();
-            warSystem = new WarSystem(this);
-        }
+	public HQBehavior(Strategy strategy) {
+		Utils.strategy = strategy;
+		Utils.parameters = strategy.parameters.clone();
+		buildOrder = strategy.buildOrder;	
+		expandSystem = new ExpandSystem();
+		warSystem = new WarSystem(this);
+	}
 
         @Override
         public void beginRound() throws GameActionException {
@@ -47,7 +47,7 @@ public class HQBehavior extends RobotBehavior {
             lastFlux = actualFlux;
             if (parameters.timidity == 1)
             {
-            	if (Clock.getRoundNum() % 100 == 0)
+            	if (Clock.getRoundNum() % 100 == 0 && Clock.getRoundNum() > 1)
             		parameters.greed++;
             }
             else if(Clock.getRoundNum() % 50 == 0) {
@@ -56,10 +56,8 @@ public class HQBehavior extends RobotBehavior {
                 	expandSystem.expand(1);
                 }
             }
-
-            messagingSystem.beginRoundHQ(messageHandlers);
-        }
-
+		messagingSystem.beginRoundHQ(messageHandlers);
+	}
         @Override
         public void run() throws GameActionException {
             macro();
@@ -72,37 +70,38 @@ public class HQBehavior extends RobotBehavior {
             	messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
             }
         }
+	
 
-        /**
-         * Handle upgrades and robots.
-         */
-        protected void macro() {
-            if(!RC.isActive()) return;
-            
-            boolean built = false;
-            if(Clock.getRoundNum() % 3 == 0) {
-                updateEncampmentCounts();
-            }
-            //RC.setIndicatorString(1,""+RC.getTeamPower());
-            if(buildOrderProgress < buildOrder.length) {
-                try {
-                    HQAction action = buildOrder[buildOrderProgress];
-                    RC.setIndicatorString(1, action.toString());
-                    if(action.execute(this)) {
-                        if(action instanceof UpgradeAction) {
-                            messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
-                        }
-                        buildOrderProgress++;
-                    }
-                } catch (GameActionException e) {
-                    e.printStackTrace();
-                }
-            } else if(RC.isActive()) {
-                //if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
-                try {
-                    if(RC.getEnergon() > 50*RC.checkResearchProgress(Upgrade.NUKE)) {
-                        researchUpgrade(Upgrade.NUKE);
-                    } else if(numAboveSoldierCap() < 0 && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
+	/**
+	 * Handle upgrades and robots.
+	 */
+	protected void macro() {
+		if(!RC.isActive()) return;
+
+		boolean built = false;
+		if(Clock.getRoundNum() % 3 == 0) {
+			updateEncampmentCounts();
+		}
+		//RC.setIndicatorString(1,""+RC.getTeamPower());
+		if(buildOrderProgress < buildOrder.length) {
+			try {
+				HQAction action = buildOrder[buildOrderProgress];
+				RC.setIndicatorString(1, action.toString());
+				if(action.execute(this)) {
+					if(action instanceof UpgradeAction) {
+						messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
+					}
+					buildOrderProgress++;
+				}
+			} catch (GameActionException e) {
+				e.printStackTrace();
+			}
+		} else if(RC.isActive()) {
+			//if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
+			try {
+				if(RC.getEnergon() > 50*RC.checkResearchProgress(Upgrade.NUKE)) {
+					researchUpgrade(Upgrade.NUKE);
+				} else if(numAboveSoldierCap() < 0 && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
 					built = buildSoldier();
 				} 
 				if(!built){
@@ -112,16 +111,20 @@ public class HQBehavior extends RobotBehavior {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	int numAboveSoldierCap() {
-		return (numSoldiers*130 - strategy.soldierLimitPercentage*(40+10*generators.size))/100;
+		
+		RC.setIndicatorString(1, "Num above soldier cap " + numAboveSoldierCap());
 	}
 
+	int numAboveSoldierCap() {
+		//return (numSoldiers*130 - strategy.soldierLimitPercentage*(40+10*generators.size))/100;
+		return (int) (-fluxDiff*10);
+	}
+	
+
 	protected void expand() {
-//		checkForVictoryExpansion();
-		
-		
+		//		checkForVictoryExpansion();
+
+
 		if(RC.senseCaptureCost() + 10 < RC.getTeamPower()) {
 			try {
 				expandSystem.considerExpanding();
@@ -130,23 +133,23 @@ public class HQBehavior extends RobotBehavior {
 			}
 		}
 	}
-	
+
 	final int VICTORY_LOOKBACK = 10;
 	int[] enemies = new int[VICTORY_LOOKBACK];
 	int victoryTurn = -100;
-	
-//	public void checkForVictoryExpansion() {
-//		enemies[Clock.getRoundNum() % VICTORY_LOOKBACK] = RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ENEMY_TEAM).length;
-//		if(Clock.getRoundNum() > 20) {
-//			if(enemies[Clock.getRoundNum() % VICTORY_LOOKBACK] + 15 < enemies[(Clock.getRoundNum() + 1) % VICTORY_LOOKBACK] &&
-//					RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ALLY_TEAM).length > 20 &&
-//					victoryTurn + 15 < Clock.getRoundNum()) {
-//				expandSystem.expand(2);
-//				victoryTurn = Clock.getRoundNum();
-//				System.out.println("VICTORY");
-//			}
-//		}
-//	}
+
+	//	public void checkForVictoryExpansion() {
+	//		enemies[Clock.getRoundNum() % VICTORY_LOOKBACK] = RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ENEMY_TEAM).length;
+	//		if(Clock.getRoundNum() > 20) {
+	//			if(enemies[Clock.getRoundNum() % VICTORY_LOOKBACK] + 15 < enemies[(Clock.getRoundNum() + 1) % VICTORY_LOOKBACK] &&
+	//					RC.senseNearbyGameObjects(Robot.class, Integer.MAX_VALUE, ALLY_TEAM).length > 20 &&
+	//					victoryTurn + 15 < Clock.getRoundNum()) {
+	//				expandSystem.expand(2);
+	//				victoryTurn = Clock.getRoundNum();
+	//				System.out.println("VICTORY");
+	//			}
+	//		}
+	//	}
 
 	private int ENCAMPMENTS_TO_CHECK = 6;
 	private void updateEncampmentCounts() { // throws GameActionException {
@@ -174,7 +177,7 @@ public class HQBehavior extends RobotBehavior {
 			}
 			if(!RC.canSenseObject(suppliers.get(supIndex))) {
 				suppliers.delete(supIndex);
-//				System.out.println("supplier lost!");
+				//				System.out.println("supplier lost!");
 				expandSystem.lost();
 			} else {
 				supIndex++;
@@ -182,7 +185,7 @@ public class HQBehavior extends RobotBehavior {
 		}
 		RC.setIndicatorString(2, "generators: " + generators.size + ", suppliers: " + suppliers.size + ", encampments: " + numEncampments + ", soldiers: " + numSoldiers);
 	}
-	
+
 	/**
 	 * Tries to build a soldier.
 	 * @return Whether successful.
@@ -225,7 +228,7 @@ public class HQBehavior extends RobotBehavior {
 			messagingSystem.writeShieldLocationMessage(Shields.shieldLocations.get(i));
 		}
 	}
-	
+
 	void researchUpgrade(Upgrade upg) throws GameActionException {
 		if(RC.isActive()) {
 			RC.researchUpgrade(upg);

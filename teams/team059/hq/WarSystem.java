@@ -16,7 +16,7 @@ import battlecode.common.Upgrade;
  */
 public class WarSystem {
 	static final int NORMAL_ADVANCE_THRESHOLD = -10;
-	static final int PANIC_ADVANCE_THRESHOLD = -20;
+	static final int PANIC_ADVANCE_THRESHOLD = -10;
 
 	final HQBehavior hq;
 
@@ -63,8 +63,10 @@ public class WarSystem {
 	private void setBorder() throws GameActionException {
 		if(strategy != Strategy.NUCLEAR) {
 			if(hq.numAboveSoldierCap() >= advanceThreshold) {
+				System.out.println("Extending border");
 				parameters.border += 0.1;
 			} else {
+				System.out.println("Shrinking border");
 				parameters.border = Math.max(strategy.parameters.border, parameters.border - 0.2);
 			}
 		}
@@ -73,7 +75,7 @@ public class WarSystem {
 			RobotInfo info = RC.senseRobotInfo(robot);
 			double position = evaluate(info.location);
 			if(evaluate(info.location) < parameters.border) {
-				parameters.border = position;
+				//parameters.border = position;
 				//break;
 			}
 		}
