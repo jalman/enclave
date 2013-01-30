@@ -195,7 +195,8 @@ public class MessagingSystem {
 				try {
 					handlers[type].handleMessage(buffer);
 				} catch(Exception e) {
-					e.printStackTrace();
+					printMessageBoard();
+					//e.printStackTrace();
 				}
 			} else {
 				System.out.println("Cannot read message at index " + i);
@@ -304,6 +305,7 @@ public class MessagingSystem {
 		if(message_written) {
 			writeHeaderMessage(total_messages);
 		}
+		message_written = false;
 	}
 
 	private void writeHeaderMessage(int total_messages) throws GameActionException {
