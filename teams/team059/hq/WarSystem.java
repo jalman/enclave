@@ -37,10 +37,10 @@ public class WarSystem {
 
 		if(nukePanic()) {
 			advanceThreshold = PANIC_ADVANCE_THRESHOLD;
-			//messagingSystem.writeAttackMessage(ENEMY_HQ, );
+			messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
 		}
 
-		setBorder();
+		//setBorder();
 
 		int home = defendMainPriority();
 		if(home > 0) {
