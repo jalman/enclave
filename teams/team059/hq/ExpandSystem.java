@@ -82,10 +82,10 @@ public class ExpandSystem {
 			MapLocation loc = encampments[far][i];
 			if((!taken[far][i] || numLost > 0) && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
 				if(suppliers < 12 || generators > 3*(suppliers-11)) {
-					messagingSystem.writeTakeEncampmentMessage(loc, victoryExpand ? 30000 : 3000, RobotType.SUPPLIER);
+					messagingSystem.writeTakeEncampmentMessage(loc, 3000, RobotType.SUPPLIER);
 					suppliers++;
 				} else {
-					messagingSystem.writeTakeEncampmentMessage(loc, victoryExpand ? 30000 : 3000, RobotType.GENERATOR);
+					messagingSystem.writeTakeEncampmentMessage(loc, 3000, RobotType.GENERATOR);
 					generators++;
 				}
 				if(taken[far][i]) {
