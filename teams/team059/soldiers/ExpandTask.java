@@ -87,6 +87,12 @@ public class ExpandTask extends TravelTask {
 		}
 		
 		if(!isSafe(currentLocation)) {
+			if (ALLY_TEAM.equals(Team.A))
+			{
+				if (random.nextDouble()*4.1 < 1)
+					return RobotType.GENERATOR;
+				return RobotType.SUPPLIER;
+			}
 			return RobotType.ARTILLERY;
 		}
 		

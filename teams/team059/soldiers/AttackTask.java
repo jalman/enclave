@@ -1,5 +1,6 @@
 package team059.soldiers;
 
+import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import team059.movement.Mover;
@@ -14,9 +15,9 @@ public class AttackTask extends TravelTask {
 	private final int timidity;
 	private int turnsMicroedForAwayFromDestination;
 	final int turnsIShouldMicroFor = 25;
-	private final int farawayThreshold = 8;
+	private final int farawayThreshold = 9;
 	private int turnsSpentGoingBack = 0;
-	final int turnsToWaitUntilMicroIsAllowedAgain = 13;
+	int turnsToWaitUntilMicroIsAllowedAgain = 13;
 	
 	public AttackTask(MapLocation target, int priority) {
 		this(target, priority, parameters.timidity, false);
@@ -43,6 +44,7 @@ public class AttackTask extends TravelTask {
 		if(Mines.tryDefuse(destination, true)) return;
 		
 		if(farawayEnemyTarget != null && turnsMicroedForAwayFromDestination < turnsIShouldMicroFor && turnsMicroedForAwayFromDestination >= 0) {
+			turnsSpentGoingBack = 0;
 			runMicro();
 		} else {
 			returnToPreMicroLocation();
@@ -50,6 +52,7 @@ public class AttackTask extends TravelTask {
 				super.execute();
 			//}
 		}
+		RC.setIndicatorString(2, "Away turns " + turnsMicroedForAwayFromDestination + " back turns " + turnsSpentGoingBack + " Faraway Target " + farawayEnemyTarget + " Round " + Clock.getRoundNum());
 	}
 
 	@Override
@@ -65,10 +68,12 @@ public class AttackTask extends TravelTask {
 	}
 	
 	private void returnToPreMicroLocation() {
+		turnsToWaitUntilMicroIsAllowedAgain = Math.min(13, naiveDistance(destination, currentLocation));
 		if (turnsMicroedForAwayFromDestination >= turnsIShouldMicroFor) {
 			turnsMicroedForAwayFromDestination = -1;
-		}
-		else if (naiveDistance(currentLocation, destination) <= farawayThreshold || turnsSpentGoingBack > turnsToWaitUntilMicroIsAllowedAgain)
+//			turnsSpentGoingBack = 0;
+		}		
+		if (naiveDistance(currentLocation, destination) <= farawayThreshold || turnsSpentGoingBack > turnsToWaitUntilMicroIsAllowedAgain)
 			turnsMicroedForAwayFromDestination = 0;
 		turnsSpentGoingBack ++;
 	}
