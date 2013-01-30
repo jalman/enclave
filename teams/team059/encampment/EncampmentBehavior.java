@@ -14,7 +14,7 @@ public class EncampmentBehavior extends RobotBehavior {
 	private boolean firstTurn = true;
 	
 	public EncampmentBehavior() {
-		RC.setIndicatorString(0, String.valueOf(forward));
+//		RC.setIndicatorString(0, String.valueOf(forward));
 	}
 	
 	@Override

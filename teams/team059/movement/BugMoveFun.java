@@ -107,7 +107,7 @@ public class BugMoveFun extends NavAlg {
             }
             DEBUG.append(" _ " + Arrays.toString(movable) + " | ");
             int[] toMove = computeMove(curLoc.x, curLoc.y, movable);
-            RC.setIndicatorString(0, Clock.getRoundNum() + DEBUG.toString());
+//            RC.setIndicatorString(0, Clock.getRoundNum() + DEBUG.toString());
             if(toMove==null) return Direction.NONE;
             Direction ret = directions[getDirTowards(toMove[0], toMove[1])];
 //            if(!canMoveNoMine(ret)) bugTurnsBlocked++;

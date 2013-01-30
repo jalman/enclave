@@ -36,7 +36,7 @@ public enum Strategy {
 //		if(ALLY_TEAM.equals(Team.A))
 //			return NORMAL;
 //		else if(ALLY_TEAM.equals(Team.B))
-//		  return RUSH;
+//		  return NUCLEAR;
 //		//ADD SOMETHING THEREABOUT (THERE=NUKE)
 //
 //		if(ALLY_TEAM.equals(Team.A))

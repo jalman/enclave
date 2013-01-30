@@ -604,7 +604,7 @@ public class MineManager extends TaskGiver {
 			}
 		}
 		} catch (Exception e) {
-			System.out.println("x = " + x + ", y = " + y);
+			//System.out.println("x = " + x + ", y = " + y);
 			e.printStackTrace();
 		}
 	}

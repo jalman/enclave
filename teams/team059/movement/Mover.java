@@ -108,7 +108,7 @@ public class Mover {
 							RC.move(d);
 						}
 					} catch (Exception e) {
-						System.out.println("ERROR: Can't move in direction " + d);
+					//	System.out.println("ERROR: Can't move in direction " + d);
 					}
 				}
 			} else {

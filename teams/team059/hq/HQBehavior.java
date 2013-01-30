@@ -73,7 +73,7 @@ public class HQBehavior extends RobotBehavior {
 		expand();
 		warSystem.run();
 
-		RC.setIndicatorString(0, parameters.toString());
+//		RC.setIndicatorString(0, parameters.toString());
 	}
 
 	/**
@@ -92,11 +92,11 @@ public class HQBehavior extends RobotBehavior {
 			if(RC.getEnergon() > 50*(Upgrade.NUKE.numRounds - RC.checkResearchProgress(Upgrade.NUKE))) {
 				researchUpgrade(Upgrade.NUKE);
 			} else if(emergencySoldier) {
-				System.out.println("emergency soldier");
+				//System.out.println("emergency soldier");
 				built = buildSoldier();				
 			} else if(buildOrderProgress < buildOrder.length) {
 					HQAction action = buildOrder[buildOrderProgress];
-					RC.setIndicatorString(1, action.toString());
+//					RC.setIndicatorString(1, action.toString());
 					if(action.execute(this)) {
 						if(action instanceof UpgradeAction) {
 							messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
@@ -188,7 +188,7 @@ public class HQBehavior extends RobotBehavior {
 				supIndex++;
 			}
 		}
-		RC.setIndicatorString(2, "generators: " + generators.size + ", suppliers: " + suppliers.size + ", encampments: " + numEncampments + ", soldiers: " + numSoldiers);
+//		RC.setIndicatorString(2, "generators: " + generators.size + ", suppliers: " + suppliers.size + ", encampments: " + numEncampments + ", soldiers: " + numSoldiers);
 	}
 
 	/**

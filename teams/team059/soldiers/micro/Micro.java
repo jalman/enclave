@@ -60,7 +60,7 @@ public class Micro{
 		if(RC.isActive())
 		{	
 			mover.execute();
-			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget() + " Bytecode used " + (Clock.getBytecodeNum()-k));
+//			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget() + " Bytecode used " + (Clock.getBytecodeNum()-k));
 
 		}
 	}
@@ -72,7 +72,7 @@ public class Micro{
 		if(RC.isActive())
 		{
 			mover.execute();
-			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget() + enemyTarget);
+//			RC.setIndicatorString(2, "MICRO " + Clock.getRoundNum() + " ALLY WEIGHT: " + allyWeight + " ENEMY WEIGHT: " + enemyWeight + " Target: " + mover.getTarget() + enemyTarget);
 		}
 	}
 

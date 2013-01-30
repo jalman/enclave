@@ -11,7 +11,9 @@ import battlecode.common.RobotController;
 
 public class RobotPlayer {
 	public static void run(RobotController rc) {
-
+		rc.setIndicatorString(0, "HACK");
+		rc.setIndicatorString(1, "PUNT");
+		rc.setIndicatorString(2, "NUKE");
 		Utils.initUtils(rc);
 		RobotBehavior robot = null;
 		switch(rc.getType()) {

@@ -107,7 +107,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 			int appeal = t.appeal();
 			//System.out.print("Task " + t + " has appeal " + appeal + " || ");
 			if(appeal > max_appeal) {
-				RC.setIndicatorString(0, "Task giver " + i);
+//				RC.setIndicatorString(0, "Task giver " + i);
 				currentTask = t;
 				max_appeal = appeal;
 			}
@@ -115,7 +115,7 @@ public class SoldierBehavior2 extends RobotBehavior {
 		//System.out.println();
 		
 		if(currentTask != null && RC.isActive()) {
-			RC.setIndicatorString(1, Clock.getRoundNum() + ": " + currentTask.toString() + " with appeal " + currentTask.appeal());
+//			RC.setIndicatorString(1, Clock.getRoundNum() + ": " + currentTask.toString() + " with appeal " + currentTask.appeal());
 			currentTask.execute();
 		}
 	}
