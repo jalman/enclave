@@ -3,6 +3,8 @@ package team059.soldiers;
 import battlecode.common.Clock;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.TerrainTile;
 import static team059.utils.Utils.*;
 import static team059.soldiers.PrioritySystem.PATROL_PRIORITY;;
 
@@ -30,12 +32,12 @@ public class PatrolManager extends TaskGiver {
 
 	private void retreat() {
 		Direction dir = currentLocation.directionTo(ALLY_HQ);
-		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY, false);
+		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY, true);
 	}
 	
 	private void advance() {
 		Direction dir = currentLocation.directionTo(ENEMY_HQ);
-		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY, false);
+		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY, true);
 	}
 	
 	/**
@@ -47,9 +49,12 @@ public class PatrolManager extends TaskGiver {
 			dir = dir.rotateLeft().rotateLeft();
 		} else {
 			dir = dir.rotateRight().rotateRight();
-		}
+		} 
 		
-		attackTask = new AttackTask(currentLocation.add(dir, STEP_SIZE), PATROL_PRIORITY, false);
+		MapLocation patrolTarget = currentLocation.add(dir, STEP_SIZE);
+		if(RC.senseTerrainTile(patrolTarget) == TerrainTile.OFF_MAP) patrolTarget = currentLocation.add(dir.opposite(), STEP_SIZE);
+		
+		attackTask = new AttackTask(patrolTarget, PATROL_PRIORITY, true);
 	}
 	
 	@Override
