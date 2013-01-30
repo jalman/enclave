@@ -171,7 +171,8 @@ public class MineManager extends TaskGiver {
 			priority += miningArtilleryPriority;
 			break;
 		case SOLDIER:
-			break;
+			task = new MineTask(currentLocation, priority);
+			return;
 		default:
 			priority += miningEncampmentPriority;			
 		}
@@ -213,7 +214,7 @@ public class MineManager extends TaskGiver {
 			nextX += (v1x + v2x);
 			nextY += (v1y + v2y);
 			//if(nextX == colEnd.x && nextY == colEnd.y) break;
-			if(nextX < 0 || nextX >= MAP_WIDTH || nextY < 0 || nextY >= MAP_HEIGHT || isDangerous(currentLocation)) break;
+			if(nextX < 0 || nextX >= MAP_WIDTH || nextY < 0 || nextY >= MAP_HEIGHT || isDangerous(new MapLocation(nextX, nextY))) break;
 			if(mineLocs[nextX][nextY] == 0) {
 				MapLocation loc = new MapLocation(nextX, nextY);
 				if(RC.senseMine(loc) == ALLY_TEAM) {
