@@ -14,8 +14,8 @@ public class AttackTask extends TravelTask {
 	private final boolean defuse;
 	private final int timidity;
 	private int turnsMicroedForAwayFromDestination;
-	final int turnsIShouldMicroFor = 25;
-	private final int farawayThreshold = 9;
+	final int turnsIShouldMicroFor = 12;
+	private final int farawayThreshold = 4;
 	private int turnsSpentGoingBack = 0;
 	int turnsToWaitUntilMicroIsAllowedAgain = 13;
 	
@@ -43,7 +43,8 @@ public class AttackTask extends TravelTask {
 	public void execute() throws GameActionException {
 		if(Mines.tryDefuse(destination, true)) return;
 		
-		if(farawayEnemyTarget != null && turnsMicroedForAwayFromDestination < turnsIShouldMicroFor && turnsMicroedForAwayFromDestination >= 0) {
+		if(farawayEnemyTarget != null && turnsMicroedForAwayFromDestination < turnsIShouldMicroFor 
+				&& turnsMicroedForAwayFromDestination >= 0) {
 			turnsSpentGoingBack = 0;
 			runMicro();
 		} else {
@@ -52,7 +53,7 @@ public class AttackTask extends TravelTask {
 				super.execute();
 			//}
 		}
-		RC.setIndicatorString(2, "Away turns " + turnsMicroedForAwayFromDestination + " back turns " + turnsSpentGoingBack + " Faraway Target " + farawayEnemyTarget + " Round " + Clock.getRoundNum());
+//		RC.setIndicatorString(2, "Away turns " + turnsMicroedForAwayFromDestination + " back turns " + turnsSpentGoingBack + " Faraway Target " + farawayEnemyTarget + " 	Destination " + destination + " Round " + Clock.getRoundNum());
 	}
 
 	@Override
@@ -69,12 +70,14 @@ public class AttackTask extends TravelTask {
 	
 	private void returnToPreMicroLocation() {
 		turnsToWaitUntilMicroIsAllowedAgain = Math.min(13, naiveDistance(destination, currentLocation));
-		if (turnsMicroedForAwayFromDestination >= turnsIShouldMicroFor) {
+		if (turnsMicroedForAwayFromDestination >= turnsIShouldMicroFor || turnsMicroedForAwayFromDestination == -1) {
 			turnsMicroedForAwayFromDestination = -1;
-//			turnsSpentGoingBack = 0;
+			turnsSpentGoingBack ++;
 		}		
-		if (naiveDistance(currentLocation, destination) <= farawayThreshold || turnsSpentGoingBack > turnsToWaitUntilMicroIsAllowedAgain)
+		if (naiveDistance(currentLocation, destination) <= (0.5 * farawayThreshold) || turnsSpentGoingBack > turnsToWaitUntilMicroIsAllowedAgain)
+		{
 			turnsMicroedForAwayFromDestination = 0;
-		turnsSpentGoingBack ++;
+			turnsSpentGoingBack = 0;
+		}
 	}
 }

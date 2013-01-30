@@ -22,6 +22,7 @@ public class Micro{
 	public int timidity = 0;
 	
 	public Micro() {
+//		System.out.println(HQ_DIST);
 		enemyTarget = null;
 	}
 	public void run(int timidness) throws GameActionException{
@@ -86,7 +87,10 @@ public class Micro{
 			setEnemyTarget();
 //		MapLocation m = averageMapLocation(enemyTarget, currentLocation, 2/3);
 		//cheap micro
-		if (timidity < -5 || (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 45, ALLY_TEAM).length >= 6))
+		if (timidity < -5 || (RC.senseNearbyGameObjects(Robot.class, enemyTarget, 45, ALLY_TEAM).length >= 6) ||
+				(Clock.getRoundNum() > 400 
+						&& RC.senseNearbyGameObjects(Robot.class, currentLocation, 10000, ALLY_TEAM).length -
+						RC.senseAlliedEncampmentSquares().length > (0.6 * HQ_DIST + 8)))
 		{
 			enemyWeight = 2;
 			allyWeight = 100000;
@@ -135,11 +139,11 @@ public class Micro{
 		else
 		{
 			mover.setNavType(NavType.BUG);
-//			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && ID % 6 == 0) || 
-//					enemyTargetRobotInfo.type.equals(RobotType.ARTILLERY) && 1.2*allyWeight > enemyWeight)
-//				Mines.tryDefuse(enemyTarget, false);
-//			else
-			mover.setNavType(NavType.BUG);
+			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && ID % 6 == 0) || 
+					enemyTargetRobotInfo.type.equals(RobotType.ARTILLERY))
+				Mines.tryDefuse(enemyTarget, false);
+			else
+				mover.setNavType(NavType.BUG);
 			attackTarget(enemyTarget);
 		}
 	}
