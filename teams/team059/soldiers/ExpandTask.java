@@ -87,13 +87,13 @@ public class ExpandTask extends TravelTask {
 		}
 		
 		if(!isSafe(currentLocation)) {
-				return RobotType.ARTILLERY;
+			return RobotType.ARTILLERY;
 		}
 		
 		if(buildType != null) return buildType;
 		
 		//TODO: do something better
-		return RC.senseAlliedEncampmentSquares().length > 8 && Clock.getRoundNum() % 4 != 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
+		return RC.senseAlliedEncampmentSquares().length > 8 && random.nextInt() % 4 != 0 ? RobotType.GENERATOR : RobotType.SUPPLIER;
 	}
 	
 	@Override
