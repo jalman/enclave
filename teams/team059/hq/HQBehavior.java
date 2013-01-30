@@ -109,8 +109,7 @@ public class HQBehavior extends RobotBehavior {
 	}
 
 	int numAboveSoldierCap() {
-		//return (numSoldiers*130 - strategy.soldierLimitPercentage*(40+10*generators.size))/100;
-		return (int) (-fluxDiff*10);
+		return (numSoldiers*130 - strategy.soldierLimitPercentage*(40+10*generators.size))/100;
 	}
 	
 
