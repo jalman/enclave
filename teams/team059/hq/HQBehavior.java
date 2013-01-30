@@ -155,7 +155,7 @@ public class HQBehavior extends RobotBehavior {
 			}
 			if(!RC.canSenseObject(generators.get(genIndex))) {
 				generators.delete(genIndex);
-				System.out.println("generator lost!");
+				//System.out.println("generator lost!");
 				expandSystem.lost();
 			} else {
 				genIndex++;
@@ -169,7 +169,7 @@ public class HQBehavior extends RobotBehavior {
 			}
 			if(!RC.canSenseObject(suppliers.get(supIndex))) {
 				suppliers.delete(supIndex);
-				System.out.println("supplier lost!");
+//				System.out.println("supplier lost!");
 				expandSystem.lost();
 			} else {
 				supIndex++;
