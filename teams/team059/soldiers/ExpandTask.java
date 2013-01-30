@@ -88,14 +88,19 @@ public class ExpandTask extends TravelTask {
 		
 		int nEncs = RC.senseAlliedEncampmentSquares().length;
 		
-		if(Clock.getRoundNum() % 3 == 0 && !isSafe(currentLocation)) {
+		try {
+			if((Clock.getRoundNum() % 3 == 0 && !isSafe(currentLocation)) || (nEncs == 0 && RC.senseEncampmentSquares(ALLY_HQ, currentLocation.distanceSquaredTo(ALLY_HQ) - 1, null).length == 0)) {
 //			if (ALLY_TEAM.equals(Team.A))
 //			{
 //				if (random.nextDouble()*2 < 1)
 //					return RobotType.SUPPLIER;
 //				return RobotType.GENERATOR;
 //			}
-			return RobotType.ARTILLERY;
+				return RobotType.ARTILLERY;
+			}
+		} catch (GameActionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		if(buildType != null) return buildType;
