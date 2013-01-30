@@ -46,7 +46,7 @@ public class HQBehavior extends RobotBehavior {
 		fluxDiff = actualFlux - lastFlux;
 		lastFlux = actualFlux;
 
-		if(Clock.getRoundNum() % 50 == 0) {
+		if(strategy == Strategy.NORMAL && Clock.getRoundNum() % 50 == 0) {
 			parameters.greed++;
 			if(numSoldiers > 15) {
 				expandSystem.expand(1);
