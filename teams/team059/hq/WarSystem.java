@@ -37,9 +37,10 @@ public class WarSystem {
 
 		if(nukePanic()) {
 			advanceThreshold = PANIC_ADVANCE_THRESHOLD;
+			messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
 		}
 
-		setBorder();
+		//setBorder();
 
 		int home = defendMainPriority();
 		if(home > 0) {
@@ -63,10 +64,10 @@ public class WarSystem {
 	private void setBorder() throws GameActionException {
 		if(strategy != Strategy.NUCLEAR) {
 			if(hq.numAboveSoldierCap() >= advanceThreshold) {
-				System.out.println("Extending border");
+				//System.out.println("Extending border");
 				parameters.border += 0.1;
 			} else {
-				System.out.println("Shrinking border");
+				//System.out.println("Shrinking border");
 				parameters.border = Math.max(strategy.parameters.border, parameters.border - 0.2);
 			}
 		}

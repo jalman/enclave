@@ -21,6 +21,9 @@ public class HQBehavior extends RobotBehavior {
 	ArraySet<Robot> generators = new ArraySet<Robot>(500);
 	ArraySet<Robot> suppliers =  new ArraySet<Robot>(500);
 	int genIndex = 0, supIndex = 0;
+	
+	boolean emergencySoldier = false;
+	int turnsSinceEmergencySoldier = 0;
 
 	double lastFlux = 0, thisFlux = 0, fluxDiff = 0, actualFlux = 0;
 
@@ -34,28 +37,38 @@ public class HQBehavior extends RobotBehavior {
 		expandSystem = new ExpandSystem();
 		warSystem = new WarSystem(this);
 	}
+	@Override
+	public void beginRound() throws GameActionException {
+		//RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
+		numBots = RC.senseNearbyGameObjects(Robot.class, currentLocation, 10000, ALLY_TEAM).length;
+		numEncampments = RC.senseAlliedEncampmentSquares().length;
+		numSoldiers = numBots - numEncampments;
+		actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
+		//thisFlux = RC.getTeamPower();
+		fluxDiff = actualFlux - lastFlux;
+		lastFlux = actualFlux;
+		
+		 if (parameters.timidity == 1)
+         {
+         	if (Clock.getRoundNum() % 125 == 0 && Clock.getRoundNum() > 1)
+         		parameters.greed++;
+         }
+		 
+		if(!emergencySoldier) {
+			emergencySoldier = (RC.senseNearbyGameObjects(Robot.class, currentLocation, 10000, ENEMY_TEAM).length > 11*numSoldiers/10);
+		} else {
+			if(turnsSinceEmergencySoldier++ > 10) {
+				emergencySoldier = (RC.senseNearbyGameObjects(Robot.class, currentLocation, 10000, ENEMY_TEAM).length > 11*numSoldiers/10);
+			}
+		}
 
-        @Override
-        public void beginRound() throws GameActionException {
-            //RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
-            numBots = RC.senseNearbyGameObjects(Robot.class, currentLocation, 10000, ALLY_TEAM).length;
-            numEncampments = RC.senseAlliedEncampmentSquares().length;
-            numSoldiers = numBots - numEncampments;
-            actualFlux = RC.getTeamPower() - (40 + 10*generators.size);
-            //thisFlux = RC.getTeamPower();
-            fluxDiff = actualFlux - lastFlux;
-            lastFlux = actualFlux;
-            if (parameters.timidity == 1)
-            {
-            	if (Clock.getRoundNum() % 125 == 0 && Clock.getRoundNum() > 1)
-            		parameters.greed++;
-            }
-            else if(Clock.getRoundNum() % 50 == 0) {
-                parameters.greed++;
-                if(numSoldiers > 15) {
-                	expandSystem.expand(1);
-                }
-            }
+		
+		if(strategy == strategy.NORMAL && Clock.getRoundNum() % 50 == 0) {
+			parameters.greed++;
+			if(numSoldiers > 15) {
+				expandSystem.expand(1);
+			}
+		}
 		messagingSystem.beginRoundHQ(messageHandlers);
 	}
         @Override
@@ -83,41 +96,42 @@ public class HQBehavior extends RobotBehavior {
 			updateEncampmentCounts();
 		}
 		//RC.setIndicatorString(1,""+RC.getTeamPower());
-		if(buildOrderProgress < buildOrder.length) {
-			try {
-				HQAction action = buildOrder[buildOrderProgress];
-				RC.setIndicatorString(1, action.toString());
-				if(action.execute(this)) {
-					if(action instanceof UpgradeAction) {
-						messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
+
+		try {
+			if(RC.getEnergon() > 50*(Upgrade.NUKE.numRounds - RC.checkResearchProgress(Upgrade.NUKE))) {
+				researchUpgrade(Upgrade.NUKE);
+			} else if(emergencySoldier) {
+				System.out.println("emergency soldier");
+				built = buildSoldier();				
+			} else if(buildOrderProgress < buildOrder.length) {
+					HQAction action = buildOrder[buildOrderProgress];
+					RC.setIndicatorString(1, action.toString());
+					if(action.execute(this)) {
+						if(action instanceof UpgradeAction) {
+							messagingSystem.writeAnnounceUpgradeMessage( ( (UpgradeAction) action).upgrade.ordinal() );
+						}
+						buildOrderProgress++;
 					}
-					buildOrderProgress++;
-				}
-			} catch (GameActionException e) {
-				e.printStackTrace();
+			} else if(RC.isActive()) {
+				//if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
+					if(numAboveSoldierCap() < 0 && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > -1))) {
+						built = buildSoldier();
+					} 
+					if(!built) {
+						if(fluxDiff*60 + actualFlux < 0) {
+							messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
+						}
+						researchUpgrade(Upgrade.NUKE);
+					}
 			}
-		} else if(RC.isActive()) {
-			//if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
-			try {
-				if(RC.getEnergon() > 50*RC.checkResearchProgress(Upgrade.NUKE)) {
-					researchUpgrade(Upgrade.NUKE);
-				} else if(numAboveSoldierCap() < 0 && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
-					built = buildSoldier();
-				} 
-				if(!built){
-					researchUpgrade(Upgrade.NUKE);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		} catch (GameActionException e) {
+			e.printStackTrace();
 		}
-		
-		RC.setIndicatorString(1, "Num above soldier cap " + numAboveSoldierCap());
+		RC.setIndicatorString(1, "Num above soldier cap " + numAboveSoldierCap() + " actualFlux = " + actualFlux + " fluxDiff = " + fluxDiff);
 	}
 
 	int numAboveSoldierCap() {
-		//return (numSoldiers*130 - strategy.soldierLimitPercentage*(40+10*generators.size))/100;
-		return (int) (-fluxDiff*10);
+		return (numSoldiers*130 - strategy.soldierLimitPercentage*(40+10*generators.size))/100;
 	}
 	
 
