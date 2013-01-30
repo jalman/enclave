@@ -58,11 +58,8 @@ public class Micro{
 		if(RC.isActive())
 		{	
 			mover.execute();
-<<<<<<< HEAD
 //			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget() + " Bytecode used " + (Clock.getBytecodeNum()-k));
-=======
-			RC.setIndicatorString(2, "GOING TO BATTLE " + Clock.getRoundNum() + "Target: " + mover.getTarget());
->>>>>>> b425ed65661580969098c4035443f9ab8f4b8e7d
+
 
 		}
 	}

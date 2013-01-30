@@ -71,31 +71,19 @@ public class HQBehavior extends RobotBehavior {
 		}
 		messagingSystem.beginRoundHQ(messageHandlers);
 	}
-<<<<<<< HEAD
-
-	@Override
-	public void run() throws GameActionException {
-		macro();
-		expand();
-		warSystem.run();
-
-//		RC.setIndicatorString(0, parameters.toString());
-	}
-=======
         @Override
         public void run() throws GameActionException {
             macro();
             expand();
             warSystem.run();
             
-            RC.setIndicatorString(0, parameters.toString());
+//            RC.setIndicatorString(0, parameters.toString());
             if (parameters.timidity == 1 && Clock.getRoundNum() > 20)
             {
             	messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
             }
         }
 	
->>>>>>> b425ed65661580969098c4035443f9ab8f4b8e7d
 
 	/**
 	 * Handle upgrades and robots.
@@ -130,7 +118,7 @@ public class HQBehavior extends RobotBehavior {
 						built = buildSoldier();
 					} 
 					if(!built) {
-						if(fluxDiff*60 + actualFlux < 0) {
+						if(fluxDiff*60 + actualFlux < 0 && !strategy.equals(Strategy.NUCLEAR)) {
 							messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
 						}
 						researchUpgrade(Upgrade.NUKE);
