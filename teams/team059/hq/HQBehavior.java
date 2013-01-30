@@ -92,12 +92,19 @@ public class HQBehavior extends RobotBehavior {
 		} else if(RC.isActive()) {
 			//if(Clock.getRoundNum() < 300 || actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0)) {
 			try {
-				if(RC.getEnergon() > 50*RC.checkResearchProgress(Upgrade.NUKE)) {
+				if(RC.getEnergon() > 50*(Upgrade.NUKE.numRounds - RC.checkResearchProgress(Upgrade.NUKE))) {
 					researchUpgrade(Upgrade.NUKE);
-				} else if(numAboveSoldierCap() < 0 && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > 0))) {
+				} else if(numAboveSoldierCap() < 0 && (actualFlux > 400.0 || (actualFlux > 20.0 && fluxDiff > -1))) {
 					built = buildSoldier();
 				} 
 				if(!built) {
+					if(fluxDiff*60 + actualFlux < 0) {
+						try {
+							messagingSystem.writeAttackMessage(ENEMY_HQ, 500);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
 					researchUpgrade(Upgrade.NUKE);
 				}
 			} catch (Exception e) {
@@ -105,7 +112,7 @@ public class HQBehavior extends RobotBehavior {
 			}
 		}
 		
-		RC.setIndicatorString(1, "Num above soldier cap " + numAboveSoldierCap());
+		RC.setIndicatorString(1, "Num above soldier cap " + numAboveSoldierCap() + " actualFlux = " + actualFlux + " fluxDiff = " + fluxDiff);
 	}
 
 	int numAboveSoldierCap() {
