@@ -81,6 +81,9 @@ public class ExpandSystem {
 		for(int i = 0; i < encampments[far].length; i++) {
 			MapLocation loc = encampments[far][i];
 			if((!taken[far][i] || numLost > 0) && (!RC.canSenseSquare(loc) || RC.senseObjectAtLocation(loc) == null)) {
+				if(strategy != Strategy.RUSH && far == 0 && i == 0) {
+					messagingSystem.writeTakeEncampmentMessage(loc, victoryExpand ? 30000 : 3000, RobotType.ARTILLERY);
+				}
 				if(suppliers < 12 || generators > 3*(suppliers-11)) {
 					messagingSystem.writeTakeEncampmentMessage(loc, victoryExpand ? 30000 : 3000, RobotType.SUPPLIER);
 					suppliers++;

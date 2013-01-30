@@ -88,7 +88,7 @@ public class ExpandTask extends TravelTask {
 		
 		int nEncs = RC.senseAlliedEncampmentSquares().length;
 		
-		if(Clock.getRoundNum() % 3 == 0 && (!isSafe(currentLocation)) || (currentLocation.distanceSquaredTo(ALLY_HQ) < 25 && nEncs == 0)) {
+		if(Clock.getRoundNum() % 3 == 0 && !isSafe(currentLocation)) {
 //			if (ALLY_TEAM.equals(Team.A))
 //			{
 //				if (random.nextDouble()*2 < 1)
