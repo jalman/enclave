@@ -37,7 +37,6 @@ public class HQBehavior extends RobotBehavior {
 		expandSystem = new ExpandSystem();
 		warSystem = new WarSystem(this);
 	}
-
 	@Override
 	public void beginRound() throws GameActionException {
 		//RC.setIndicatorString(0, generators.size + " generators. " + Double.toString(actualFlux) + " is pow");
@@ -49,6 +48,12 @@ public class HQBehavior extends RobotBehavior {
 		fluxDiff = actualFlux - lastFlux;
 		lastFlux = actualFlux;
 		
+		 if (parameters.timidity == 1)
+         {
+         	if (Clock.getRoundNum() % 125 == 0 && Clock.getRoundNum() > 1)
+         		parameters.greed++;
+         }
+		 
 		if(!emergencySoldier) {
 			emergencySoldier = (RC.senseNearbyGameObjects(Robot.class, currentLocation, 10000, ENEMY_TEAM).length > 11*numSoldiers/10);
 		} else {
@@ -57,15 +62,16 @@ public class HQBehavior extends RobotBehavior {
 			}
 		}
 
-		if(strategy == Strategy.NORMAL && Clock.getRoundNum() % 50 == 0) {
+		
+		if(strategy == strategy.NORMAL && Clock.getRoundNum() % 50 == 0) {
 			parameters.greed++;
 			if(numSoldiers > 15) {
 				expandSystem.expand(1);
 			}
 		}
-
 		messagingSystem.beginRoundHQ(messageHandlers);
 	}
+<<<<<<< HEAD
 
 	@Override
 	public void run() throws GameActionException {
@@ -75,6 +81,21 @@ public class HQBehavior extends RobotBehavior {
 
 //		RC.setIndicatorString(0, parameters.toString());
 	}
+=======
+        @Override
+        public void run() throws GameActionException {
+            macro();
+            expand();
+            warSystem.run();
+            
+            RC.setIndicatorString(0, parameters.toString());
+            if (parameters.timidity == 1 && Clock.getRoundNum() > 20)
+            {
+            	messagingSystem.writeAttackMessage(ENEMY_HQ, 200);
+            }
+        }
+	
+>>>>>>> b425ed65661580969098c4035443f9ab8f4b8e7d
 
 	/**
 	 * Handle upgrades and robots.
