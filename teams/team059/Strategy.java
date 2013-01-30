@@ -39,11 +39,12 @@ public enum Strategy {
 //		  return NORMAL;
 //		//ADD SOMETHING THEREABOUT (THERE=NUKE)
 //
-//		if(ALLY_TEAM.equals(Team.A))
-//			return NUCLEAR;
-//
-//		 return NORMAL;
+		if(ALLY_TEAM.equals(Team.A))
+			return NUCLEAR;
 
+		 return NORMAL;
+
+		/*
 		int distance = naiveDistance(ALLY_HQ, ENEMY_HQ);
 		
 		MapLocation halfway = new MapLocation((ALLY_HQ.x + ENEMY_HQ.x)/2, (ALLY_HQ.y + ENEMY_HQ.y)/2);
@@ -57,6 +58,8 @@ public enum Strategy {
 //			return RUSH;
 //		} else {
 			return NORMAL;
-//		}
+<<<<<<< HEAD
+		}
+		*/
 	}
 }
