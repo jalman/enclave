@@ -40,13 +40,13 @@ public class Micro{
 
 	public void rushToBattle() throws GameActionException{
 		//farawayEnemyTarget should be already set if micro mode is entered
-		if (naiveDistance(currentLocation, farawayEnemyTarget) >= 5 && RC.getRobot().getID() % 4 == 0)
+		if (naiveDistance(currentLocation, farawayEnemyTarget) >= 5 && ID % 4 == 0)
 			mover.setNavType(NavType.BUG_HIGH_DIG);
 		else
 			mover.setNavType(NavType.BUG);
 		int k = Clock.getBytecodeNum();
 		
-		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 4 ==0)
+		if ((Clock.getRoundNum() + ID) % 4 ==0)
 		{		
 			Mines.tryDefuse(farawayEnemyTarget, false);
 		}
@@ -134,7 +134,7 @@ public class Micro{
 		}
 		else
 		{
-			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && RC.getRobot().getID() % 6 == 0) || 
+			if (enemyWeight < 0 || (currentLocation.distanceSquaredTo(ENEMY_HQ) <= 13 && ID % 6 == 0) || 
 					enemyTargetRobotInfo.type.equals(RobotType.ARTILLERY) && 1.2*allyWeight > enemyWeight)
 				Mines.tryDefuse(enemyTarget, false);
 			else
@@ -177,10 +177,10 @@ public class Micro{
 		}
 		else
 		{
-			if (naiveDistance(currentLocation, ENEMY_HQ) < 3 && m.x == ENEMY_HQ.x && m.y == ENEMY_HQ.y)
-			{
-				System.out.println(currentLocation + " " + m);
-			}
+//			if (naiveDistance(currentLocation, ENEMY_HQ) < 3 && m.x == ENEMY_HQ.x && m.y == ENEMY_HQ.y)
+//			{
+//				System.out.println(currentLocation + " " + m);
+//			}
 			mover.setTarget(RC.getLocation());
 		}
 	}
