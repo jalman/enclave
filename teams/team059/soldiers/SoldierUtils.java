@@ -41,7 +41,7 @@ public class SoldierUtils {
 			closeEnoughToGoToBattleSquared=121;
 	
 		
-		if ((Clock.getRoundNum() + RC.getRobot().getID()) % 2 == 0)
+		if ((Clock.getRoundNum() + ID % 2 == 0))
 			getFarAwayEnemyTarget();
 	}
 	public static void getFarAwayEnemyTarget() throws GameActionException{

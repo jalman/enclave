@@ -80,7 +80,7 @@ public class NukeHQBehavior extends RobotBehavior {
 			}
 		}
 		if(done) {
-			System.out.println("Finished " + buildOrder[buildOrderProgress]);
+//			System.out.println("Finished " + buildOrder[buildOrderProgress]);
 			buildOrderProgress++;
 			if(RC.isActive()) {
 				macro();
