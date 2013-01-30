@@ -53,7 +53,7 @@ public class AttackTask extends TravelTask {
 				super.execute();
 			//}
 		}
-		RC.setIndicatorString(2, "Away turns " + turnsMicroedForAwayFromDestination + " back turns " + turnsSpentGoingBack + " Faraway Target " + farawayEnemyTarget + " 	Destination " + destination + " Round " + Clock.getRoundNum());
+//		RC.setIndicatorString(2, "Away turns " + turnsMicroedForAwayFromDestination + " back turns " + turnsSpentGoingBack + " Faraway Target " + farawayEnemyTarget + " 	Destination " + destination + " Round " + Clock.getRoundNum());
 	}
 
 	@Override

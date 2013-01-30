@@ -22,7 +22,7 @@ public class Micro{
 	public int timidity = 0;
 	
 	public Micro() {
-		System.out.println(HQ_DIST);
+//		System.out.println(HQ_DIST);
 		enemyTarget = null;
 	}
 	public void run(int timidness) throws GameActionException{
